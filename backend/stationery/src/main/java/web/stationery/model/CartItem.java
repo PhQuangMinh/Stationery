@@ -14,18 +14,10 @@ import java.sql.Timestamp;
 @Table(name = "cart_items")
 public class CartItem {
 
-    @EmbeddedId
-    private CartItemId id;
-
-    @ManyToOne
-    @MapsId("cartId")
-    @JoinColumn(name = "cart_id")
-    private Cart cart;
-
-    @ManyToOne
-    @MapsId("productId")
-    @JoinColumn(name = "product_id")
-    private Product product;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private long id;
 
     @Column(nullable = false)
     private int quantity;
@@ -37,6 +29,14 @@ public class CartItem {
     @Column(name = "update_at")
     @UpdateTimestamp
     private Timestamp updateAt;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
 }
 

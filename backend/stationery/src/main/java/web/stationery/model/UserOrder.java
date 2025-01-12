@@ -19,11 +19,8 @@ public class UserOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int orderId;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "id")
+    private long id;
 
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate;
@@ -31,7 +28,7 @@ public class UserOrder {
     @Column(name = "total_amount", nullable = false)
     private int totalAmount;
 
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private String status;
 
     @Column(name = "shipping_address", nullable = false)
@@ -45,13 +42,16 @@ public class UserOrder {
     @UpdateTimestamp
     private Timestamp updateAt;
 
-//    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    private List<OrderItem> listOrderItem;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderItem> orderItems;
 
-//    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-//    private Shipping shipping;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-//    public UserOrder() {
-//        listOrderItem = new ArrayList<>();
-//    }
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Shipping shipping;
+
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Payment payment;
 }

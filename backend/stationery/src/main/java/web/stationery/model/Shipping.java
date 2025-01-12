@@ -17,11 +17,8 @@ public class Shipping {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int shippingId;
-
-    @OneToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private UserOrder order;
+    @Column(name = "id")
+    private long id;
 
     @Column(name = "shipping_method", nullable = false)
     private String shippingMethod;
@@ -29,7 +26,7 @@ public class Shipping {
     @Column(name = "shipping_date", nullable = false)
     private LocalDate shippingDate;
 
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private String status;
 
     @Column(name = "create_at", updatable = false)
@@ -39,5 +36,9 @@ public class Shipping {
     @Column(name = "update_at")
     @UpdateTimestamp
     private Timestamp updateAt;
+
+    @OneToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    private UserOrder order;
 }
 

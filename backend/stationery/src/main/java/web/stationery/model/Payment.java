@@ -17,11 +17,8 @@ public class Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int paymentId;
-
-    @ManyToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private UserOrder userOrder;
+    @Column(name = "id")
+    private long id;
 
     @Column(name = "payment_method", nullable = false)
     private String paymentMethod;
@@ -29,7 +26,7 @@ public class Payment {
     @Column(name = "payment_date", nullable = false)
     private LocalDate paymentDate;
 
-    @Column(nullable = false)
+    @Column(name = "status", nullable = false)
     private String status;
 
     @Column(name = "create_at", updatable = false)
@@ -39,5 +36,9 @@ public class Payment {
     @Column(name = "update_at")
     @UpdateTimestamp
     private Timestamp updateAt;
+
+    @OneToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    private UserOrder order;
 }
 

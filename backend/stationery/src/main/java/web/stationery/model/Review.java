@@ -7,22 +7,22 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
+@Table(name = "reviews")
 @Getter
 @Setter
-@Table(name = "brands")
-public class Brand {
-
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "rating")
+    private float rating;
+
+    @Column(name = "comment")
+    private String comment;
 
     @Column(name = "create_at", updatable = false)
     @CreationTimestamp
@@ -32,11 +32,11 @@ public class Brand {
     @UpdateTimestamp
     private Timestamp updateAt;
 
-    @ManyToMany
-    @JoinTable(
-            name = "brand_category",
-            joinColumns = @JoinColumn(name = "brand_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
-    private List<Category> categories = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 }

@@ -18,7 +18,8 @@ public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int cartId;
+    @Column(name = "id")
+    private long id;
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -35,8 +36,8 @@ public class Cart {
     @UpdateTimestamp
     private Timestamp updateAt;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<CartItem> listCartItem;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CartItem> cartItems;
 
 
 }

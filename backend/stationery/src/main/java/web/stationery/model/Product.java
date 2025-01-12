@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -15,7 +17,8 @@ import java.sql.Timestamp;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int productId;
+    @Column(name = "id")
+    private long id;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -29,9 +32,11 @@ public class Product {
     @Column(name = "quantity", nullable = false)
     private int quantity;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
+    @Column(name = "count_sales", nullable = false)
+    private int countSales;
+
+    @Column(name =  "discount", nullable = false)
+    private int discount;
 
     @Column(name = "image_url", nullable = false)
     private String imageUrl;
@@ -43,4 +48,16 @@ public class Product {
     @Column(name = "update_at")
     @UpdateTimestamp
     private Timestamp updateAt;
+
+    @ManyToMany(mappedBy = "products")
+    private List<Category> categories = new ArrayList<>();
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderItem> orderItems;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<CartItem> cartItems;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Review> reviews;
 }
