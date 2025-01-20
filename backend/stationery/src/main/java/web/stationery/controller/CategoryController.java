@@ -3,42 +3,54 @@ package web.stationery.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import web.stationery.common.dto.CustomResponse;
+import web.stationery.dto.request.categoryrequest.CategoryRequest;
+import web.stationery.dto.response.CategoryResponse;
+import web.stationery.dto.response.CustomResponse;
 import web.stationery.model.Category;
 import web.stationery.service.CategoryService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/categorys")
+@RequestMapping("/categories")
 public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping()
-    public Category createCategory(@RequestBody Category category) {
+    public CategoryResponse createCategory(@RequestBody CategoryRequest category) {
         return categoryService.save(category);
     }
 
-    @GetMapping("/{id}")
-    public CustomResponse<Category> findById(@PathVariable int id){
-        return new CustomResponse<>(categoryService.findById(String.valueOf(id)));
+    @GetMapping()
+    public CustomResponse<?> findByName(@RequestParam String name){
+        return new CustomResponse<>(categoryService.findByName(name));
     }
 
-    @GetMapping()
-    public CustomResponse<Page<Category>> findAll(
+    @GetMapping("/all-name")
+    public CustomResponse<?> findAllByName(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam String name
+    ){
+        return new CustomResponse<>(categoryService.findAllByName(size, page, sortBy, name));
+    }
+
+    @GetMapping("/all")
+    public CustomResponse<Page<CategoryResponse>> findAll(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "id") String sortBy) {
         return new CustomResponse<>(categoryService.findAll(size, page, sortBy));
     }
 
-    @PutMapping("/{id}")
-    public CustomResponse<Category> updateCategory(@RequestBody Category category){
+    @PutMapping()
+    public CustomResponse<CategoryResponse> updateCategory(@RequestBody CategoryRequest category){
         return new CustomResponse<>(categoryService.save(category));
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteCategory(@PathVariable String id){
-        categoryService.deleteById(id);
+    @DeleteMapping()
+    public CustomResponse<?> deleteCategory(@RequestParam String name){
+        return new CustomResponse<>(categoryService.deleteByName(name));
     }
 
 }

@@ -11,19 +11,19 @@ import java.sql.Timestamp;
 @Setter
 @Getter
 @Entity
-@Table(name = "order_items")
+@Table(name = "orderitems")
 public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private int id;
 
     @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable = false)
-    private int price;
+    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean deleteFlag = false;
 
     @Column(name = "create_at", updatable = false)
     @CreationTimestamp

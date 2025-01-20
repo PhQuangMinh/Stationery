@@ -3,41 +3,47 @@ package web.stationery.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import web.stationery.common.dto.CustomResponse;
+import web.stationery.dto.request.CartRequest;
+import web.stationery.dto.request.productrequest.ProductRequest;
+import web.stationery.dto.response.CartResponse;
+import web.stationery.dto.response.CustomResponse;
 import web.stationery.model.Cart;
 import web.stationery.service.CartService;
+import web.stationery.service.UserService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/carts")
+@RequestMapping("/carts")
 public class CartController {
     private final CartService cartService;
 
-    @PostMapping()
-    public Cart createcart(@RequestBody Cart cart) {
-        return cartService.save(cart);
-    }
+    private final UserService userService;
 
-    @GetMapping("/{id}")
-    public CustomResponse<Cart> findById(@PathVariable int id){
-        return new CustomResponse<>(cartService.findById(String.valueOf(id)));
-    }
-
-    @GetMapping()
-    public CustomResponse<Page<Cart>> findAll(
+    @GetMapping("/all")
+    public CustomResponse<?> findAll(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "id") String sortBy) {
         return new CustomResponse<>(cartService.findAll(size, page, sortBy));
     }
 
-    @PutMapping("/{id}")
-    public CustomResponse<Cart> updateCart(@RequestBody Cart cart){
-        return new CustomResponse<>(cartService.save(cart));
+    @GetMapping("/{username}/get-cart")
+    public CustomResponse<?> getCartUser(@PathVariable String username){
+        return new CustomResponse<>(cartService.getCartUser(userService.findUserByUsername(username)));
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteCart(@PathVariable String id){
-        cartService.deleteById(id);
+    @PostMapping("/{username}/add-products")
+    public CustomResponse<?> addProductToCart(@PathVariable String username, @RequestBody ProductRequest productRequest) {
+        return new CustomResponse<>(cartService.addProductToCart(userService.findUserByUsername(username), productRequest));
+    }
+
+    @PutMapping("/{username}/update")
+    public CustomResponse<?> updateCart(@PathVariable String username, @RequestBody CartRequest cart){
+        return new CustomResponse<>(cartService.updateCart(userService.findUserByUsername(username), cart));
+    }
+
+    @DeleteMapping("/{username}/remove-products")
+    public CustomResponse<?> removeProductFromCart(@PathVariable String username, @RequestBody ProductRequest productRequest){
+        return new CustomResponse<>(cartService.removeProductFromCart(userService.findUserByUsername(username), productRequest));
     }
 }

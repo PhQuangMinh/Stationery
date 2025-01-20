@@ -11,13 +11,13 @@ import java.sql.Timestamp;
 @Entity
 @Getter
 @Setter
-@Table(name = "cart_items")
+@Table(name = "cartitems")
 public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private int id;
 
     @Column(nullable = false)
     private int quantity;
@@ -29,6 +29,9 @@ public class CartItem {
     @Column(name = "update_at")
     @UpdateTimestamp
     private Timestamp updateAt;
+
+    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean deleteFlag = false;
 
     @ManyToOne
     @JoinColumn(name = "product_id")

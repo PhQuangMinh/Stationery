@@ -3,41 +3,52 @@ package web.stationery.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-import web.stationery.common.dto.CustomResponse;
+import web.stationery.dto.request.productrequest.ProductRequest;
+import web.stationery.dto.response.CustomResponse;
+import web.stationery.dto.response.ProductResponse;
 import web.stationery.model.Product;
 import web.stationery.service.ProductService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/products")
+@RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping()
-    public Product createproduct(@RequestBody Product product) {
-        return productService.save(product);
-    }
-
-    @GetMapping("/{id}")
-    public CustomResponse<Product> findById(@PathVariable int id){
-        return new CustomResponse<>(productService.findById(String.valueOf(id)));
-    }
-
-    @GetMapping()
-    public CustomResponse<Page<Product>> findAll(
+    @GetMapping("/all")
+    public CustomResponse<?> findAll(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "id") String sortBy) {
         return new CustomResponse<>(productService.findAll(size, page, sortBy));
     }
 
+    @GetMapping("/all-name")
+    public CustomResponse<?> findAllByName(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam String name) {
+        return new CustomResponse<>(productService.findAllByName(size, page, sortBy, name));
+    }
+
+    @GetMapping("/{id}")
+    public CustomResponse<?> findById(@PathVariable String id){
+        return new CustomResponse<>(productService.findById(id));
+    }
+
+    @PostMapping()
+    public CustomResponse<?> addProduct(@RequestBody ProductRequest productRequest) {
+        return new CustomResponse<>(productService.save(productRequest));
+    }
+
     @PutMapping("/{id}")
-    public CustomResponse<Product> updateProduct(@RequestBody Product product){
-        return new CustomResponse<>(productService.save(product));
+    public CustomResponse<?> updateProduct(@PathVariable int id, @RequestBody ProductRequest productRequest){
+        return new CustomResponse<>(productService.update(String.valueOf(id), productRequest));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable String id){
-        productService.deleteById(id);
+    public CustomResponse<?> deleteProduct(@PathVariable String id){
+        return new CustomResponse<>(productService.deleteById(id));
     }
 }
