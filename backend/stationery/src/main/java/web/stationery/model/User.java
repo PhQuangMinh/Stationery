@@ -3,8 +3,10 @@ package web.stationery.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import web.stationery.common.constant.Role;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -14,17 +16,21 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @Setter
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private int id;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
     @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @Column(name = "username", nullable = false)
+    private String username;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
@@ -38,8 +44,11 @@ public class User {
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "role_name", nullable = false)
-    private String roleName;
+    @Column(name = "role", nullable = false)
+    private String role;
+
+    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean deleteFlag = false;
 
     @Column(name = "create_at", updatable = false)
     @CreationTimestamp
@@ -50,14 +59,17 @@ public class User {
     private Timestamp updateAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserOrder> userOrders;
+    private List<UserOrder> userOrders = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Cart cart;
+    private Cart cart = new Cart();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Review> reviews;
+    private List<Review> reviews = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Notification> notifications;
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Notification> sentNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Notification> receivedNotifications = new ArrayList<>();
 }

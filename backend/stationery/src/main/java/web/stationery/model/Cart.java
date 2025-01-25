@@ -1,5 +1,6 @@
 package web.stationery.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,18 +16,10 @@ import java.util.List;
 @Setter
 @Table(name = "carts")
 public class Cart {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @Column(nullable = false)
-    private String status;
+    private int id;
 
     @Column(name = "create_at", updatable = false)
     @CreationTimestamp
@@ -35,6 +28,10 @@ public class Cart {
     @Column(name = "update_at")
     @UpdateTimestamp
     private Timestamp updateAt;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<CartItem> cartItems;

@@ -3,6 +3,7 @@ package web.stationery.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,15 +14,19 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@ToString
 @Table(name = "categories")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private int id;
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean deleteFlag = false;
 
     @Column(name = "create_at", updatable = false)
     @CreationTimestamp
@@ -31,14 +36,6 @@ public class Category {
     @UpdateTimestamp
     private Timestamp updateAt;
 
-    @ManyToMany(mappedBy = "categories")
-    private List<Brand> brands = new ArrayList<>();
-
-    @ManyToMany
-    @JoinTable(
-            name = "category_product",
-            joinColumns = @JoinColumn(name = "category_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id")
-    )
+    @ManyToMany(mappedBy = "categories", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
 }

@@ -3,7 +3,9 @@ package web.stationery.model;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import web.stationery.common.constant.TypeNotification;
 
 import java.sql.Timestamp;
 
@@ -11,20 +13,24 @@ import java.sql.Timestamp;
 @Table(name = "notifications")
 @Getter
 @Setter
+@ToString
 public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
-
-    @Column(name = "type", nullable = false)
-    private String type;
+    private int id;
 
     @Column(name = "message", nullable = false)
     private String message;
 
     @Column(name = "status", nullable = false)
     private String status;
+
+    @Column(name = "link")
+    private String link;
+
+    @Column(name = "type", nullable = false)
+    private String type;
 
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
@@ -33,7 +39,14 @@ public class Notification {
     @Column(name = "read_at", updatable = false)
     private Timestamp readAt;
 
+    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean deleteFlag = false;
+
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id", nullable = false)
+    private User receiver;
 }

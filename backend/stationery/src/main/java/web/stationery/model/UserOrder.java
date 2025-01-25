@@ -14,25 +14,25 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "user_orders")
+@Table(name = "userorders")
 public class UserOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private int id;
 
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate;
-
-    @Column(name = "total_amount", nullable = false)
-    private int totalAmount;
 
     @Column(name = "status", nullable = false)
     private String status;
 
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
+
+    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean deleteFlag = false;
 
     @Column(name = "create_at", updatable = false)
     @CreationTimestamp
@@ -48,10 +48,4 @@ public class UserOrder {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-    private Shipping shipping;
-
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
-    private Payment payment;
 }

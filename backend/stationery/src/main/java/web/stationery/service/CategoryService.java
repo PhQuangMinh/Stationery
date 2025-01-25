@@ -1,11 +1,13 @@
 package web.stationery.service;
 
 import org.springframework.data.domain.Page;
-import web.stationery.model.Category;
+import web.stationery.dto.request.categoryrequest.CategoryRequest;
+import web.stationery.dto.response.CategoryResponse;
 
 public interface CategoryService {
-    Page<Category> findAll(int size, int page, String sortBy);
-    Category findById(String id);
-    Category save(Category category);
-    void deleteById(String id);
+    Page<CategoryResponse> findAll(int size, int page, String sortBy);
+    CategoryResponse findByName(String name);
+    CategoryResponse save(CategoryRequest category);
+    CategoryResponse deleteByName(String name);
+    Page<CategoryResponse> findAllByName(int size, int page, String sortBy, String name);
 }
