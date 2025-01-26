@@ -83,6 +83,7 @@ public class UserServiceImpl implements UserService {
             if (user.isEmpty()){
                 throw new NotFoundException("User not found - " + username);
             }
+            System.out.println("HELLO " + user.get());
             return new org.springframework.security.core.userdetails.User(
                     user.get().getUsername(),
                     user.get().getPassword(),

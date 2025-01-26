@@ -11,11 +11,10 @@ import web.stationery.service.ProductService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;
 
-    @GetMapping("/all")
+    @GetMapping("/products/all")
     public CustomResponse<?> findAll(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
@@ -23,7 +22,7 @@ public class ProductController {
         return new CustomResponse<>(productService.findAll(size, page, sortBy));
     }
 
-    @GetMapping("/all-name")
+    @GetMapping("/products/all-name")
     public CustomResponse<?> findAllByName(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
@@ -32,22 +31,22 @@ public class ProductController {
         return new CustomResponse<>(productService.findAllByName(size, page, sortBy, name));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/products/{id}")
     public CustomResponse<?> findById(@PathVariable String id){
         return new CustomResponse<>(productService.findById(id));
     }
 
-    @PostMapping()
+    @PostMapping("/admin/products")
     public CustomResponse<?> addProduct(@RequestBody ProductRequest productRequest) {
         return new CustomResponse<>(productService.save(productRequest));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/products/{id}")
     public CustomResponse<?> updateProduct(@PathVariable int id, @RequestBody ProductRequest productRequest){
         return new CustomResponse<>(productService.update(String.valueOf(id), productRequest));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/products/{id}")
     public CustomResponse<?> deleteProduct(@PathVariable String id){
         return new CustomResponse<>(productService.deleteById(id));
     }

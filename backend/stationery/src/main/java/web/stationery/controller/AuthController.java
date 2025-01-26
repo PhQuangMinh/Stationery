@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,18 +29,22 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
 
+    private final PasswordEncoder passwordEncoder;
+
     private final UserService userService;
 
     private final JWTTokenService jwtTokenService;
 
     @PostMapping("/register")
     public CustomResponse<?> register(@Valid @RequestBody RegisterUserRequest userRequest){
-        userRequest.setPassword(BCryptEncoder.getPasswordEncoder().encode(userRequest.getPassword()));
+        System.out.println("ở đây " + authenticationManager);
+        System.out.println(userRequest);
+        userRequest.setPassword(passwordEncoder.encode(userRequest.getPassword()));
         return new CustomResponse<>(authService.createUser(userRequest), HttpStatus.OK);
     }
 
     @PostMapping("/login")
-    public CustomResponse<?> login(@RequestBody AuthRequest authRequest){
+    public CustomResponse<?> login(@Valid @RequestBody AuthRequest authRequest){
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
