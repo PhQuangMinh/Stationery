@@ -18,4 +18,5 @@ public interface UserService {
     UserResponse updateUser(String username, UpdateUserRequest updateUserRequest);
     UserResponse getProfileUserByUsername(String username);
     UserResponse deleteUserByUsername(String username);
+    int getTotalSpending(String username);
 }

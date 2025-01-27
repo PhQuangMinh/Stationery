@@ -39,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    private CustomResponse<?> login(@RequestBody AuthRequest authRequest){
+    public CustomResponse<?> login(@RequestBody AuthRequest authRequest){
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));

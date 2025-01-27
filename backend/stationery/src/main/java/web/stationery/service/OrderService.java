@@ -12,4 +12,5 @@ public interface OrderService {
     OrderResponse updateOrder(User user, OrderRequest orderRequest);
     OrderResponse save(User user, OrderRequest orderRequest);
     OrderResponse deleteById(String id);
+    OrderResponse getLastOrder(String username);
 }

@@ -62,4 +62,9 @@ public class UserController {
         return new CustomResponse<>(userService.findAll(size, page, sortBy));
     }
 
+    @GetMapping("/{username}/total-spending")
+    public CustomResponse<Integer> getTotalSpending(@PathVariable String username){
+        return new CustomResponse<>(userService.getTotalSpending(username), HttpStatus.OK);
+    }
+
 }

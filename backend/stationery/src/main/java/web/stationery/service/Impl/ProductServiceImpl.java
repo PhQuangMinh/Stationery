@@ -95,4 +95,11 @@ public class ProductServiceImpl implements ProductService {
         product.get().setDeleteFlag(true);
         return productMapper.toResponse(productRepository.save(product.get()));
     }
+
+    @Override
+    public ProductResponse getBestSellingProduct() {
+        Optional<Product> findProduct = productRepository.findTopByOrderByCountSalesDesc();
+        if (findProduct.isEmpty()) throw new NotFoundException("Product not found");
+        return productMapper.toResponse(findProduct.get());
+    }
 }

@@ -1,6 +1,7 @@
 package web.stationery.service.Impl;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +16,7 @@ import web.stationery.model.UserOrder;
 import web.stationery.repository.OrderRepository;
 import web.stationery.repository.ProductRepository;
 import web.stationery.service.OrderService;
+import web.stationery.service.UserService;
 import web.stationery.utils.mapper.OrderMapper;
 
 import java.util.List;
@@ -28,6 +30,8 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper = new OrderMapper();
 
     private final ProductRepository productRepository;
+
+    private final UserService userService;
 
 
     @Override
@@ -79,5 +83,15 @@ public class OrderServiceImpl implements OrderService {
         }
         findOrder.get().setDeleteFlag(true);
         return orderMapper.toResponse(orderRepository.save(findOrder.get()));
+    }
+
+    @Override
+    public OrderResponse getLastOrder(String username) {
+        User user = userService.findUserByUsername(username);
+        List<UserOrder> orders = orderRepository.findOrdersByUser(user);
+        if (orders.isEmpty()){
+            throw new NotFoundException("No orders found for user - " + username);
+        }
+        return orderMapper.toResponse(orders.getLast());
     }
 }
