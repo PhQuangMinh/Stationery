@@ -11,7 +11,10 @@ import web.stationery.common.exception.NotFoundException;
 import web.stationery.common.utils.PageableUtils;
 import web.stationery.dto.request.userrequest.UpdateUserRequest;
 import web.stationery.dto.response.UserResponse;
+import web.stationery.model.OrderItem;
 import web.stationery.model.User;
+import web.stationery.model.UserOrder;
+import web.stationery.repository.OrderRepository;
 import web.stationery.repository.UserRepository;
 import web.stationery.service.UserService;
 import web.stationery.utils.BCryptEncoder;
@@ -19,6 +22,7 @@ import web.stationery.utils.mapper.UserMapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +31,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     private final UserMapper userMapper;
+
+    private final OrderRepository orderRepository;
 
     @Override
     public Page<User> findAll(int size, int page, String sortBy) {
@@ -115,6 +121,24 @@ public class UserServiceImpl implements UserService {
         }
         user.get().setDeleteFlag(true);
         return userMapper.toUserResponse(userRepository.save(user.get()));
+    }
+
+    @Override
+    public int getTotalSpending(String username) {
+        System.out.println(username);
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()){
+            throw new NotFoundException("User not found - " + username);
+        }
+        List<UserOrder> orders = orderRepository.findOrdersByUser(user.get());
+
+        int totalSpending = 0;
+        for (UserOrder order : orders) {
+            for (OrderItem item : order.getOrderItems()) {
+                totalSpending += item.getProduct().getPrice() * item.getQuantity();
+            }
+        }
+        return totalSpending;
     }
 
 }

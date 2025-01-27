@@ -35,13 +35,28 @@
 		<jjwt-impl.version>0.11.2</jjwt-impl.version>
 		<jjwt-jackson.version>0.11.2</jjwt-jackson.version>
 		<jakarta.servlet-api.version>5.0.0</jakarta.servlet-api.version>
+		<dotenv-java.version>3.0.0</dotenv-java.version>
+		<spring-web.version>6.1.12</spring-web.version>
+		<json.version>20231013</json.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>6.1.12</version>
+			<version>${spring-web.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>io.github.cdimascio</groupId>
+			<artifactId>dotenv-java</artifactId>
+			<version>${dotenv-java.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -95,6 +110,13 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

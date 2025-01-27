@@ -1,5 +1,6 @@
 package web.stationery.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,5 +39,6 @@ public class Brand {
     private Timestamp updateAt;
 
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Product> products = new ArrayList<>();
 }

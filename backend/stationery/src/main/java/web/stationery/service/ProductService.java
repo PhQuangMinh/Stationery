@@ -15,4 +15,5 @@ public interface ProductService {
     ProductResponse save(ProductRequest productRequest);
     ProductResponse update(String id, ProductRequest productRequest);
     ProductResponse deleteById(String id);
+    ProductResponse getBestSellingProduct();
 }
