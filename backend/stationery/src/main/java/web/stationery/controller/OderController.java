@@ -11,13 +11,13 @@ import web.stationery.service.UserService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("")
 public class OderController {
     private final OrderService orderService;
 
     private final UserService userService;
 
-    @GetMapping("/all")
+    @GetMapping("/admin/orders/all")
     public CustomResponse<Page<OrderResponse>> findAll(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
@@ -25,27 +25,27 @@ public class OderController {
         return new CustomResponse<>(orderService.findAll(size, page, sortBy));
     }
 
-    @GetMapping("/{username}/get-order")
+    @GetMapping("/user/orders/{username}/get-order")
     public CustomResponse<?> getOrderUser(@PathVariable String username){
         return new CustomResponse<>(orderService.getOrderUser(userService.findUserByUsername(username)));
     }
 
-    @PutMapping("/delete-order/{id}")
+    @PutMapping("/admin/orders/delete-order/{id}")
     public CustomResponse<OrderResponse> deleteOrder(@PathVariable String id){
         return new CustomResponse<>(orderService.deleteById(id));
     }
 
-    @PostMapping("/{username}")
+    @PostMapping("/user/orders/{username}")
     public CustomResponse<OrderResponse> createOrder(@PathVariable String username, @RequestBody OrderRequest orderRequest) {
         return new CustomResponse<>(orderService.save(userService.findUserByUsername(username), orderRequest));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/admin/orders/{id}")
     public CustomResponse<OrderResponse> findById(@PathVariable int id){
         return new CustomResponse<>(orderService.findById(String.valueOf(id)));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/user/orders/update/{id}")
     public CustomResponse<OrderResponse> updateOrder(@PathVariable String username, @RequestBody OrderRequest orderRequest){
         return new CustomResponse<>(orderService.updateOrder(userService.findUserByUsername(username), orderRequest));
     }

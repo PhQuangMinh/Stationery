@@ -13,13 +13,12 @@ import web.stationery.service.UserService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/carts")
 public class CartController {
     private final CartService cartService;
 
     private final UserService userService;
 
-    @GetMapping("/all")
+    @GetMapping("/admin/carts/all")
     public CustomResponse<?> findAll(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
@@ -27,22 +26,22 @@ public class CartController {
         return new CustomResponse<>(cartService.findAll(size, page, sortBy));
     }
 
-    @GetMapping("/{username}/get-cart")
+    @GetMapping("/user/{username}/carts/get-cart")
     public CustomResponse<?> getCartUser(@PathVariable String username){
         return new CustomResponse<>(cartService.getCartUser(userService.findUserByUsername(username)));
     }
 
-    @PostMapping("/{username}/add-products")
+    @PostMapping("/user/{username}/carts/add-products")
     public CustomResponse<?> addProductToCart(@PathVariable String username, @RequestBody ProductRequest productRequest) {
         return new CustomResponse<>(cartService.addProductToCart(userService.findUserByUsername(username), productRequest));
     }
 
-    @PutMapping("/{username}/update")
+    @PutMapping("/user/{username}/carts/update")
     public CustomResponse<?> updateCart(@PathVariable String username, @RequestBody CartRequest cart){
         return new CustomResponse<>(cartService.updateCart(userService.findUserByUsername(username), cart));
     }
 
-    @DeleteMapping("/{username}/remove-products")
+    @DeleteMapping("/user/{username}/carts/remove-products")
     public CustomResponse<?> removeProductFromCart(@PathVariable String username, @RequestBody ProductRequest productRequest){
         return new CustomResponse<>(cartService.removeProductFromCart(userService.findUserByUsername(username), productRequest));
     }

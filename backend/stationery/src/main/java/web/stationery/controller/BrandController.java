@@ -11,21 +11,20 @@ import web.stationery.service.BrandService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/brands")
 public class BrandController {
     private final BrandService brandService;
 
-    @PostMapping()
+    @PostMapping("/admin/brands")
     public CustomResponse<?> createBrand(@RequestBody BrandRequest brand) {
         return new CustomResponse<>(brandService.save(brand));
     }
 
-    @GetMapping()
+    @GetMapping("/brands")
     public CustomResponse<BrandResponse> findByName(@RequestParam String name){
         return new CustomResponse<>(brandService.findByName(name));
     }
 
-    @GetMapping("/all-name")
+    @GetMapping("/brands/all-name")
     public CustomResponse<?> findAllByName(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
@@ -35,7 +34,7 @@ public class BrandController {
         return new CustomResponse<>(brandService.findAllByName(size, page, sortBy, name));
     }
 
-    @GetMapping("/all")
+    @GetMapping("/brands/all")
     public CustomResponse<Page<BrandResponse>> findAll(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
@@ -43,12 +42,12 @@ public class BrandController {
         return new CustomResponse<>(brandService.findAll(size, page, sortBy));
     }
 
-    @PutMapping()
+    @PutMapping("/admin/brands")
     public CustomResponse<BrandResponse> updateBrand(@RequestBody BrandRequest brand){
         return new CustomResponse<>(brandService.save(brand));
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/admin/brands")
     public CustomResponse<BrandResponse> deleteBrand(@RequestParam String name){
         return new CustomResponse<>(brandService.deleteByName(name));
     }

@@ -11,21 +11,21 @@ import web.stationery.service.CategoryService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/categories")
+@RequestMapping("")
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @PostMapping()
+    @PostMapping("/admin/categories")
     public CategoryResponse createCategory(@RequestBody CategoryRequest category) {
         return categoryService.save(category);
     }
 
-    @GetMapping()
+    @GetMapping("/categories")
     public CustomResponse<?> findByName(@RequestParam String name){
         return new CustomResponse<>(categoryService.findByName(name));
     }
 
-    @GetMapping("/all-name")
+    @GetMapping("/categories/all-name")
     public CustomResponse<?> findAllByName(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
@@ -35,7 +35,7 @@ public class CategoryController {
         return new CustomResponse<>(categoryService.findAllByName(size, page, sortBy, name));
     }
 
-    @GetMapping("/all")
+    @GetMapping("/categories/all")
     public CustomResponse<Page<CategoryResponse>> findAll(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
@@ -43,12 +43,12 @@ public class CategoryController {
         return new CustomResponse<>(categoryService.findAll(size, page, sortBy));
     }
 
-    @PutMapping()
+    @PutMapping("/admin/categories")
     public CustomResponse<CategoryResponse> updateCategory(@RequestBody CategoryRequest category){
         return new CustomResponse<>(categoryService.save(category));
     }
 
-    @DeleteMapping()
+    @DeleteMapping("/admin/categories")
     public CustomResponse<?> deleteCategory(@RequestParam String name){
         return new CustomResponse<>(categoryService.deleteByName(name));
     }
