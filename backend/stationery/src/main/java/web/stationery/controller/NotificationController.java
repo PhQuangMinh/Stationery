@@ -2,13 +2,17 @@ package web.stationery.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import web.stationery.configuration.RabbitMQConfig;
 import web.stationery.dto.request.NotificationRequest;
 import web.stationery.dto.response.CustomResponse;
 import web.stationery.dto.response.NotificationResponse;
 import web.stationery.service.NotificationService;
 import web.stationery.service.UserService;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,12 +21,19 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
-    @PostMapping("/notifications/{sender}/{receiver}")
-    public CustomResponse<NotificationResponse> sendNotification(@PathVariable String sender, @PathVariable String receiver
-            ,@RequestBody NotificationRequest notificationRequest){
-        return new CustomResponse<>(notificationService.sendNotification(userService.findUserByUsername(sender)
-                , userService.findUserByUsername(receiver), notificationRequest));
+    private final RabbitTemplate rabbitTemplate;
+
+    @MessageMapping("/send")
+    public void sendNotification(@Payload NotificationRequest notification){
+        System.out.println("Received message: " + notification);
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, notification);
     }
+
+//    @PostMapping("/notifications/{sender}/{receiver}")
+//    public CustomResponse<NotificationResponse> sendNotification(@PathVariable String sender, @PathVariable String receiver
+//            ,@RequestBody NotificationRequest notificationRequest){
+//        return new CustomResponse<>(notificationService.sendNotification( notificationRequest));
+//    }
 
     @GetMapping("/notifications/{username}/{size}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
