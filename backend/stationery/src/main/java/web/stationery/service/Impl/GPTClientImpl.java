@@ -73,6 +73,7 @@ public class GPTClientImpl implements GPTClient {
     }
 
     public String formatJsonFlow(String flow){
+        System.out.println("đây là flow: " + flow);
         return flow.substring(flow.indexOf("{"), flow.lastIndexOf("}")+1);
     }
 
@@ -82,7 +83,7 @@ public class GPTClientImpl implements GPTClient {
         int flow = flowJson.getInt("status");
         System.out.println("FLOW: " + flow);
         return switch (flow) {
-            case 0 -> new CustomResponse<>("Chào bạn");
+            case -1, 0 -> new CustomResponse<>(flowJson.getString("response"));
             case 1 -> new CustomResponse<>(userService.getTotalSpending(username));
             case 2 -> new CustomResponse<>(orderService.getLastOrder(username));
             case 3 -> new CustomResponse<>(productService.getBestSellingProduct());
