@@ -33,12 +33,13 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/login", "/register", "/brands/**"
-                        , "/categories", "/products", "/reviews")
-                        .permitAll()
-                        .requestMatchers("/user").hasRole("USER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+//                        .requestMatchers("/login", "/register", "/brands/**"
+//                        , "/categories", "/products", "/reviews")
+//                        .permitAll()
+//                        .requestMatchers("/user").hasRole("USER")
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+//                        .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

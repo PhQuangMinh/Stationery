@@ -10,7 +10,9 @@ import web.stationery.dto.response.NotificationResponse;
 import web.stationery.model.Notification;
 import web.stationery.model.User;
 import web.stationery.repository.NotificationRepository;
+import web.stationery.repository.UserRepository;
 import web.stationery.service.NotificationService;
+import web.stationery.service.UserService;
 import web.stationery.utils.mapper.NotificationMapper;
 
 import java.util.List;
@@ -24,10 +26,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationMapper notificationMapper = new NotificationMapper();
 
-    @Override
-    public NotificationResponse sendNotification(User sender, User receiver, NotificationRequest notificationRequest) {
-        return notificationMapper.toNotificationResponse(notificationRepository.save(notificationMapper.toEntity(notificationRequest, sender, receiver)));
-    }
+    private final UserService userService;
 
     @Override
     public Page<NotificationResponse> getNotifications(User user, int size) {
@@ -56,5 +55,12 @@ public class NotificationServiceImpl implements NotificationService {
         if (findNotification.isEmpty()) throw new NotFoundException("Not found notification - " + notificationId);
         findNotification.get().setDeleteFlag(true);
         return notificationMapper.toNotificationResponse(notificationRepository.save(findNotification.get()));
+    }
+
+    @Override
+    public NotificationResponse saveNotification(NotificationRequest notificationRequest) {
+        return notificationMapper.toNotificationResponse(notificationRepository.save(
+                notificationMapper.toEntity(
+                        notificationRequest, userService.findUserByUsername(notificationRequest.getUsernameReceiver()))));
     }
 }

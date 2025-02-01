@@ -28,15 +28,13 @@ public class NotificationMapper {
         );
     }
 
-    public Notification toEntity(NotificationRequest notificationRequest, User sender, User receiver){
+    public Notification toEntity(NotificationRequest notificationRequest, User receiver){
         Notification notification = new Notification();
         notification.setMessage(notificationRequest.getMessage());
         notification.setStatus(notificationRequest.getStatus());
         notification.setLink(notificationRequest.getLink());
         notification.setType(notificationRequest.getType());
-        notification.setSender(sender);
         notification.setReceiver(receiver);
-        System.out.println(notification);
         return notification;
     }
 }
