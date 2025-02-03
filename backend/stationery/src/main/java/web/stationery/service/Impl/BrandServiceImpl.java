@@ -22,14 +22,15 @@ import java.util.Optional;
 public class BrandServiceImpl implements BrandService {
     private final BrandRepository brandRepository;
 
-    private final BrandMapper brandMapper;
+    private final BrandMapper brandMapper = new BrandMapper();
 
     @Override
     public Page<BrandResponse> findAll(int size, int page, String sortBy) {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
         Page<Brand> brands = brandRepository.findAll(pageable);
         List<BrandResponse> brandResponses = brandMapper.toResponseList(brands.getContent());
-        return new PageImpl<>(brandResponses);
+        System.out.println(brandResponses);
+        return new PageImpl<>(brandResponses, pageable, brands.getTotalElements());
     }
 
     @Override
@@ -56,8 +57,8 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public Page<BrandResponse> findAllByName(int size, int page, String sortBy, String name) {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
-        List<Brand> brands = brandRepository.findByNameContainingIgnoreCase(name, pageable);
-        List<BrandResponse> brandResponses = brandMapper.toResponseList(brands);
-        return new PageImpl<>(brandResponses);
+        Page<Brand> brands = brandRepository.findByNameContainingIgnoreCase(name, pageable);
+        List<BrandResponse> brandResponses = brandMapper.toResponseList(brands.getContent());
+        return new PageImpl<>(brandResponses, pageable, brands.getTotalElements());
     }
 }

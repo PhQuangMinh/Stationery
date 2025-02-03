@@ -33,7 +33,7 @@ public class NotificationServiceImpl implements NotificationService {
         Pageable pageable = PageRequest.of(0, size, Sort.by("id").descending());
         Page<Notification> notificationPage = notificationRepository.findByReceiverEquals(user, pageable);
         List<NotificationResponse> notificationResponseList = notificationMapper.toNotificationResponseList(notificationPage.getContent());
-        return new PageImpl<>(notificationResponseList);
+        return new PageImpl<>(notificationResponseList, pageable, notificationPage.getTotalElements());
     }
 
     @Override

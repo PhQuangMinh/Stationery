@@ -29,12 +29,6 @@ public class NotificationController {
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, notification);
     }
 
-//    @PostMapping("/notifications/{sender}/{receiver}")
-//    public CustomResponse<NotificationResponse> sendNotification(@PathVariable String sender, @PathVariable String receiver
-//            ,@RequestBody NotificationRequest notificationRequest){
-//        return new CustomResponse<>(notificationService.sendNotification( notificationRequest));
-//    }
-
     @GetMapping("/notifications/{username}/{size}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public CustomResponse<Page<NotificationResponse>> getNotification(@PathVariable String username

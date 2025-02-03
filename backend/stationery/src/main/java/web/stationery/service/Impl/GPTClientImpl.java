@@ -73,7 +73,6 @@ public class GPTClientImpl implements GPTClient {
     }
 
     public String formatJsonFlow(String flow){
-        System.out.println("đây là flow: " + flow);
         return flow.substring(flow.indexOf("{"), flow.lastIndexOf("}")+1);
     }
 

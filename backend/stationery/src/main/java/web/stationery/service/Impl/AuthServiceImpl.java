@@ -27,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
         }
         User user = userMapper.toEntity(userRequest);
         user.setPassword(BCryptEncoder.getPasswordEncoder().encode(userRequest.getPassword()));
-        user.setRole(Role.ROLE_USER.name());
+        user.setRole(Role.ROLE_USER);
         System.out.println(user.getRole());
         user.setAddress(userRequest.getAddress());
         System.out.println(user);

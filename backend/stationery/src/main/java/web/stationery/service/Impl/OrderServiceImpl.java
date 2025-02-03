@@ -39,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
         Page<UserOrder> ordersPage = orderRepository.findAll(pageable);
         List<OrderResponse> orderResponses = orderMapper.toResponseList(ordersPage.getContent());
-        return new PageImpl<>(orderResponses);
+        return new PageImpl<>(orderResponses, pageable, ordersPage.getTotalElements());
     }
 
     @Override

@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
         return new org.springframework.security.core.userdetails.User(
                 user.get().getUsername(),
                 String.valueOf(user.get().getId()),
-                new ArrayList<>(Collections.singletonList(new SimpleGrantedAuthority(user.get().getRole()))));
+                new ArrayList<>(Collections.singletonList(new SimpleGrantedAuthority(user.get().getRole().name()))));
     }
 
     @Override
@@ -83,11 +83,10 @@ public class UserServiceImpl implements UserService {
             if (user.isEmpty()){
                 throw new NotFoundException("User not found - " + username);
             }
-            System.out.println("HELLO " + user.get());
             return new org.springframework.security.core.userdetails.User(
                     user.get().getUsername(),
                     user.get().getPassword(),
-                    new ArrayList<>(Collections.singletonList(new SimpleGrantedAuthority(user.get().getRole())))
+                    new ArrayList<>(Collections.singletonList(new SimpleGrantedAuthority(user.get().getRole().name())))
             );
         };
     }
