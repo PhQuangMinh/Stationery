@@ -37,15 +37,15 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
         Page<Product> products = productRepository.findAll(pageable);
         List<ProductResponse> productResponses = productMapper.toResponseList(products.getContent());
-        return new PageImpl<>(productResponses);
+        return new PageImpl<>(productResponses, pageable, products.getTotalElements());
     }
 
     @Override
     public Page<ProductResponse> findAllByName(int size, int page, String sortBy, String name) {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
-        List<Product> products = productRepository.findByNameContainingIgnoreCase(name, pageable);
-        List<ProductResponse> productResponses = productMapper.toResponseList(products);
-        return new PageImpl<>(productResponses);
+        Page<Product> products = productRepository.findByNameContainingIgnoreCase(name, pageable);
+        List<ProductResponse> productResponses = productMapper.toResponseList(products.getContent());
+        return new PageImpl<>(productResponses, pageable, products.getTotalElements());
     }
 
     @Override

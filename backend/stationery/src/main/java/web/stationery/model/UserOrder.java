@@ -7,8 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,7 +21,7 @@ public class UserOrder {
     private int id;
 
     @Column(name = "order_date", nullable = false)
-    private LocalDate orderDate;
+    private Timestamp orderDate;
 
     @Column(name = "status", nullable = false)
     private String status;

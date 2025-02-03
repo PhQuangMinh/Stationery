@@ -18,7 +18,6 @@ import web.stationery.service.UserService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/users")
 public class UserController {
     private final UserService userService;
 
@@ -27,12 +26,12 @@ public class UserController {
         return userService.save(user);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/admin/{id}")
     public CustomResponse<User> findById(@PathVariable int id){
         return new CustomResponse<>(userService.findById(String.valueOf(id)));
     }
 
-    @PutMapping("/update-profile")
+    @PutMapping("/users/update-profile")
     public CustomResponse<?> updateUser(@Valid @RequestBody UpdateUserRequest userRequest){
 //        return new CustomResponse<>(userService.updateUser("johndoe123", userRequest), HttpStatus.OK);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -43,10 +42,10 @@ public class UserController {
         throw new AuthorizingException("Unauthenticated");
     }
 
-    @GetMapping("/profile-current-user")
+    @GetMapping("/users/profile-current-user")
     public CustomResponse<?> getProfileUser(){
-//        return new CustomResponse<>(userService.getProfileUserByUsername("johndoe123"), HttpStatus.OK);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Authentication type: " + authentication.getClass().getName());
         if (authentication instanceof JwtAuthenticationToken jwtToken){
             Jwt jwt = jwtToken.getToken();
             return new CustomResponse<>(userService.getProfileUserByUsername(jwt.getSubject()), HttpStatus.OK.toString());

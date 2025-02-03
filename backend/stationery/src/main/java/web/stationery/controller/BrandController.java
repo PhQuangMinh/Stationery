@@ -35,7 +35,7 @@ public class BrandController {
     }
 
     @GetMapping("/brands/all")
-    public CustomResponse<Page<BrandResponse>> findAll(
+    public CustomResponse<?> findAll(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "id") String sortBy) {

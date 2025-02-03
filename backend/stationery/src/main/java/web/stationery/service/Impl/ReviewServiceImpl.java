@@ -28,7 +28,7 @@ public class ReviewServiceImpl implements ReviewService {
         Pageable pageable = PageRequest.of(0, size, Sort.by("id").descending());
         Page<Review> reviewPage = reviewRepository.findByProduct(product, pageable);
         List<ReviewResponse> reviewResponses = reviewMapper.toResponseList(reviewPage.getContent());
-        return new PageImpl<>(reviewResponses);
+        return new PageImpl<>(reviewResponses, pageable, reviewPage.getTotalElements());
     }
 
     @Override

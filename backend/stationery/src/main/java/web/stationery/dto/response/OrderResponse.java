@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderResponse {
     private String id;
-    private LocalDate orderDate;
+    private Timestamp orderDate;
     private long totalAmount;
     private String status;
     private String addressShipping;

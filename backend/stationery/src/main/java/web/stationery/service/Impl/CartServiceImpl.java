@@ -37,7 +37,7 @@ public class CartServiceImpl implements CartService {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
         Page<Cart> cartsPage = cartRepository.findAll(pageable);
         List<CartResponse> cartResponseList = cartMapper.toResponseList(cartsPage.getContent());
-        return new PageImpl<>(cartResponseList);
+        return new PageImpl<>(cartResponseList, pageable, cartsPage.getTotalElements());
     }
 
     @Override

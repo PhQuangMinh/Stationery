@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
         Page<Category> categoriesPage = categoryRepository.findAll(pageable);
         List<CategoryResponse> categoryResponses = categoryMapper.toResponseList(categoriesPage.getContent());
-        return new PageImpl<>(categoryResponses);
+        return new PageImpl<>(categoryResponses, pageable, categoriesPage.getTotalElements());
     }
 
     @Override
@@ -57,8 +57,8 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Page<CategoryResponse> findAllByName(int size, int page, String sortBy, String name) {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
-        List<Category> categories = categoryRepository.findByNameContainingIgnoreCase(name, pageable);
-        List<CategoryResponse> categoryResponses = categoryMapper.toResponseList(categories);
-        return new PageImpl<>(categoryResponses);
+        Page<Category> categories = categoryRepository.findByNameContainingIgnoreCase(name, pageable);
+        List<CategoryResponse> categoryResponses = categoryMapper.toResponseList(categories.getContent());
+        return new PageImpl<>(categoryResponses, pageable, categories.getTotalElements());
     }
 }
