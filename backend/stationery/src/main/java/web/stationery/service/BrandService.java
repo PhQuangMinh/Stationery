@@ -7,7 +7,6 @@ import web.stationery.model.Brand;
 
 public interface BrandService {
     Page<BrandResponse> findAll(int size, int page, String sortBy);
-//    Page<Brand> findAll(int size, int page, String sortBy);
     BrandResponse findByName(String name);
     BrandResponse save(BrandRequest brand);
     BrandResponse deleteByName(String name);
