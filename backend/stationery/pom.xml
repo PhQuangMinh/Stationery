@@ -43,6 +43,7 @@
 		<jackson-core.version>2.17.2</jackson-core.version>
 		<spring-boot-starter-web.version>3.4.1</spring-boot-starter-web.version>
 		<spring-security-web.version>6.3.5</spring-security-web.version>
+		<cloudinary-http5.version>2.0.0</cloudinary-http5.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -188,13 +189,22 @@
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
 		</dependency>
 
-
-
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
 			<version>${jakarta.servlet-api.version}</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http5</artifactId>
+			<version>${cloudinary-http5.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-taglib</artifactId>
+			<version>${cloudinary-http5.version}</version>
 		</dependency>
 
 

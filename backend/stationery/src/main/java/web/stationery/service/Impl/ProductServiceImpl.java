@@ -76,7 +76,6 @@ public class ProductServiceImpl implements ProductService {
                 }
         ).toList();
         product.setCategories(categories);
-        System.out.println(product);
         return productMapper.toResponse(productRepository.save(product));
     }
 

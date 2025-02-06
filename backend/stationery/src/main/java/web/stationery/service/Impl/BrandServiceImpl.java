@@ -29,7 +29,6 @@ public class BrandServiceImpl implements BrandService {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
         Page<Brand> brands = brandRepository.findAll(pageable);
         List<BrandResponse> brandResponses = brandMapper.toResponseList(brands.getContent());
-        System.out.println(brandResponses);
         return new PageImpl<>(brandResponses, pageable, brands.getTotalElements());
     }
 
