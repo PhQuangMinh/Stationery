@@ -141,4 +141,9 @@ public class UserServiceImpl implements UserService {
         return totalSpending;
     }
 
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
 }

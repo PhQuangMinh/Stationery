@@ -34,11 +34,11 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/login", "/register", "/brands/all"
-                        , "/categories/**", "/products/**", "/reviews/**", "/api/v1/**").permitAll()
+                        , "/categories/**", "/products/**", "/reviews/**", "/api/v1/**", "/api/email/**").permitAll()
                         .requestMatchers("/users/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
-//                                .anyRequest().permitAll()
+                                .anyRequest().permitAll()
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

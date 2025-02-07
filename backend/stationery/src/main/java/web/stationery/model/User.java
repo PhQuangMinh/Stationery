@@ -73,4 +73,8 @@ public class User {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Notification> receivedNotifications = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<VerificationCode> verificationCodes = new ArrayList<>();
+
 }
