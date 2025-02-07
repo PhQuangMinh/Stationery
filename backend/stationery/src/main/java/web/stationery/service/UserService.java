@@ -19,4 +19,5 @@ public interface UserService {
     UserResponse getProfileUserByUsername(String username);
     UserResponse deleteUserByUsername(String username);
     int getTotalSpending(String username);
+    User findByEmail(String email);
 }
