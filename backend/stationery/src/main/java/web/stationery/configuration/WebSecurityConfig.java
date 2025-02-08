@@ -38,7 +38,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/users/**").hasRole("USER")
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                                .anyRequest().permitAll()
+//                                .anyRequest().permitAll()
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
