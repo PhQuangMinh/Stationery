@@ -24,7 +24,6 @@ public class RabbitMQListenerImpl implements RabbitMQListener {
         if (notificationRequest.getUsernameReceiver()==null){
             notificationRequest.setUsernameReceiver("minh");
         }
-        System.out.println("Received from RabbitMQ: " + notificationRequest);
         notificationService.saveNotification(notificationRequest);
     }
 }
