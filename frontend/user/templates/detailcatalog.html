@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>checkout page</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="../static/css/detailcatalog.css">
+        <link rel="stylesheet" href="../static/css/component/header.css">
+        <link rel="stylesheet" href="../static/css/component/footer.css">
+        <link rel="shortcut icon" href="#">
+    </head>
+    <body>
+        <div id="header-container"></div>
+        <div class="container">
+            <a href="../../landingpage/landingpage.html" class=" text-dark text-decoration-none">Trang chủ</a>
+            <p class="text-dark text-decoration-none" style="display: inline;"> / Chi tiết đơn hàng</p>
+            <hr>
+        </div>
+        <div class="container">
+            <div class="container-fluid">
+                <div class="row">
+                    <!-- Sidebar -->
+                    <div class="col-auto p-0">
+                        <div class="sidebar">
+                            <div class="fw-bold p-3">DANH MỤC SẢN PHẨM</div>
+                            <div id="categoryMenu"></div>
+                        </div>
+                    </div>
+        
+                    <!-- Main Content -->
+                    <div class="col p-0">
+                        <div class="content-wrapper">
+                            <h2 class="category-title">Cánh diều</h2>
+                            <div class="product-grid-container">
+                                <div class="product-grid" id="productGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="footer-container"></div>
+        <script src="../static/js/component.js"></script>
+        <script src="../static/js/detailcatalog.js"></script>
+    </body>
+
+</html>

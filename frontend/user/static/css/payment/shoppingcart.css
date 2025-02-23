@@ -1,0 +1,8 @@
+th, td {
+    text-align: center;
+    vertical-align: middle; /* Căn giữa theo chiều dọc */
+}
+
+.checkout-btn{
+    background-color: brown;
+}

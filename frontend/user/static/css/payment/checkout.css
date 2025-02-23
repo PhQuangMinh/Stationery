@@ -1,0 +1,36 @@
+.product-img {
+    width: 80px;
+    height: auto;
+}
+.payment-option {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+.payment-option.selected {
+    border-color: #0d6efd;
+}
+.quantity-input {
+    width: 60px;
+    text-align: center;
+}
+.order-items-container {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+.order-items-container::-webkit-scrollbar {
+    width: 5px;
+}
+.order-items-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+.order-items-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+.order-items-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

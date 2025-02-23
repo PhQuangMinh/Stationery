@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>checkout page</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="../../static/css/payment/checkout.css">
+        <link rel="stylesheet" href="../../static/css/component/header.css">
+        <link rel="shortcut icon" href="#">
+    </head>
+    <body>
+        <div id="header-container"></div>
+        <div class="container">
+            <a href="../landingpage/landingpage.html" class=" text-dark text-decoration-none">Trang chủ</a>
+            <p class="text-dark text-decoration-none" style="display: inline;"> / Thông tin mua hàng</p>
+            <hr>
+        </div>
+        <div class="container py-5">
+            <div class="row">
+                <!-- Left Column - Customer Information -->
+                <div class="col-md-7">
+                    <h2 class="mb-4">Thông tin mua hàng</h2>
+                    <form id="checkoutForm">
+                        <div class="mb-3">
+                            <input type="email" class="form-control" placeholder="Email" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Họ và tên" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="tel" class="form-control" placeholder="Số điện thoại" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Địa chỉ" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Tỉnh thành" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Quận huyện" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Phường xã" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" rows="3" placeholder="Ghi chú (Tùy chọn)"></textarea>
+                        </div>
+                    </form>
+                </div>
+    
+                <!-- Right Column - Order Summary -->
+                <div class="col-md-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Payment Methods -->
+                            <div class="payment-methods mb-4">
+                                <div class="payment-option selected">
+                                    <div class="d-flex align-items-center">
+                                        <input type="radio" name="payment" value="vnpay" checked>
+                                        <span class="ms-2">Thanh toán qua VNPAY</span>
+                                        <img src="../../static/img/logo/logo-vnpay.png" alt="VNPAY" height="30" class="ms-auto">
+                                    </div>
+                                </div>
+                                <div class="payment-option">
+                                    <div class="d-flex align-items-center">
+                                        <input type="radio" name="payment" value="cod">
+                                        <span class="ms-2">Thanh toán khi nhận hàng</span>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <!-- Order Details -->
+                            <h5 class="mb-3">Đơn hàng (<span id="totalItems">0</span> sản phẩm)</h5>
+                            <div class="order-items-container mb-4">
+                                <div id="orderItems">
+                                    <!-- Products will be inserted here -->
+                                </div>
+                            </div>
+    
+                            <!-- Price Summary -->
+                            <div class="price-summary">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Tạm tính</span>
+                                    <span id="subtotal">0 đ</span>
+                                </div>
+                                <div class="d-flex justify-content-between border-top pt-2">
+                                    <strong>Tổng tiền thanh toán</strong>
+                                    <strong class="text-danger" id="total">0 đ</strong>
+                                </div>
+                            </div>
+    
+                            <!-- Place Order Button -->
+                            <button class="btn btn-danger w-100 mt-4" type="submit">Đặt hàng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="../../static/js/checkout.js"></script>
+        <script src="../../static/js/component.js"></script>
+    </body>
+
+</html>

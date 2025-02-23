@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="vi">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>checkout page</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="../../../static/css/auth/forgotpassword/otpverification.css">
+        <link rel="stylesheet" href="../../../static/css/component/header.css">
+        <link rel="stylesheet" href="../../../static/css/component/footer.css">
+        <link rel="shortcut icon" href="#">
+    </head>
+    <body>
+        <div id="header-container"></div>
+        <div class="container">
+            <a href="../../landingpage/landingpage.html" class=" text-dark text-decoration-none">Trang chủ</a>
+            <p class="text-dark text-decoration-none" style="display: inline;"> / Quên mật khẩu</p>
+            <hr>
+        </div>
+        <div class="container">
+            <div class="form-container">
+                <h1 class="forgot-title">Quên mật khẩu</h1>
+                <p class="instruction-text">
+                    Nhập mã OTP, mã có hiệu lực trong <span id="timer">5:00</span> phút.
+                </p>
+    
+                <form id="otpForm" novalidate>
+                    <div class="mb-4">
+                        <label for="otp" class="form-label">Mã OTP</label>
+                        <input type="text" 
+                               class="form-control otp-input" 
+                               id="otp" 
+                               maxlength="6" 
+                               pattern="\d{6}"
+                               required>
+                        <div class="invalid-feedback">
+                            Vui lòng nhập mã OTP hợp lệ (6 chữ số)
+                        </div>
+                    </div>
+    
+                    <div>
+                        <button type="submit" class="btn btn-primary btn-verify" id="submitButton">
+                            Xác nhận
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="footer-container"></div>
+        <script src="../../../static/js/component.js"></script>
+        <script src="../../../static/js/auth/forgotpassword/otpverification.js"></script>
+    </body>
+
+</html>
