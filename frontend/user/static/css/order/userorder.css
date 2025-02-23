@@ -1,0 +1,11 @@
+.table th {
+    background-color: #b1aaaa;
+    text-align: center;
+}
+.table td {
+    text-align: center;
+}
+.price {
+    color: red;
+    font-weight: bold;
+}

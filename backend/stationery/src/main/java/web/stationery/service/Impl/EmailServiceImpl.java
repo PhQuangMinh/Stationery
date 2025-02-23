@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import web.stationery.common.exception.IncorrectDataException;
 import web.stationery.model.User;
 import web.stationery.model.VerificationCode;
 import web.stationery.repository.VerificationCodeRepository;
@@ -36,7 +37,7 @@ public class EmailServiceImpl implements EmailService {
         Timestamp expiryTime = Timestamp.from(Instant.now().plusSeconds(300));
         User user = userService.findByEmail(toEmail);
         if (user==null){
-            return "Email không tồn tại!";
+            throw new IncorrectDataException("Email not found");
         }
         VerificationCode code = new VerificationCode(user, verificationCode, expiryTime);
         verificationCodeRepository.save(code);

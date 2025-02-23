@@ -1,0 +1,74 @@
+.main-content {
+    margin-left: 250px;
+    padding: 2rem;
+    background-color: #198754;
+    background: linear-gradient(to bottom, #4facfe, #00f2fe);
+    min-height: 100vh; 
+}
+
+.table-container {
+    max-height: 70vh; /* Giới hạn chiều cao bảng */
+    overflow-y: auto; /* Thanh cuộn dọc */
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Đảm bảo bảng chiếm toàn bộ không gian trong container */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Cố định header khi cuộn */
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.brand-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    background-color: #198754;
+    color: white;
+    display: inline-block;
+}
+
+.brand-image {
+    width: 80px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.popup-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+.brand-preview {
+    width: 80px;
+    height: 50px;
+    margin-top: 10px;
+    display: none;
+}
+

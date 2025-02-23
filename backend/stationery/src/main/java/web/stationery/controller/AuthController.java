@@ -19,8 +19,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import web.stationery.common.exception.IncorrectDataException;
 import web.stationery.dto.request.userrequest.AuthRequest;
+import web.stationery.dto.request.userrequest.ForgotPasswordRequest;
 import web.stationery.dto.request.userrequest.RegisterUserRequest;
 import web.stationery.dto.response.CustomResponse;
+import web.stationery.model.User;
 import web.stationery.service.AuthService;
 import web.stationery.service.JWTTokenService;
 import web.stationery.service.UserService;
@@ -53,9 +55,14 @@ public class AuthController {
             throw new IncorrectDataException("Incorrect username or password");
         }
         final UserDetails userDetails = userService.loadUserByUserName(authRequest.getUsername());
-        System.out.println("Role: " + userDetails.getAuthorities());
         final String jwt = jwtTokenService.generateToken(userDetails);
         return new CustomResponse<>(jwt, HttpStatus.OK);
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<CustomResponse<?>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        authService.forgotPassword(forgotPasswordRequest);
+        return new ResponseEntity<>(new CustomResponse<>("Password reset link sent to your email"), HttpStatus.OK);
     }
 
 }

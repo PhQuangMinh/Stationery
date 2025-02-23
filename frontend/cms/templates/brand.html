@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý thương hiệu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../static/css/brand.css">
+    <link rel="stylesheet" href="../static/css/sidebar.css">
+</head>
+<body>
+    <div id="sidebar-container"></div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="bg-white rounded shadow-sm p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h5 mb-0">Danh sách thương hiệu</h1>
+                <div>
+                    <button id="btnAddBrand" class="btn btn-primary">Thêm mới</button>
+                    <button id="btnSaveChanges" class="btn btn-success mt-3">Lưu</button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên thương hiệu</th>
+                            <th>Hình ảnh</th>
+                            <th>Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="brandTableBody">
+                        <!-- Dữ liệu sẽ được chèn bằng JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup thêm thương hiệu -->
+    <div id="addBrandForm" class="popup-container">
+        <div class="popup-content">
+            <h2>Thêm thương hiệu mới</h2>
+            <div class="mb-3">
+                <label for="newBrandName" class="form-label">Tên thương hiệu</label>
+                <input type="text" id="newBrandName" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="newBrandImage" class="form-label">Hình ảnh</label>
+                <input type="file" id="newBrandImage" class="form-control">
+                <img id="previewBrandImage" src="#" alt="Preview" class="brand-preview" style="display:none;">
+            </div>
+            <div class="mb-3">
+                <label for="newBrandStatus" class="form-label">Trạng thái</label>
+                <select id="newBrandStatus" class="form-select">
+                    <option value="Hoạt động">Hoạt động</option>
+                    <option value="Không hoạt động">Không hoạt động</option>
+                </select>
+            </div>
+            <button id="btnSaveBrand" class="btn btn-success">Lưu</button>
+            <button id="btnCancelBrand" class="btn btn-danger">Hủy</button>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../static/js/sidebar.js"></script>
+    <script src="../static/js/brand.js"></script>
+</body>
+</html>

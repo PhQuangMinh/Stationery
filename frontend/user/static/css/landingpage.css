@@ -1,0 +1,50 @@
+.nav-link {
+    color: black;
+    font-weight: 500;
+    
+}
+
+.nav-link:hover {
+    background-color: rgba(216, 12, 12, 0.1);
+    border-radius: 4px;
+}
+
+.sectionbelow {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+    border: #E84C3D;
+    background-color: red;
+    padding-right: 73px;
+    max-height: 43px;
+}
+
+.product-card-below{
+    border: 1px solid #eee;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+}
+
+.product-card-below:hover{
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-image{
+    max-width: 100%;
+    margin-bottom: 15px;
+    height: auto;
+}
+
+.product-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.product-price {
+    color: #E84C3D;
+    font-size: 18px;
+    font-weight: bold;
+}
