@@ -1,30 +1,108 @@
-const brands = [
-    { id: 1, name: "Nike", image: "../static/images/nike.jpg", status: "Hoạt động" },
-    { id: 2, name: "Adidas", image: "../static/images/adidas.jpg", status: "Hoạt động" },
-    { id: 3, name: "Puma", image: "../static/images/puma.jpg", status: "Không hoạt động" },
-    { id: 4, name: "Reebok", image: "../static/images/reebok.jpg", status: "Hoạt động" },
-];
+const CREATE_API_URL = 'http://localhost:8080/admin/brands';
+const GET_ALL_API_URL = 'http://localhost:8080/brands/all';
+const UPDATE_API_URL = 'http://localhost:8080/admin/brands';
+
+const brands = [];
+
+function fetchBrands() {
+    const token = localStorage.getItem('token'); // Lấy token từ localStorage
+
+    fetch(GET_ALL_API_URL, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}` // Thêm token vào header
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Lỗi khi tải danh sách thương hiệu');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data.data.content);
+        brands.length = 0; // Xóa dữ liệu cũ
+        brands.push(...data.data.content); // Thêm dữ liệu mới
+        renderBrands(); // Hiển thị lại danh sách thương hiệu
+    })
+    .catch(error => console.error('Lỗi khi tải danh sách thương hiệu:', error));
+}
+
 
 // Hiển thị danh sách thương hiệu
 function renderBrands() {
     const tableBody = document.getElementById('brandTableBody');
     tableBody.innerHTML = brands.map((brand, index) => `
-        <tr>
+        <tr onclick="editBrand(${index})">
             <td>${brand.id}</td>
-            <td><input type="text" class="form-control" value="${brand.name}" data-index="${index}" data-field="name"></td>
-            <td><img src="${brand.image}" class="brand-image" alt="Thương hiệu"></td>
-            <td>
-                <select class="form-select brand-status" data-index="${index}" data-field="status">
-                    <option value="Hoạt động" ${brand.status === "Hoạt động" ? "selected" : ""}>Hoạt động</option>
-                    <option value="Không hoạt động" ${brand.status === "Không hoạt động" ? "selected" : ""}>Không hoạt động</option>
-                </select>
-            </td>
+            <td>${brand.name}</td>
+            <td>${brand.deleteFlag ? "Không hoạt động" : "Hoạt động"}</td>
         </tr>
     `).join('');
 }
 
-// Hiển thị popup thêm thương hiệu
+// Mở modal chỉnh sửa thương hiệu
+function editBrand(index) {
+    const brand = brands[index];
+
+    document.getElementById('newBrandName').value = brand.name;
+    document.getElementById('newBrandStatus').value = brand.deleteFlag ? "Không hoạt động" : "Hoạt động";
+    document.getElementById('btnSaveBrand').setAttribute('data-index', index);
+    document.getElementById('addBrandForm').style.display = 'flex';
+}
+
+// Lưu thương hiệu (cập nhật hoặc thêm mới)
+document.getElementById('btnSaveBrand').addEventListener('click', async function () {
+    const index = this.getAttribute('data-index');
+    const newBrand = {
+        name: document.getElementById('newBrandName').value,
+        deleteFlag: document.getElementById('newBrandStatus').value === "Không hoạt động"
+    };
+    const token = localStorage.getItem('token'); 
+    console.log("token: ", token)
+    if (index !== null) {
+        // Chỉnh sửa thương hiệu
+        const requestOptions = {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(newBrand)
+        };
+        console.log(requestOptions);
+        await fetch(UPDATE_API_URL, requestOptions).then(response => response.json())
+        .then(() => {
+            alert('Cập nhật thương hiệu thành công!');
+            fetchBrands();
+        })
+        .catch(error => console.error('Lỗi khi cập nhật thương hiệu:', error));
+    } else {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(newBrand)
+        };
+        console.log(requestOptions);
+        await fetch(CREATE_API_URL, requestOptions).then(response => response.json())
+        .then(() => {
+            alert('Thêm thương hiệu thành công!');
+            fetchBrands();
+        })
+        .catch(error => console.error('Lỗi khi thêm thương hiệu:', error));
+    }
+
+    document.getElementById('addBrandForm').style.display = 'none';
+});
+
+// Hiển thị popup thêm thương hiệu mới
 document.getElementById('btnAddBrand').addEventListener('click', function () {
+    document.getElementById('newBrandName').value = '';
+    document.getElementById('newBrandStatus').value = 'Hoạt động';
+    document.getElementById('btnSaveBrand').removeAttribute('data-index');
     document.getElementById('addBrandForm').style.display = 'flex';
 });
 
@@ -33,46 +111,5 @@ document.getElementById('btnCancelBrand').addEventListener('click', function () 
     document.getElementById('addBrandForm').style.display = 'none';
 });
 
-// Xử lý upload ảnh
-document.getElementById('newBrandImage').addEventListener('change', function (event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            document.getElementById('previewBrandImage').src = e.target.result;
-            document.getElementById('previewBrandImage').style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
-});
-
-// Thêm thương hiệu mới
-document.getElementById('btnSaveBrand').addEventListener('click', function () {
-    const newBrand = {
-        id: brands.length + 1,
-        name: document.getElementById('newBrandName').value,
-        image: document.getElementById('previewBrandImage').src,
-        status: document.getElementById('newBrandStatus').value
-    };
-
-    brands.push(newBrand);
-    renderBrands();
-    document.getElementById('addBrandForm').style.display = 'none';
-});
-
-// Cập nhật dữ liệu khi chỉnh sửa
-document.getElementById('brandTableBody').addEventListener('input', (event) => {
-    const index = event.target.dataset.index;
-    const field = event.target.dataset.field;
-    brands[index][field] = event.target.value;
-});
-
-// Khởi tạo trang
-document.addEventListener('DOMContentLoaded', function() {
-    renderBrands();
-});
-
-document.getElementById('btnSaveChanges').addEventListener('click', function () {
-    localStorage.setItem('brands', JSON.stringify(brands));
-    alert("Thay đổi đã được lưu!");
-});
+// Khi trang tải, lấy danh sách thương hiệu
+document.addEventListener('DOMContentLoaded', fetchBrands);
