@@ -53,7 +53,7 @@ function formatPrice(price) {
 function createProductCard(product) {
     return `
         <div class="col-12 col-sm-6 col-lg-3">
-            <div class="product-card">
+            <div class="product-card" data-id="${product.id}">
                 <div class="discount-badge">${product.discount}% OFF</div>
                 <img src="${product.image}" class="product-image" alt="${product.title}">
                 <h3 class="product-title">${product.title}</h3>
@@ -72,6 +72,12 @@ function createProductCard(product) {
 function renderProductsHeader(containerId, products){
     const container = document.getElementById(containerId);
     container.innerHTML = products.map(product => createProductCard(product)).join('');
+    document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', function () {
+            const productId = this.getAttribute('data-id');
+            window.location.href = `/templates/detailproduct.html?id=${productId}`;
+        });
+    });
 }
 
 async function loadProducts(){
@@ -159,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () =>{
 function renderProduct(product){
     return `
     <div class="col-md-6 mb-4">
-        <div class="product-card-below">
+        <div class="product-card-below" data-id="${product.id}">
             <img src="${product.image}" alt="${product.title}" class="product-image">
             <h3 class="product-title">${product.title}</h3>
             <div class="rating">
@@ -176,6 +182,12 @@ function renderProduct(product){
 function renderProducts(products, productGrid){
     const productContainer = document.getElementById(productGrid);
     productContainer.innerHTML = products.map(product => renderProduct(product)).join('');
+    document.querySelectorAll('.product-card-below').forEach(card => {
+        card.addEventListener('click', function () {
+            const productId = this.getAttribute('data-id');
+            window.location.href = `/templates/detailproduct.html?id=${productId}`;
+        });
+    });
 }
 
 function renderSectionBelow(textHeader, imageUrlHeader, imageUrlDemo, intro, navId, productGrid){
@@ -213,3 +225,4 @@ function renderSectionBelow(textHeader, imageUrlHeader, imageUrlDemo, intro, nav
     </div>
     `
 }
+

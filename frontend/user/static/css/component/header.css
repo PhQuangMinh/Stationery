@@ -77,43 +77,50 @@ body {
     cursor: pointer;
     padding-left: 40px;
 }
-
 nav {
-    background: #eee;
-    padding: 0; /* Xóa padding để tránh làm tăng chiều cao */
-    height: 30px; /* Đặt chiều cao cố định */
-    font-size: 17px;
     display: flex;
-    align-items: center; /* Canh giữa nội dung theo chiều dọc */
-    justify-content: center;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    /* background: #007bff; Màu nền */
+    /* padding: 10px 0; */
+    background-color: #f8f9fa;
 }
-
 nav ul {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
-    justify-content: center;
-    align-items: center; /* Canh giữa nội dung theo chiều dọc */
-    height: 100%;
-    text-align: center;
 }
-
 nav ul li {
-    margin: 0 15px;
-    height: 100%;
-    display: flex;
-    align-items: center; /* Đảm bảo các thẻ <li> cũng căn giữa */
+    position: relative;
+    padding: 10px 20px;
+    cursor: pointer;
 }
-
 nav ul li a {
     text-decoration: none;
-    color: rgb(61, 58, 58);
-    font-weight: bold;
-    display: flex;
-    align-items: center; /* Căn giữa chữ theo chiều dọc */
-    height: 100%; /* Giúp <a> giãn theo <li> */
-    /* padding-bottom: 15px; */
+    color: #333;
+}
+.submenu {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background-color: white;
+    min-width: 200px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+.submenu li {
+    padding: 10px;
+    width: 100%;
+}
+.submenu li:hover {
+    background-color: #f1f1f1;
+}
+nav ul li:hover > .submenu {
+    display: block;
+}
+.submenu .submenu {
+    left: 100%;
+    top: 0;
 }
 
 header {

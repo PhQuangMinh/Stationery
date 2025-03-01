@@ -3,170 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý sản phẩm</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Hiệu sách cô Minh</title>
     <style>
-        .table-container {
-            max-width: 100%;
-            overflow-x: auto;
+        body {
+            font-family: Arial, sans-serif;
         }
-        .table {
-            min-width: 1200px;
-            font-size: 16px;
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            background-color: #f8f9fa;
         }
-        .product-image {
-            width: 50px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 5px;
+        nav ul li {
+            position: relative;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+        }
+        .submenu {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 100%;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .submenu li {
+            padding: 10px;
+            width: 100%;
+        }
+        .submenu li:hover {
+            background-color: #f1f1f1;
+        }
+        nav ul li:hover > .submenu {
+            display: block;
+        }
+        .submenu .submenu {
+            left: 100%;
+            top: 0;
         }
     </style>
 </head>
 <body>
-
-    <!-- Main Content -->
-    <div class="container mt-4">
-        <div class="bg-white rounded shadow-sm p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="h5 mb-0">Danh sách sản phẩm</h1>
-                <div>
-                    <button id="btnAddProduct" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">Thêm mới</button>
-                    <button class="btn btn-success ms-2" id="saveChanges">Lưu</button>
-                </div>
-            </div>
-
-            <div class="table-container">
-                <table class="table table-bordered">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Tên</th>
-                            <th>Danh mục</th>
-                            <th>Thương hiệu</th>
-                            <th>Giá</th>
-                            <th>Giảm giá</th>
-                            <th>Số lượng</th>
-                            <th>Số lượt mua</th>
-                            <th>Ngày tạo</th>
-                            <th>Ảnh</th>
-                            <th>Trạng thái</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productTableBody">
-                        <!-- Data sẽ được chèn bằng JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Thêm sản phẩm -->
-    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addProductModalLabel">Thêm sản phẩm mới</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <label>Tên:</label>
-                    <input type="text" id="newProductName" class="form-control">
-
-                    <label>Danh mục:</label>
-                    <input type="text" id="newProductCategory" class="form-control">
-
-                    <label>Thương hiệu:</label>
-                    <input type="text" id="newProductBrand" class="form-control">
-
-                    <label>Giá:</label>
-                    <input type="text" id="newProductPrice" class="form-control">
-
-                    <label>Giảm giá:</label>
-                    <input type="text" id="newProductDiscount" class="form-control">
-
-                    <label>Số lượng:</label>
-                    <input type="number" id="newProductQuantity" class="form-control">
-
-                    <label>Số lượt mua:</label>
-                    <input type="number" id="newProductSold" class="form-control">
-
-                    <label>Ngày tạo:</label>
-                    <input type="date" id="newProductDate" class="form-control">
-
-                    <label>Ảnh sản phẩm:</label>
-                    <input type="file" id="newProductImage" class="form-control">
-                    <img id="previewImage" class="product-image" style="display:none; margin-top: 10px; width: 100px; height: 120px; object-fit: cover; border-radius: 5px;">
-
-                    <label>Trạng thái:</label>
-                    <select id="newProductStatus" class="form-select">
-                        <option value="Hoạt động">Hoạt động</option>
-                        <option value="Không hoạt động">Không hoạt động</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-success" id="btnSaveProduct">Lưu</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JavaScript -->
+    <header>
+        
+    </header>
     <script>
-        const products = [];
+        const categories = [
+            {
+                name: "Sách giáo khoa",
+                subcategories: [
+                    {
+                        name: "Lớp 1",
+                        subcategories: [
+                            { name: "Cánh diều", subcategories: [] },
+                            { name: "Kết nối tri thức", subcategories: [] },
+                            { name: "Chân trời sáng tạo", subcategories: [] }
+                        ]
+                    },
+                    { name: "Lớp 2", subcategories: [] },
+                    { name: "Lớp 3", subcategories: [] }
+                ]
+            },
+            { name: "Sách tham khảo", subcategories: [] },
+            { name: "Vở ghi", subcategories: [] },
+            { name: "Máy tính cầm tay", subcategories: [] },
+            { name: "Đồ dùng học tập", subcategories: [] },
+            { name: "Khác", subcategories: [] }
+        ];
 
-        // Xử lý xem trước ảnh
-        document.getElementById('newProductImage').addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('previewImage').src = e.target.result;
-                    document.getElementById('previewImage').style.display = 'block';
-                };
-                reader.readAsDataURL(file);
+        document.addEventListener("DOMContentLoaded", function () {
+            const menuContainer = document.getElementById("menu");
+
+            function createMenuItems(categories) {
+                const ul = document.createElement("ul");
+                ul.classList.add("submenu");
+
+                categories.forEach(category => {
+                    const li = document.createElement("li");
+                    li.textContent = category.name;
+
+                    if (category.subcategories.length > 0) {
+                        const subMenu = createMenuItems(category.subcategories);
+                        li.appendChild(subMenu);
+                    }
+
+                    ul.appendChild(li);
+                });
+
+                return ul;
             }
+
+            categories.forEach(category => {
+                const li = document.createElement("li");
+                li.innerHTML = `<a href="#">${category.name}</a>`;
+
+                if (category.subcategories.length > 0) {
+                    const subMenu = createMenuItems(category.subcategories);
+                    li.appendChild(subMenu);
+                }
+
+                menuContainer.appendChild(li);
+            });
         });
-
-        // Thêm sản phẩm mới vào danh sách
-        document.getElementById('btnSaveProduct').addEventListener('click', function() {
-            const newProduct = {
-                name: document.getElementById('newProductName').value,
-                category: document.getElementById('newProductCategory').value,
-                brand: document.getElementById('newProductBrand').value,
-                price: document.getElementById('newProductPrice').value,
-                discount: document.getElementById('newProductDiscount').value,
-                quantity: document.getElementById('newProductQuantity').value,
-                sold: document.getElementById('newProductSold').value,
-                date: document.getElementById('newProductDate').value,
-                image: document.getElementById('previewImage').src,
-                status: document.getElementById('newProductStatus').value
-            };
-
-            products.push(newProduct);
-            renderProducts();
-            document.querySelector('.btn-close').click(); // Đóng modal
-        });
-
-        // Hiển thị sản phẩm lên bảng
-        function renderProducts() {
-            const tableBody = document.getElementById('productTableBody');
-            tableBody.innerHTML = products.map((product, index) => `
-                <tr>
-                    <td>${product.name}</td>
-                    <td>${product.category}</td>
-                    <td>${product.brand}</td>
-                    <td>${product.price}</td>
-                    <td>${product.discount}</td>
-                    <td>${product.quantity}</td>
-                    <td>${product.sold}</td>
-                    <td>${product.date}</td>
-                    <td><img src="${product.image}" class="product-image" alt="Sản phẩm"></td>
-                    <td>${product.status}</td>
-                </tr>
-            `).join('');
-        }
     </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
