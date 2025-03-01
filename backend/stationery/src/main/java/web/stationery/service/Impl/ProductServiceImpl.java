@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import web.stationery.common.exception.NotFoundException;
 import web.stationery.common.utils.PageableUtils;
+import web.stationery.dto.request.productrequest.AdminProductRequest;
 import web.stationery.dto.request.productrequest.ProductRequest;
 import web.stationery.dto.response.ProductResponse;
 import web.stationery.model.Brand;
@@ -20,16 +21,14 @@ import web.stationery.utils.mapper.ProductMapper;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
-
     private final ProductMapper productMapper;
-
     private final BrandRepository brandRepository;
-
     private final CategoryRepository categoryRepository;
 
     @Override
@@ -101,4 +100,49 @@ public class ProductServiceImpl implements ProductService {
         if (findProduct.isEmpty()) throw new NotFoundException("Product not found");
         return productMapper.toResponse(findProduct.get());
     }
+
+    @Override
+    public Product saveAdmin(AdminProductRequest productRequest) {
+        Product product = productMapper.toEntity(productRequest);
+        Optional<Brand> findBrand = brandRepository.findByName(productRequest.getBrand().getName());
+        if (findBrand.isEmpty()) throw new NotFoundException("Brand not found - " + productRequest.getBrand().getName());
+        product.setBrand(findBrand.get());
+        List<Category> categories = productRequest.getCategories().stream().map(
+                categoryRequest -> {
+                    Optional<Category> findCategory = categoryRepository.findByName(categoryRequest.getName());
+                    if (findCategory.isEmpty()) throw new NotFoundException("Category not found - " + categoryRequest.getName());
+                    return findCategory.get();
+                }
+        ).toList();
+        product.setCategories(categories);
+        product.setDeleteFlag(productRequest.isDeleteFlag());
+        return productRepository.save(product);
+    }
+
+    @Override
+    public Product updateAdmin(AdminProductRequest productRequest) {
+        Optional<Product> findProduct = productRepository.findById(String.valueOf(productRequest.getId()));
+        if (findProduct.isEmpty()) throw new NotFoundException("Product not found - " + productRequest.getId());
+
+        Product existingProduct = findProduct.get();
+
+        // Không cập nhật brand để tránh lỗi liên quan đến brand
+        Brand currentBrand = existingProduct.getBrand();
+
+        // Cập nhật các trường khác của product
+        productMapper.updateProduct(existingProduct, productRequest);
+        existingProduct.setBrand(currentBrand); // Giữ nguyên brand cũ
+
+        List<Category> categories = productRequest.getCategories().stream().map(categoryRequest -> {
+            Optional<Category> findCategory = categoryRepository.findByName(categoryRequest.getName());
+            if (findCategory.isEmpty()) throw new NotFoundException("Category not found - " + categoryRequest.getName());
+            return findCategory.get();
+        }).collect(Collectors.toList());
+
+        existingProduct.setCategories(categories);
+        existingProduct.setDeleteFlag(productRequest.isDeleteFlag());
+
+        return productRepository.save(existingProduct);
+    }
+
 }

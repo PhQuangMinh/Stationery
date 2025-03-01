@@ -1,28 +1,23 @@
 package web.stationery.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import web.stationery.dto.request.categoryrequest.AdminCategoryRequest;
 import web.stationery.dto.request.categoryrequest.CategoryRequest;
-import web.stationery.dto.response.CategoryResponse;
 import web.stationery.dto.response.CustomResponse;
-import web.stationery.model.Category;
 import web.stationery.service.CategoryService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("")
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @PostMapping("/admin/categories")
-    public CategoryResponse createCategory(@RequestBody CategoryRequest category) {
-        return categoryService.save(category);
-    }
-
-    @GetMapping("/categories")
-    public CustomResponse<?> findByName(@RequestParam String name){
-        return new CustomResponse<>(categoryService.findByName(name));
+    @GetMapping("/categories/all")
+    public CustomResponse<?> findAll(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        return new CustomResponse<>(categoryService.findAll(size, page, sortBy));
     }
 
     @GetMapping("/categories/all-name")
@@ -30,27 +25,37 @@ public class CategoryController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam String name
-    ){
+            @RequestParam String name) {
         return new CustomResponse<>(categoryService.findAllByName(size, page, sortBy, name));
     }
 
-    @GetMapping("/categories/all")
-    public CustomResponse<Page<CategoryResponse>> findAll(
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "id") String sortBy) {
-        return new CustomResponse<>(categoryService.findAll(size, page, sortBy));
+    @GetMapping("/categories/{id}")
+    public CustomResponse<?> findById(@PathVariable String id) {
+        return new CustomResponse<>(categoryService.findById(Integer.valueOf(id)));
     }
 
-    @PutMapping("/admin/categories")
-    public CustomResponse<CategoryResponse> updateCategory(@RequestBody CategoryRequest category){
-        return new CustomResponse<>(categoryService.save(category));
+    @GetMapping("/categories/tree")
+    public CustomResponse<?> getCategoriesTree() {
+        return new CustomResponse<>(categoryService.getCategoriesTree());
     }
 
-    @DeleteMapping("/admin/categories")
-    public CustomResponse<?> deleteCategory(@RequestParam String name){
-        return new CustomResponse<>(categoryService.deleteByName(name));
+    @GetMapping("/admin/categories/all-full")
+    public CustomResponse<?> getAllCategoriesFull() {
+        return new CustomResponse<>(categoryService.findAllFull());
     }
 
+    @PostMapping("/admin/categories")
+    public CustomResponse<?> addCategory(@RequestBody AdminCategoryRequest categoryRequest) {
+        return new CustomResponse<>(categoryService.saveAdmin(categoryRequest));
+    }
+
+    @PutMapping("/admin/categories/{id}")
+    public CustomResponse<?> updateCategory(@PathVariable String id, @RequestBody AdminCategoryRequest categoryRequest) {
+        return new CustomResponse<>(categoryService.updateAdmin(Integer.valueOf(id), categoryRequest));
+    }
+
+    @DeleteMapping("/admin/categories/{id}")
+    public CustomResponse<?> deleteCategory(@PathVariable String id) {
+        return new CustomResponse<>(categoryService.deleteById(Integer.valueOf(id)));
+    }
 }

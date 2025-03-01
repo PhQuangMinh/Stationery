@@ -13,4 +13,6 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<Category, String> {
     Optional<Category> findByName(String name);
     Page<Category> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    List<Category> findByParentIsNull();
+    List<Category> findByParent_Id(Integer parentId);
 }

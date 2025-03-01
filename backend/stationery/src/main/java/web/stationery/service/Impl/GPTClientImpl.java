@@ -1,9 +1,9 @@
 package web.stationery.service.Impl;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
@@ -31,11 +31,8 @@ public class GPTClientImpl implements GPTClient {
 
     private final WebClient webClient;
 
-    private final Dotenv dotenv = Dotenv.load();
-
-    private final String apiKey = dotenv.get("OPEN_API_KEY");
-
-    private final String apiUrl = dotenv.get("GPT_API_URL");
+    @Value("${key.open-api-key}")
+    private String apiKey;
 
     private final UserService userService;
 
@@ -54,6 +51,7 @@ public class GPTClientImpl implements GPTClient {
 
         try {
             // Gửi request đến API GPT
+            String apiUrl = "https://api.openai.com/v1";
             GPTResponse response = webClient.post()
                     .uri(apiUrl + "/chat/completions")
                     .header("Authorization", "Bearer " + apiKey)

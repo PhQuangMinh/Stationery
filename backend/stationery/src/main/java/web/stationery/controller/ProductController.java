@@ -3,6 +3,7 @@ package web.stationery.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import web.stationery.dto.request.productrequest.AdminProductRequest;
 import web.stationery.dto.request.productrequest.ProductRequest;
 import web.stationery.dto.response.CustomResponse;
 import web.stationery.dto.response.ProductResponse;
@@ -37,13 +38,14 @@ public class ProductController {
     }
 
     @PostMapping("/admin/products")
-    public CustomResponse<?> addProduct(@RequestBody ProductRequest productRequest) {
-        return new CustomResponse<>(productService.save(productRequest));
+    public CustomResponse<?> addProduct(@RequestBody AdminProductRequest productRequest) {
+        return new CustomResponse<>(productService.saveAdmin(productRequest));
     }
 
-    @PutMapping("/admin/products/{id}")
-    public CustomResponse<?> updateProduct(@PathVariable int id, @RequestBody ProductRequest productRequest){
-        return new CustomResponse<>(productService.update(String.valueOf(id), productRequest));
+    @PutMapping("/admin/products")
+    public CustomResponse<?> updateProduct(@RequestBody AdminProductRequest productRequest){
+        System.out.println(productRequest);
+        return new CustomResponse<>(productService.updateAdmin(productRequest));
     }
 
     @DeleteMapping("/admin/products/{id}")

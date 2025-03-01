@@ -1,6 +1,8 @@
 package web.stationery.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -23,10 +25,25 @@ public class NotificationController {
 
     private final RabbitTemplate rabbitTemplate;
 
+    private final Logger logger = LoggerFactory.getLogger(NotificationController.class);
+
     @MessageMapping("/send")
-    public void sendNotification(@Payload NotificationRequest notification){
-        System.out.println("Received message: " + notification);
-        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, notification);
+    public void sendNotification(@Payload NotificationRequest notification) {
+        try {
+            logger.info("Received notification: {}", notification);
+            validateNotification(notification);
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, 
+                RabbitMQConfig.ROUTING_KEY, notification);
+        } catch (Exception e) {
+            logger.error("Error sending notification: ", e);
+            throw new RuntimeException("Failed to send notification", e);
+        }
+    }
+
+    private void validateNotification(NotificationRequest notification) {
+        if (notification == null || notification.getUsernameReceiver() == null) {
+            throw new IllegalArgumentException("Invalid notification data");
+        }
     }
 
     @GetMapping("/notifications/{username}/{size}")

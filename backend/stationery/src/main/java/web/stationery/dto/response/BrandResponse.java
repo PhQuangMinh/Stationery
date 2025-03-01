@@ -12,4 +12,5 @@ import lombok.*;
 public class BrandResponse {
     private int id;
     private String name;
+    private boolean deleteFlag;
 }

@@ -1,15 +1,13 @@
 package web.stationery.dto.request.categoryrequest;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@AllArgsConstructor
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class CategoryRequest {
-    private String id;
     private String name;
+    private Integer parentId;
 }

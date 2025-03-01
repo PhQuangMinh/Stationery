@@ -1,6 +1,7 @@
 package web.stationery.service;
 
 import org.springframework.data.domain.Page;
+import web.stationery.dto.request.productrequest.AdminProductRequest;
 import web.stationery.dto.request.productrequest.ProductRequest;
 import web.stationery.dto.response.ProductResponse;
 import web.stationery.model.Product;
@@ -16,4 +17,6 @@ public interface ProductService {
     ProductResponse update(String id, ProductRequest productRequest);
     ProductResponse deleteById(String id);
     ProductResponse getBestSellingProduct();
+    Product saveAdmin(AdminProductRequest productRequest);
+    Product updateAdmin(AdminProductRequest productRequest);
 }
