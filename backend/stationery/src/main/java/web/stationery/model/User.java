@@ -1,5 +1,6 @@
 package web.stationery.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +8,7 @@ import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import web.stationery.common.constant.Role;
+import web.stationery.utils.validator.StrongPassword;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -60,6 +62,9 @@ public class User {
     private Timestamp updateAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+
+
     private List<UserOrder> userOrders = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

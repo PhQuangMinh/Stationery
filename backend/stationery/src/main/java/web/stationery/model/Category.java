@@ -2,9 +2,7 @@ package web.stationery.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -12,21 +10,21 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @ToString
+@Entity
 @Table(name = "categories")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private int id;
+    private Integer id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean deleteFlag = false;
 
     @Column(name = "create_at", updatable = false)
@@ -37,7 +35,25 @@ public class Category {
     @UpdateTimestamp
     private Timestamp updateAt;
 
-    @ManyToMany(mappedBy = "categories", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
     @JsonIgnore
-    private List<Product> products;
+    private Category parent;
+
+    @OneToMany(mappedBy = "parent")
+    @JsonIgnore
+    private List<Category> subcategories = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Product> products = new ArrayList<>();
+
+    @Transient
+    public Integer getId() {
+        return id != null ? id : null;
+    }
+
+    public void setId(String id) {
+        this.id = id != null ? Integer.parseInt(id) : null;
+    }
 }

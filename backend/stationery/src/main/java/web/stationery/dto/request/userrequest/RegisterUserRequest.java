@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import web.stationery.utils.validator.StrongPassword;
 
 @Getter
 @Setter
@@ -15,14 +16,13 @@ public class RegisterUserRequest {
 
     private String lastName;
 
-//    @Size(min = 3, message = "INVALID_USERNAME")
     private String username;
 
     @NotBlank(message = "NOT_EMPTY_EMAIL")
     @Email(message = "INVALID_EMAIL")
     private String email;
 
-//    @Size(min = 8, message = "INVALID_PASSWORD")
+    @StrongPassword
     private String password;
 
     private String address;
