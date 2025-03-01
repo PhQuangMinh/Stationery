@@ -1,0 +1,1 @@
+CSDL: https://dbdiagram.io/d/stationery-670d269597a66db9a3ec149c
