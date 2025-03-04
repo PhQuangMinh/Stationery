@@ -3,7 +3,9 @@ package web.stationery.utils.mapper;
 import org.springframework.stereotype.Component;
 import web.stationery.dto.request.categoryrequest.AdminCategoryRequest;
 import web.stationery.dto.request.categoryrequest.CategoryRequest;
-import web.stationery.dto.response.CategoryResponse;
+import web.stationery.dto.response.categoryresponse.CategoryAdminResponse;
+import web.stationery.dto.response.categoryresponse.CategoryResponse;
+import web.stationery.dto.response.categoryresponse.CategoryUserResponse;
 import web.stationery.model.Category;
 
 import java.util.Collections;
@@ -20,27 +22,45 @@ public class CategoryMapper {
 
         Category category = new Category();
         category.setName(request.getName());
-        // Các trường khác sẽ được set tự động hoặc trong service
         return category;
     }
 
-    public CategoryResponse toResponse(Category category) {
+    public CategoryUserResponse toResponse(Category category) {
         if (category == null) {
             return null;
         }
 
-        CategoryResponse response = new CategoryResponse();
+        CategoryUserResponse response = new CategoryUserResponse();
         response.setId(category.getId());
         response.setName(category.getName());
         response.setId(category.getId());
-        
-        // Map subcategories nếu có
+
         if (category.getSubcategories() != null) {
             response.setChildren(category.getSubcategories().stream()
                     .map(this::toResponse)
                     .collect(Collectors.toList()));
         }
         
+        return response;
+    }
+
+    public CategoryAdminResponse toAdminResponse(Category category) {
+        if (category == null) {
+            return null;
+        }
+
+        CategoryAdminResponse response = new CategoryAdminResponse();
+        response.setId(category.getId());
+        response.setName(category.getName());
+        response.setId(category.getId());
+        response.setDeleteFlag(category.isDeleteFlag());
+
+        if (category.getSubcategories() != null) {
+            response.setChildren(category.getSubcategories().stream()
+                    .map(this::toAdminResponse)
+                    .collect(Collectors.toList()));
+        }
+
         return response;
     }
 
@@ -53,11 +73,8 @@ public class CategoryMapper {
                 .collect(Collectors.toList());
     }
 
-    public void updateCategory(Category category, CategoryRequest categoryRequest) {
-        // Implementation of updateCategory method
-    }
-
     public void updateCategory(Category category, AdminCategoryRequest adminCategoryRequest) {
-        // Implementation of updateCategory method
+        category.setName(adminCategoryRequest.getName());
+        category.setDeleteFlag(adminCategoryRequest.isDeleteFlag());
     }
 }

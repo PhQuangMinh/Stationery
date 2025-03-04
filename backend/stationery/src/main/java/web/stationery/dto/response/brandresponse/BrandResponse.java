@@ -1,4 +1,4 @@
-package web.stationery.dto.response;
+package web.stationery.dto.response.brandresponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
@@ -12,5 +12,4 @@ import lombok.*;
 public class BrandResponse {
     private int id;
     private String name;
-    private boolean deleteFlag;
 }

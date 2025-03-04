@@ -9,7 +9,8 @@ import web.stationery.common.exception.NotFoundException;
 import web.stationery.common.utils.PageableUtils;
 import web.stationery.dto.request.categoryrequest.AdminCategoryRequest;
 import web.stationery.dto.request.categoryrequest.CategoryRequest;
-import web.stationery.dto.response.CategoryResponse;
+import web.stationery.dto.response.categoryresponse.CategoryAdminResponse;
+import web.stationery.dto.response.categoryresponse.CategoryResponse;
 import web.stationery.model.Category;
 import web.stationery.repository.CategoryRepository;
 import web.stationery.service.CategoryService;
@@ -47,14 +48,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryResponse> getCategoriesTree() {
+    public List<CategoryAdminResponse> getCategoriesTree() {
         List<Category> rootCategories = categoryRepository.findByParentIsNull();
         return buildCategoryTree(rootCategories);
     }
 
-    private List<CategoryResponse> buildCategoryTree(List<Category> categories) {
+    private List<CategoryAdminResponse> buildCategoryTree(List<Category> categories) {
         return categories.stream().map(category -> {
-            CategoryResponse response = categoryMapper.toResponse(category);
+            CategoryAdminResponse response = categoryMapper.toAdminResponse(category);
             List<Category> children = categoryRepository.findByParent_Id(category.getId());
             if (!children.isEmpty()) {
                 response.setChildren(buildCategoryTree(children));
@@ -77,16 +78,6 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse save(CategoryRequest categoryRequest) {
-        Category category = categoryMapper.toEntity(categoryRequest);
-        if (categoryRequest.getParentId() != null) {
-            Category parent = findCategoryById(categoryRequest.getParentId());
-            category.setParent(parent);
-        }
-        return categoryMapper.toResponse(categoryRepository.save(category));
-    }
-
-    @Override
     public Category saveAdmin(AdminCategoryRequest categoryRequest) {
         Category category = categoryMapper.toEntity(categoryRequest);
         if (categoryRequest.getParentId() != null) {
@@ -95,17 +86,6 @@ public class CategoryServiceImpl implements CategoryService {
         }
         category.setDeleteFlag(categoryRequest.isDeleteFlag());
         return categoryRepository.save(category);
-    }
-
-    @Override
-    public CategoryResponse update(Integer id, CategoryRequest categoryRequest) {
-        Category existingCategory = findCategoryById(id);
-        categoryMapper.updateCategory(existingCategory, categoryRequest);
-        if (categoryRequest.getParentId() != null) {
-            Category parent = findCategoryById(categoryRequest.getParentId());
-            existingCategory.setParent(parent);
-        }
-        return categoryMapper.toResponse(categoryRepository.save(existingCategory));
     }
 
     @Override
@@ -121,9 +101,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryResponse deleteById(Integer id) {
-        Category category = findCategoryById(id);
-        category.setDeleteFlag(true);
-        return categoryMapper.toResponse(categoryRepository.save(category));
+    public void deleteById(Integer id) {
+        Optional<Category> category = categoryRepository.findById(String.valueOf(id));
+        if (category.isEmpty()) {
+            throw new NotFoundException("Category not found - " + id);
+        }
+        categoryRepository.deleteById(String.valueOf(id));
     }
 }

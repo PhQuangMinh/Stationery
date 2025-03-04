@@ -3,7 +3,7 @@
     padding: 15px;
     border: 1px solid #eee;
     border-radius: 8px;
-    transition: all 0.3s ease; /*tất cả đều di chuyển trong 0.3s bắt đầu chậm, giữa tăng, cuối chậm lại*/
+    transition: all 0.3s ease;
 }
 
 .product-card:hover{
@@ -12,7 +12,7 @@
 
 .discount-badge{
     position: absolute;
-    top: 10px; /*cách 10px từ phía trên của pt chứa*/
+    top: 10px; 
     right: 10px;
     background-color: #ff4444;
     color: white;
@@ -31,7 +31,7 @@
     font-size: 16px;
     margin-bottom: 10px;
     height: 40px;
-    overflow: hidden; /*nội dung vượt quá thì sẽ ẩn đi*/
+    overflow: hidden; 
 }
 
 .rating{
@@ -45,7 +45,7 @@
 }
 
 .original-price{
-    text-decoration: line-through; /*đặt gạch chéo*/
+    text-decoration: line-through; 
     color: #999;
     font-size: 14px;
     margin-left: 5px;

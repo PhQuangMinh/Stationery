@@ -1,10 +1,25 @@
 let selectedCategory = null; // Lưu danh mục đang chọn
+const CATEGORY_TREE_API_URL = "http://localhost:8080/categories/tree";
+const SAVE_CATEGORY_API_URL = "http://localhost:8080/admin/categories";
+const UPDATE_CATEGORY_API_URL = "http://localhost:8080/admin/categories";
+const DELETE_CATEGORY_API_URL = "http://localhost:8080/admin/categories";
+
+// Thêm hàm kiểm tra response
+function handleResponse(response) {
+    if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        window.location.href = 'login.html';
+    }
+    return response;
+}
 
 // 🟢 Lấy danh mục từ backend
 async function fetchCategories() {
     try {
-        let response = await fetch("http://localhost:8080/api/categories/tree");
+        let response = await fetch(CATEGORY_TREE_API_URL);
+        handleResponse(response);
         let data = await response.json();
+        console.log(data)
         return data.data || [];
     } catch (error) {
         console.error("Lỗi khi tải danh mục:", error);
@@ -14,9 +29,10 @@ async function fetchCategories() {
 
 // 🟢 Gửi danh mục mới lên backend
 async function saveCategoryToBackend(name, parentId = null) {
+    console.log("save token: ", localStorage.getItem('accessToken'))
     try {
-        const token = localStorage.getItem('token');
-        let response = await fetch("http://localhost:8080/api/admin/categories", {
+        const token = localStorage.getItem('accessToken');
+        let response = await fetch(SAVE_CATEGORY_API_URL, {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json",
@@ -28,28 +44,24 @@ async function saveCategoryToBackend(name, parentId = null) {
                 deleteFlag: false 
             })
         });
-
-        if (!response.ok) {
-            throw new Error("Lỗi khi lưu danh mục");
-        }
-
-        return await response.json();
+        handleResponse(response);
+        return response;
     } catch (error) {
         console.error("Lỗi khi lưu danh mục:", error);
-        alert("Có lỗi xảy ra khi lưu danh mục");
     }
 }
 
 // Thêm hàm xóa danh mục
 async function deleteCategory(id) {
     try {
-        const token = localStorage.getItem('token');
-        let response = await fetch(`http://localhost:8080/api/admin/categories/${id}`, {
+        const token = localStorage.getItem('accessToken');
+        let response = await fetch(`http://localhost:8080/admin/categories/${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`
             }
         });
+        handleResponse(response);
 
         if (!response.ok) {
             throw new Error("Lỗi khi xóa danh mục");
@@ -58,54 +70,54 @@ async function deleteCategory(id) {
         return await response.json();
     } catch (error) {
         console.error("Lỗi khi xóa danh mục:", error);
-        alert("Có lỗi xảy ra khi xóa danh mục");
     }
 }
 
 // Thêm hàm cập nhật danh mục
-async function updateCategory(id, name, parentId = null) {
+async function updateCategory(id, name, parentId = null, deleteFlag) {
     try {
-        const token = localStorage.getItem('token');
-        let response = await fetch(`http://localhost:8080/api/admin/categories/${id}`, {
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(`http://localhost:8080/admin/categories/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
             body: JSON.stringify({
-                name,
+                name: name,
                 parentId: parentId ? parseInt(parentId) : null,
-                deleteFlag: false
+                deleteFlag: deleteFlag
             })
         });
+        handleResponse(response);
 
         if (!response.ok) {
-            throw new Error("Lỗi khi cập nhật danh mục");
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Lỗi khi cập nhật danh mục");
         }
 
-        return await response.json();
+        return true;
     } catch (error) {
         console.error("Lỗi khi cập nhật danh mục:", error);
-        alert("Có lỗi xảy ra khi cập nhật danh mục");
+        return false;
     }
 }
 
 // 🟢 Tạo HTML cho danh mục
 function createCategoryHTML(category, level = 0) {
     const hasSubcategories = category.children && category.children.length > 0;
+    console.log(category.deleteFlag)
+    console.log("category: ", category.deleteFlag ? ' <span class="badge bg-danger ms-2">Không hoạt động</span>' : ' <span class="badge bg-success ms-2">Hoạt động</span>')
+    const statusClass = category.deleteFlag ? 'text-muted' : '';
     
     let html = `
-        <div class="category-item" data-id="${category.id}" data-name="${category.name}">
-            <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center">
-                    ${hasSubcategories ? `<span class="category-toggle">▼</span>` : `<span style="margin-left: 1rem"></span>`}
-                    <span class="category-name">${category.name}</span>
-                </div>
-                <div class="category-actions">
-                    <button class="btn btn-sm btn-primary edit-category">Sửa</button>
-                    <button class="btn btn-sm btn-danger delete-category">Xóa</button>
-                </div>
+        <div class="category-item ${statusClass}" data-id="${category.id}" data-name="${category.name}" data-parent-id="${category.parentId || ''}" data-status="${category.deleteFlag}">
+            <div class="d-flex align-items-center">
+                ${hasSubcategories ? `<span class="category-toggle">▼</span>` : `<span style="margin-left: 1rem"></span>`}
+                <span class="category-name">${category.name}</span>
+                ${category.deleteFlag ? ' <span class="badge bg-danger ms-2">Không hoạt động</span>' : ' <span class="badge bg-success ms-2">Hoạt động</span>'}
             </div>
+        </div>
     `;
 
     if (hasSubcategories) {
@@ -136,6 +148,7 @@ async function renderCategories() {
 
 // 🟢 Thêm sự kiện vào danh mục
 function addCategoryEventListeners() {
+    // Xử lý click vào category-toggle
     document.querySelectorAll('.category-toggle').forEach(toggle => {
         toggle.addEventListener('click', (e) => {
             const categoryItem = e.target.closest('.category-item');
@@ -148,79 +161,185 @@ function addCategoryEventListeners() {
         });
     });
 
-    // Chọn danh mục để thêm danh mục con
-    document.querySelectorAll('.category-name').forEach(item => {
-        item.addEventListener('click', function () {
-            const categoryId = this.closest('.category-item').dataset.id;
-            const categoryName = this.textContent;
-            
-            selectedCategory = { id: categoryId, name: categoryName };
-            
-            document.getElementById('selectedCategoryName').textContent = categoryName;
-            document.getElementById('addSubcategoryContainer').style.display = 'block';
-        });
-    });
-
-    // Thêm sự kiện cho nút xóa
-    document.querySelectorAll('.delete-category').forEach(button => {
-        button.addEventListener('click', async function(e) {
-            e.stopPropagation();
-            const categoryItem = this.closest('.category-item');
-            const categoryId = categoryItem.dataset.id;
-            
-            if (confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
-                const result = await deleteCategory(categoryId);
-                if (result) {
-                    renderCategories();
-                }
+    // Thêm sự kiện click vào category-item
+    document.querySelectorAll('.category-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            // Nếu click vào category-toggle, không mở modal
+            if (e.target.classList.contains('category-toggle')) {
+                return;
             }
-        });
-    });
 
-    // Thêm sự kiện cho nút sửa
-    document.querySelectorAll('.edit-category').forEach(button => {
-        button.addEventListener('click', async function(e) {
-            e.stopPropagation();
-            const categoryItem = this.closest('.category-item');
-            const categoryId = categoryItem.dataset.id;
-            const categoryName = categoryItem.dataset.name;
+            const categoryData = {
+                id: this.dataset.id,
+                name: this.dataset.name,
+                parentId: this.dataset.parentId,
+                deleteFlag: this.dataset.status === 'true'
+            };
             
-            const newName = prompt('Nhập tên mới cho danh mục:', categoryName);
-            if (newName && newName !== categoryName) {
-                const result = await updateCategory(categoryId, newName);
-                if (result) {
-                    renderCategories();
-                }
-            }
+            showCategoryModal('edit', categoryData);
         });
     });
 }
 
-// 🟢 Thêm danh mục cha mới
-document.getElementById('btnAddParentCategory').addEventListener('click', async function () {
-    const parentCategoryName = document.getElementById('parentCategoryInput').value.trim();
-    
-    if (parentCategoryName) {
-        const savedCategory = await saveCategoryToBackend(parentCategoryName, null); // Không có parent
+// Thêm các event listener mới
+document.getElementById('btnShowAddCategory').addEventListener('click', () => {
+    showCategoryModal('add');
+});
+
+// Hàm hiển thị modal với mode thêm mới hoặc chỉnh sửa
+function showCategoryModal(mode = 'add', categoryData = null) {
+    const modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+    const modalTitle = document.getElementById('modalTitle');
+    const categoryId = document.getElementById('categoryId');
+    const categoryName = document.getElementById('categoryName');
+    const parentCategory = document.getElementById('parentCategory');
+    const statusActive = document.getElementById('statusActive');
+    const statusInactive = document.getElementById('statusInactive');
+    const btnDelete = document.getElementById('btnDeleteCategory');
+
+    // Reset form
+    categoryId.value = '';
+    categoryName.value = '';
+    statusActive.checked = true;
+    btnDelete.style.display = 'none';
+
+    if (mode === 'add') {
+        modalTitle.textContent = 'Thêm danh mục mới';
+        fetchCategories().then(categories => {
+            populateParentSelect(categories);
+        });
+    } else {
+        modalTitle.textContent = 'Chỉnh sửa danh mục';
+        categoryId.value = categoryData.id;
+        categoryName.value = categoryData.name;
+        btnDelete.style.display = 'inline-block';
         
-        if (savedCategory) {
-            document.getElementById('parentCategoryInput').value = '';
-            renderCategories(); // Cập nhật danh sách
+        if (categoryData.deleteFlag === true || categoryData.deleteFlag === 'true') {
+            statusInactive.checked = true;
+            statusActive.checked = false;
+        } else {
+            statusActive.checked = true;
+            statusInactive.checked = false;
         }
+
+        fetchCategories().then(categories => {
+            populateParentSelect(categories, categoryData.id);
+            parentCategory.value = categoryData.parentId || '';
+        });
+    }
+
+    // Thêm event listener cho sự kiện hidden.bs.modal
+    const categoryModal = document.getElementById('categoryModal');
+    categoryModal.addEventListener('hidden.bs.modal', function () {
+        // Xóa backdrop và reset các thuộc tính
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    });
+
+    modal.show();
+}
+
+// Cập nhật hàm populateParentSelect
+function populateParentSelect(categories, excludeId = null) {
+    const select = document.getElementById('parentCategory');
+    select.innerHTML = '<option value="">Không có danh mục cha</option>';
+    
+    function addOptions(cats, level = 0) {
+        cats.forEach(category => {
+            if (!excludeId || category.id !== excludeId) {
+                const prefix = '- '.repeat(level);
+                const option = new Option(prefix + category.name, category.id);
+                select.add(option);
+                
+                if (category.children && category.children.length > 0) {
+                    addOptions(category.children, level + 1);
+                }
+            }
+        });
+    }
+    
+    addOptions(categories);
+}
+
+// Xử lý sự kiện nút thêm danh mục
+document.getElementById('btnShowAddCategory').addEventListener('click', () => {
+    showCategoryModal('add');
+});
+
+// Xử lý sự kiện nút Lưu trong modal
+document.getElementById('btnSaveCategory').addEventListener('click', async function() {
+    const categoryId = document.getElementById('categoryId').value;
+    const name = document.getElementById('categoryName').value.trim();
+    const parentId = document.getElementById('parentCategory').value;
+    const deleteFlag = document.querySelector('input[name="status"]:checked').value === 'true';
+    
+    if (!name) {
+        return;
+    }
+
+    try {
+        let result;
+        if (categoryId) {
+            // Chế độ chỉnh sửa
+            result = await updateCategory(categoryId, name, parentId, deleteFlag);
+        } else {
+            // Chế độ thêm mới
+            result = await saveCategoryToBackend(name, parentId);
+        }
+
+        if (result) {
+            // Đóng modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('categoryModal'));
+            modal.hide();
+            
+            // Cập nhật lại danh sách
+            await renderCategories();
+            
+            // Thông báo thành công
+            alert(categoryId ? 'Cập nhật danh mục thành công!' : 'Thêm danh mục thành công!');
+        }
+    } catch (error) {
+        console.error("Lỗi:", error);
+        alert("Có lỗi xảy ra: " + error.message);
     }
 });
 
-// 🟢 Gửi danh mục con lên server khi thêm
-document.getElementById('btnAddSubcategory').addEventListener('click', async function () {
-    const subcategoryName = document.getElementById('subcategoryInput').value.trim();
-    
-    if (subcategoryName && selectedCategory) {
-        const savedCategory = await saveCategoryToBackend(subcategoryName, selectedCategory.id);
-        
-        if (savedCategory) {
-            document.getElementById('subcategoryInput').value = '';
-            renderCategories(); // Cập nhật UI
+// Thêm event listener cho nút xóa
+document.getElementById('btnDeleteCategory').addEventListener('click', async function() {
+    const categoryId = document.getElementById('categoryId').value;
+    if (!categoryId) return;
+
+    if (!confirm('Bạn có chắc chắn muốn xóa danh mục này?')) {
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(`http://localhost:8080/admin/categories/${categoryId}`, {
+            method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+
+        // Đóng modal đúng cách
+        const modal = bootstrap.Modal.getInstance(document.getElementById('categoryModal'));
+        modal.hide();
+
+        alert('Xóa danh mục thành công!');
+        renderCategories();
+    } catch (error) {
+        console.error('Lỗi khi xóa danh mục:', error);
+        alert('Có lỗi xảy ra khi xóa danh mục!');
     }
 });
 

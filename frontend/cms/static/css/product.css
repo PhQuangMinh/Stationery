@@ -55,3 +55,29 @@
     max-width: 500px;
     margin: 20px auto;
 }
+
+/* Thêm CSS cho modal */
+.modal-dialog {
+    max-height: 90vh;
+    margin: 1.75rem auto;
+}
+
+.modal-content {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-body {
+    overflow-y: auto;
+    max-height: calc(90vh - 120px); /* Trừ đi chiều cao của header và footer */
+    padding: 1rem;
+}
+
+.modal-header {
+    flex-shrink: 0;
+}
+
+.modal-footer {
+    flex-shrink: 0;
+}

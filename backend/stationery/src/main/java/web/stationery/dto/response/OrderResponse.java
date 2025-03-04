@@ -19,5 +19,6 @@ public class OrderResponse {
     private long totalAmount;
     private String status;
     private String addressShipping;
+    private UserResponse userResponse;
     private List<OrderItemResponse> orderItemResponses = new ArrayList<>();
 }

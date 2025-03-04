@@ -16,6 +16,7 @@ import web.stationery.model.Product;
 import web.stationery.repository.BrandRepository;
 import web.stationery.repository.CategoryRepository;
 import web.stationery.repository.ProductRepository;
+import web.stationery.service.BrandService;
 import web.stationery.service.ProductService;
 import web.stationery.utils.mapper.ProductMapper;
 
@@ -27,9 +28,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
+
     private final ProductMapper productMapper;
+
     private final BrandRepository brandRepository;
+
     private final CategoryRepository categoryRepository;
+
+    private final BrandService brandService;
 
     @Override
     public Page<ProductResponse> findAll(int size, int page, String sortBy) {
@@ -62,23 +68,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse save(ProductRequest productRequest) {
-        Product product = productMapper.toEntity(productRequest);
-        Optional<Brand> findBrand = brandRepository.findByName(productRequest.getBrand().getName());
-        if (findBrand.isEmpty()) throw new NotFoundException("Brand not found - " + productRequest.getBrand().getName());
-        product.setBrand(findBrand.get());
-        List<Category> categories = productRequest.getCategories().stream().map(
-                categoryRequest -> {
-                    Optional<Category> findCategory = categoryRepository.findByName(categoryRequest.getName());
-                    if (findCategory.isEmpty()) throw new NotFoundException("Category not found - " + categoryRequest.getName());
-                    return findCategory.get();
-                }
-        ).toList();
-        product.setCategories(categories);
-        return productMapper.toResponse(productRepository.save(product));
-    }
-
-    @Override
     public ProductResponse update(String id, ProductRequest productRequest) {
         Optional<Product> findProduct = productRepository.findById(String.valueOf(id));
         if (findProduct.isEmpty()) throw new NotFoundException("Product not found - " + id);
@@ -87,11 +76,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductResponse deleteById(String id) {
+    public void deleteById(String id) {
         Optional<Product> product = productRepository.findById(id);
         if (product.isEmpty()) throw new NotFoundException("Product not found - " + id);
-        product.get().setDeleteFlag(true);
-        return productMapper.toResponse(productRepository.save(product.get()));
+        productRepository.delete(product.get());
     }
 
     @Override
@@ -126,12 +114,9 @@ public class ProductServiceImpl implements ProductService {
 
         Product existingProduct = findProduct.get();
 
-        // Không cập nhật brand để tránh lỗi liên quan đến brand
-        Brand currentBrand = existingProduct.getBrand();
-
-        // Cập nhật các trường khác của product
+        Brand updateBrand = brandService.findBrandByName(productRequest.getBrand().getName());
         productMapper.updateProduct(existingProduct, productRequest);
-        existingProduct.setBrand(currentBrand); // Giữ nguyên brand cũ
+        existingProduct.setBrand(updateBrand);
 
         List<Category> categories = productRequest.getCategories().stream().map(categoryRequest -> {
             Optional<Category> findCategory = categoryRepository.findByName(categoryRequest.getName());

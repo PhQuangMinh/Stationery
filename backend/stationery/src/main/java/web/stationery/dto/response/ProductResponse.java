@@ -1,11 +1,11 @@
 package web.stationery.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import web.stationery.model.Category;
+import web.stationery.dto.response.brandresponse.BrandResponse;
+import web.stationery.dto.response.categoryresponse.CategoryResponse;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ public class ProductResponse {
     private int countSales;
     private int discount;
     private String imageUrl;
-    private String brandName;
+    private BrandResponse brandResponse;
     private boolean deleteFlag;
     private List<CategoryResponse> categories;
 }

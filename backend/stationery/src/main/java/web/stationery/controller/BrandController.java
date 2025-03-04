@@ -55,7 +55,7 @@ public class BrandController {
     }
 
     @DeleteMapping("/admin/brands/{id}")
-    public CustomResponse<?> deleteBrand(@PathVariable String id) {
-        return new CustomResponse<>(brandService.deleteById(id));
+    public void deleteBrand(@PathVariable String id) {
+        brandService.deleteById(id);
     }
 }

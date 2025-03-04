@@ -1,115 +1,174 @@
 const CREATE_API_URL = 'http://localhost:8080/admin/brands';
-const GET_ALL_API_URL = 'http://localhost:8080/brands/all';
+const GET_ALL_API_URL = 'http://localhost:8080/admin/brands/all-full';
 const UPDATE_API_URL = 'http://localhost:8080/admin/brands';
 
-const brands = [];
+let brands = [];
+let editingBrandId = null;
 
-function fetchBrands() {
-    const token = localStorage.getItem('token'); // Lấy token từ localStorage
-
-    fetch(GET_ALL_API_URL, {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}` // Thêm token vào header
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Lỗi khi tải danh sách thương hiệu');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data.data.content);
-        brands.length = 0; // Xóa dữ liệu cũ
-        brands.push(...data.data.content); // Thêm dữ liệu mới
-        renderBrands(); // Hiển thị lại danh sách thương hiệu
-    })
-    .catch(error => console.error('Lỗi khi tải danh sách thương hiệu:', error));
+// Thêm hàm kiểm tra response
+function handleResponse(response) {
+    if (response.status === 401) {
+        localStorage.removeItem('accessToken');
+        window.location.href = 'login.html';
+    }
+    return response;
 }
 
+async function fetchBrands() {
+    try {
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(GET_ALL_API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        handleResponse(response);
+        const data = await response.json();
+        console.log(data);
+        brands = data.data;
+        renderBrands();
+    } catch (error) {
+        console.error('Lỗi khi tải danh sách thương hiệu:', error);
+    }
+}
 
-// Hiển thị danh sách thương hiệu
 function renderBrands() {
     const tableBody = document.getElementById('brandTableBody');
-    tableBody.innerHTML = brands.map((brand, index) => `
-        <tr onclick="editBrand(${index})">
+    tableBody.innerHTML = brands.map(brand => `
+        <tr onclick="editBrand(${brand.id})">
             <td>${brand.id}</td>
             <td>${brand.name}</td>
-            <td>${brand.deleteFlag ? "Không hoạt động" : "Hoạt động"}</td>
+            <td>${brand.deleteFlag ? ' <span class="badge bg-danger">Không hoạt động</span>' : ' <span class="badge bg-success">Hoạt động</span>'}</td>
         </tr>
     `).join('');
 }
 
-// Mở modal chỉnh sửa thương hiệu
-function editBrand(index) {
-    const brand = brands[index];
+function editBrand(brandId) {
+    const brand = brands.find(b => b.id === brandId);
+    if (!brand) return;
 
+    editingBrandId = brandId;
+    document.getElementById('brandId').value = brand.id;
     document.getElementById('newBrandName').value = brand.name;
-    document.getElementById('newBrandStatus').value = brand.deleteFlag ? "Không hoạt động" : "Hoạt động";
-    document.getElementById('btnSaveBrand').setAttribute('data-index', index);
-    document.getElementById('addBrandForm').style.display = 'flex';
-}
-
-// Lưu thương hiệu (cập nhật hoặc thêm mới)
-document.getElementById('btnSaveBrand').addEventListener('click', async function () {
-    const index = this.getAttribute('data-index');
-    const newBrand = {
-        name: document.getElementById('newBrandName').value,
-        deleteFlag: document.getElementById('newBrandStatus').value === "Không hoạt động"
-    };
-    const token = localStorage.getItem('token'); 
-    console.log("token: ", token)
-    if (index !== null) {
-        // Chỉnh sửa thương hiệu
-        const requestOptions = {
-            method: 'PUT',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(newBrand)
-        };
-        console.log(requestOptions);
-        await fetch(UPDATE_API_URL, requestOptions).then(response => response.json())
-        .then(() => {
-            alert('Cập nhật thương hiệu thành công!');
-            fetchBrands();
-        })
-        .catch(error => console.error('Lỗi khi cập nhật thương hiệu:', error));
+    
+    // Sửa lại phần xử lý trạng thái
+    const statusActive = document.getElementById('statusActive');
+    const statusInactive = document.getElementById('statusInactive');
+    if (brand.deleteFlag === true || brand.deleteFlag === 'true') {
+        statusInactive.checked = true;
+        statusActive.checked = false;
     } else {
-        const requestOptions = {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(newBrand)
-        };
-        console.log(requestOptions);
-        await fetch(CREATE_API_URL, requestOptions).then(response => response.json())
-        .then(() => {
-            alert('Thêm thương hiệu thành công!');
-            fetchBrands();
-        })
-        .catch(error => console.error('Lỗi khi thêm thương hiệu:', error));
+        statusActive.checked = true;
+        statusInactive.checked = false;
     }
 
-    document.getElementById('addBrandForm').style.display = 'none';
+    // Hiển thị nút xóa
+    document.getElementById('btnDeleteBrand').style.display = 'inline-block';
+    
+    // Hiển thị modal
+    const modal = new bootstrap.Modal(document.getElementById('brandModal'));
+    modal.show();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Thêm event listener cho nút thêm mới
+    const btnAddBrand = document.getElementById('btnAddBrand');
+    if (btnAddBrand) {
+        btnAddBrand.addEventListener('click', function() {
+            editingBrandId = null;
+            document.getElementById('brandId').value = '';
+            document.getElementById('newBrandName').value = '';
+            document.getElementById('statusActive').checked = true;
+            document.getElementById('btnDeleteBrand').style.display = 'none';
+            
+            // Cập nhật tiêu đề modal
+            document.getElementById('modalTitle').textContent = 'Thêm thương hiệu mới';
+            
+            // Hiển thị modal
+            const modal = new bootstrap.Modal(document.getElementById('brandModal'));
+            modal.show();
+        });
+    }
+
+    // Gọi API ban đầu
+    fetchBrands();
 });
 
-// Hiển thị popup thêm thương hiệu mới
-document.getElementById('btnAddBrand').addEventListener('click', function () {
-    document.getElementById('newBrandName').value = '';
-    document.getElementById('newBrandStatus').value = 'Hoạt động';
-    document.getElementById('btnSaveBrand').removeAttribute('data-index');
-    document.getElementById('addBrandForm').style.display = 'flex';
+document.getElementById('btnSaveBrand').addEventListener('click', async function() {
+    const name = document.getElementById('newBrandName').value.trim();
+    if (!name) {
+        return;
+    }
+
+    const deleteFlag = document.querySelector('input[name="status"]:checked').value === 'true';
+    const token = localStorage.getItem('accessToken');
+
+    const brandData = {
+        name: name,
+        deleteFlag: deleteFlag
+    };
+
+    try {
+        let response;
+        if (editingBrandId) {
+            response = await fetch(`${UPDATE_API_URL}/${editingBrandId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(brandData)
+            });
+        } else {
+            response = await fetch(CREATE_API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(brandData)
+            });
+        }
+        handleResponse(response);
+
+        // Đóng modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('brandModal'));
+        modal.hide();
+
+        // Thông báo và tải lại danh sách
+        alert(editingBrandId ? 'Cập nhật thương hiệu thành công!' : 'Thêm thương hiệu thành công!');
+        fetchBrands();
+    } catch (error) {
+        console.error('Lỗi:', error);
+        alert('Có lỗi xảy ra khi lưu thương hiệu: ' + error.message);
+    }
 });
 
-// Ẩn popup
-document.getElementById('btnCancelBrand').addEventListener('click', function () {
-    document.getElementById('addBrandForm').style.display = 'none';
-});
+document.getElementById('btnDeleteBrand').addEventListener('click', async function() {
+    if (!editingBrandId) return;
 
-// Khi trang tải, lấy danh sách thương hiệu
-document.addEventListener('DOMContentLoaded', fetchBrands);
+    if (!confirm('Bạn có chắc chắn muốn xóa thương hiệu này?')) {
+        return;
+    }
+
+    try {
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(`${UPDATE_API_URL}/${editingBrandId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        handleResponse(response);
+
+        // Đóng modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('brandModal'));
+        modal.hide();
+
+        alert('Xóa thương hiệu thành công!');
+        fetchBrands();
+    } catch (error) {
+        console.error('Lỗi:', error);
+        alert('Có lỗi xảy ra khi xóa thương hiệu!');
+    }
+});

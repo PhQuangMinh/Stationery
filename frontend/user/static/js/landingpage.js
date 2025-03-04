@@ -125,16 +125,19 @@ const navItems = [
     { text: "Xem tất cả", link: "#", isHighlighted: true }
 ];
 
-function renderNavigation(navItems, navId){
-    const navContainer = document.getElementById(navId)
+function renderNavigation(navItems, navId) {
+    const navContainer = document.getElementById(navId);
     navContainer.innerHTML = navItems.map(item => `
         <li class="nav-item" style="font-size: 19px; height:36.28px;">
-        <a class="nav-link ${item.isHighlighted ? 'text-danger' : ''} p-0" href="${item.link}" style="">
-            ${item.text}
-        </a>
+            <a class="nav-link ${item.isHighlighted ? 'text-danger' : ''} p-0" 
+               href="${BASE_URL}/templates/detailcatalog.html?category=${encodeURIComponent(item.text)}" 
+               style="">
+                ${item.text}
+            </a>
         </li>
-        `).join('');
-    }
+    `).join('');
+}
+
 document.addEventListener('DOMContentLoaded', () =>{
     document.getElementById('section1').innerHTML = renderSection(
         'Sản phẩm khuyến mãi', 

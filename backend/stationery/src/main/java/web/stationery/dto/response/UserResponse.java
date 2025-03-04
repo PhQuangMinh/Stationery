@@ -20,4 +20,10 @@ public class UserResponse {
     private String phone;
     private String address;
     private String role;
+    public UserResponse(long id, String firstName, String lastName, String phone){
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phone = phone;
+    }
 }

@@ -1,9 +1,12 @@
 package web.stationery.utils.mapper;
 
 import org.springframework.stereotype.Component;
+import web.stationery.common.constant.Role;
+import web.stationery.dto.request.userrequest.RegisterUserAdminRequest;
 import web.stationery.dto.request.userrequest.RegisterUserRequest;
 import web.stationery.dto.request.userrequest.UpdateUserRequest;
 import web.stationery.dto.response.UserResponse;
+import web.stationery.model.Cart;
 import web.stationery.model.User;
 import java.util.List;
 import java.util.Collections;
@@ -25,8 +28,17 @@ public class UserMapper {
         user.setLastName(request.getLastName());
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
-        // Các trường khác sẽ được set trong service
+
         
+        return user;
+    }
+
+    public User toEntityAdmin(RegisterUserAdminRequest request){
+        User user = toEntity(request);
+        user.setRole(Role.valueOf(request.getRole()));
+        Cart cart = new Cart();
+        cart.setUser(user);
+        user.setCart(cart);
         return user;
     }
 
@@ -58,6 +70,10 @@ public class UserMapper {
     }
 
     public void updateUser(User user, UpdateUserRequest userRequest) {
-        // Implementation of updateUser method
+        user.setEmail(userRequest.getEmail());
+        user.setPhone(userRequest.getPhone());
+        user.setFirstName(userRequest.getFirstName());
+        user.setLastName(userRequest.getLastName());
+        user.setAddress(userRequest.getAddress());
     }
 }

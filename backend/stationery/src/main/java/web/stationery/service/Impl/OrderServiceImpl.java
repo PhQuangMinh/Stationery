@@ -76,13 +76,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse deleteById(String id) {
-        Optional<UserOrder> findOrder = orderRepository.findById(id);
-        if (findOrder.isEmpty()){
+    public void deleteById(String id) {
+        Optional<UserOrder> order = orderRepository.findById(id);
+        if (order.isEmpty()) {
             throw new NotFoundException("Order not found - " + id);
         }
-        findOrder.get().setDeleteFlag(true);
-        return orderMapper.toResponse(orderRepository.save(findOrder.get()));
+        orderRepository.deleteById(id);
     }
 
     @Override
@@ -93,5 +92,24 @@ public class OrderServiceImpl implements OrderService {
             throw new NotFoundException("No orders found for user - " + username);
         }
         return orderMapper.toResponse(orders.getLast());
+    }
+
+    @Override
+    public UserOrder findOrderById(String id) {
+        Optional<UserOrder> findOrder = orderRepository.findById(id);
+        if (findOrder.isEmpty()){
+            throw new NotFoundException("Order not found - " + id);
+        }
+        return findOrder.get();
+    }
+
+    @Override
+    public OrderResponse updateOrderAdmin(String id, OrderRequest orderRequest) {
+        Optional<UserOrder> findOrder = orderRepository.findById(id);
+        if (findOrder.isEmpty()){
+            throw new NotFoundException("Order not found - " + id);
+        }
+        orderMapper.updateOrderAdmin(findOrder.get(), orderRequest);
+        return orderMapper.toResponse(orderRepository.save(findOrder.get()));
     }
 }
