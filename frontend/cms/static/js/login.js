@@ -18,13 +18,17 @@ async function login() {
 
         if (response.ok) {
             const result = await response.json();
-            console.log(result.data)
-            // Lưu token nếu API trả về token
             if (result.data) {
-                localStorage.setItem("token", result.data);
+                localStorage.setItem("accessToken", result.data);
+                // Kiểm tra role sau khi đăng nhập
+                const payload = JSON.parse(atob(result.data.split(".")[1]));
+                console.log(payload.roles)
+                if (payload.roles && payload.roles[0].authority.includes('ROLE_ADMIN')) {
+                    window.location.href = "product.html";
+                } else {
+                    localStorage.removeItem("accessToken");
+                }
             }
-            // Chuyển hướng sau khi đăng nhập thành công
-            window.location.href = "http://127.0.0.1:5500/templates/product.html";
         } else {
             document.getElementById('errorMessage').style.display = "block";
         }

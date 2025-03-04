@@ -13,9 +13,8 @@ public interface ProductService {
     Page<ProductResponse> findAllByName(int size, int page, String sortBy, String name);
     ProductResponse findById(String id);
     Product findProductById(String id);
-    ProductResponse save(ProductRequest productRequest);
     ProductResponse update(String id, ProductRequest productRequest);
-    ProductResponse deleteById(String id);
+    void deleteById(String id);
     ProductResponse getBestSellingProduct();
     Product saveAdmin(AdminProductRequest productRequest);
     Product updateAdmin(AdminProductRequest productRequest);

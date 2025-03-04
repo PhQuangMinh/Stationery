@@ -2,16 +2,22 @@ package web.stationery.service.Impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import web.stationery.common.constant.Role;
 import web.stationery.common.exception.NotFoundException;
 import web.stationery.common.utils.PageableUtils;
+import web.stationery.dto.request.userrequest.RegisterUserAdminRequest;
+import web.stationery.dto.request.userrequest.RegisterUserRequest;
+import web.stationery.dto.request.userrequest.UpdateUserAdminRequest;
 import web.stationery.dto.request.userrequest.UpdateUserRequest;
 import web.stationery.dto.response.UserResponse;
 import web.stationery.model.OrderItem;
+import web.stationery.model.Product;
 import web.stationery.model.User;
 import web.stationery.model.UserOrder;
 import web.stationery.repository.OrderRepository;
@@ -35,9 +41,11 @@ public class UserServiceImpl implements UserService {
     private final OrderRepository orderRepository;
 
     @Override
-    public Page<User> findAll(int size, int page, String sortBy) {
+    public Page<UserResponse> findAll(int size, int page, String sortBy) {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
-        return userRepository.findAll(pageable);
+        Page<User> userResponsePage = userRepository.findAll(pageable);
+        List<UserResponse> userResponseList = userMapper.toUserResponseList(userResponsePage.getContent());
+        return new PageImpl<>(userResponseList, pageable, userResponsePage.getTotalElements());
     }
 
     @Override
@@ -62,7 +70,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteById(String id) {
         Optional<User> user = userRepository.findById(id);
-        if (user.isEmpty()) throw new NotFoundException("User not found - " + id);
+        if (user.isEmpty()) {
+            throw new NotFoundException("User not found - " + id);
+        }
         userRepository.deleteById(id);
     }
 
@@ -97,7 +107,6 @@ public class UserServiceImpl implements UserService {
         if (user.isEmpty()){
             throw new NotFoundException("User not found - " + username);
         }
-        userRequest.setPassword(BCryptEncoder.getPasswordEncoder().encode(userRequest.getPassword()));
         userMapper.updateUser(user.get(), userRequest);
         userRepository.save(user.get());
         return userMapper.toUserResponse(user.get());
@@ -144,6 +153,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public UserResponse addUserAdmin(RegisterUserAdminRequest userRequest) {
+        User user = userMapper.toEntityAdmin(userRequest);
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponse updateUserAdmin(String id, UpdateUserAdminRequest userRequest) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new NotFoundException("User not found - " + id);
+        }
+        
+        userMapper.updateUser(user.get(), userRequest);
+        if (userRequest.getRole() != null) {
+            user.get().setRole(Role.valueOf(userRequest.getRole()));
+        }
+        
+        return userMapper.toUserResponse(userRepository.save(user.get()));
     }
 
 }

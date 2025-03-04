@@ -55,7 +55,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/admin/categories/{id}")
-    public CustomResponse<?> deleteCategory(@PathVariable String id) {
-        return new CustomResponse<>(categoryService.deleteById(Integer.valueOf(id)));
+    public void deleteCategory(@PathVariable String id) {
+        categoryService.deleteById(Integer.valueOf(id));
     }
 }

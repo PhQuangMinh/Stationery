@@ -6,7 +6,7 @@ const orders = [
 function loadOrders() {
     const tableBody = document.getElementById("orderTableBody");
     orders.forEach(order => {
-        const row = `<tr>
+        const row = `<tr style="cursor: pointer" onclick="goToOrderDetail(${order.id})">
                         <td>${order.id}</td>
                         <td>${order.date}</td>
                         <td>${order.address}</td>
@@ -15,6 +15,10 @@ function loadOrders() {
                     </tr>`;
         tableBody.innerHTML += row;
     });
+}
+
+function goToOrderDetail(orderId) {
+    window.location.href = `detailorder.html?id=${orderId}`;
 }
 
 document.addEventListener("DOMContentLoaded", loadOrders);

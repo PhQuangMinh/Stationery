@@ -17,6 +17,7 @@ public class OderController {
 
     private final UserService userService;
 
+
     @GetMapping("/admin/orders/all")
     public CustomResponse<Page<OrderResponse>> findAll(
             @RequestParam(defaultValue = "10") int size,
@@ -31,8 +32,8 @@ public class OderController {
     }
 
     @PutMapping("/admin/orders/delete-order/{id}")
-    public CustomResponse<OrderResponse> deleteOrder(@PathVariable String id){
-        return new CustomResponse<>(orderService.deleteById(id));
+    public void deleteOrder(@PathVariable String id){
+        orderService.deleteById(id);
     }
 
     @PostMapping("/user/orders/{username}")
@@ -45,8 +46,15 @@ public class OderController {
         return new CustomResponse<>(orderService.findById(String.valueOf(id)));
     }
 
-    @PutMapping("/user/orders/update/{id}")
+    @PutMapping("/user/orders/update/{username}")
     public CustomResponse<OrderResponse> updateOrder(@PathVariable String username, @RequestBody OrderRequest orderRequest){
         return new CustomResponse<>(orderService.updateOrder(userService.findUserByUsername(username), orderRequest));
     }
+
+    @PutMapping("/admin/orders/update/{id}")
+    public CustomResponse<OrderResponse> updateOrderAdmin(@PathVariable String id, @RequestBody OrderRequest orderRequest){
+        return new CustomResponse<>(orderService.updateOrderAdmin(id, orderRequest));
+    }
+
+
 }

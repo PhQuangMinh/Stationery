@@ -10,7 +10,8 @@ import web.stationery.common.exception.NotFoundException;
 import web.stationery.common.utils.PageableUtils;
 import web.stationery.dto.request.brandrequest.AdminBrandRequest;
 import web.stationery.dto.request.brandrequest.BrandRequest;
-import web.stationery.dto.response.BrandResponse;
+import web.stationery.dto.response.brandresponse.BrandAdminResponse;
+import web.stationery.dto.response.brandresponse.BrandResponse;
 import web.stationery.model.Brand;
 import web.stationery.repository.BrandRepository;
 import web.stationery.service.BrandService;
@@ -56,9 +57,9 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public List<BrandResponse> findAllFull() {
+    public List<BrandAdminResponse> findAllFull() {
         List<Brand> brands = brandRepository.findAll();
-        return brandMapper.toResponseList(brands);
+        return brandMapper.toAdminResponseList(brands);
     }
 
     @Override
@@ -92,14 +93,21 @@ public class BrandServiceImpl implements BrandService {
     public Brand updateAdmin(String id, AdminBrandRequest brandRequest) {
         Brand existingBrand = findBrandById(id);
         brandMapper.updateBrand(existingBrand, brandRequest);
-        existingBrand.setDeleteFlag(brandRequest.isDeleteFlag());
         return brandRepository.save(existingBrand);
     }
 
     @Override
-    public BrandResponse deleteById(String id) {
-        Brand brand = findBrandById(id);
-        brand.setDeleteFlag(true);
-        return brandMapper.toResponse(brandRepository.save(brand));
+    public void deleteById(String id) {
+        Optional<Brand> brand = brandRepository.findById(id);
+        if (brand.isEmpty()) {
+            throw new NotFoundException("Brand not found - " + id);
+        }
+        brandRepository.deleteById(id);
+    }
+
+    @Override
+    public Brand findBrandByName(String name) {
+        Optional<Brand> findBrand = brandRepository.findByName(name);
+        return findBrand.orElseThrow(() -> new NotFoundException("Brand not found - " + name));
     }
 }

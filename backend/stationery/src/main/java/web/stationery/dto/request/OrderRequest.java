@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class OrderRequest {
     private Timestamp orderDate;
+    private long totalAmount;
     private String status;
     private String shippingAddress;
     private List<OrderItemRequest> orderItemRequests;

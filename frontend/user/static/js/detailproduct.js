@@ -126,6 +126,102 @@ function addToCart(productData) {
     alert("Sản phẩm đã được thêm vào giỏ hàng! 🛒");
 }
 
+const reviews = [
+    {
+        id: 1,
+        productId: 2,
+        userName: "Nguyễn Văn A",
+        rating: 5,
+        comment: "Sách rất hay và chất lượng, nội dung dễ hiểu.",
+        date: "2024-03-15"
+    },
+    {
+        id: 2,
+        productId: 2,
+        userName: "Trần Thị B",
+        rating: 4,
+        comment: "Sách tốt, giao hàng nhanh. Tuy nhiên giá hơi cao.",
+        date: "2024-03-14"
+    },
+    {
+        id: 3,
+        productId: 2,
+        userName: "Lê Văn C",
+        rating: 5,
+        comment: "Sách tiếng Anh rất hay, phù hợp với chương trình học.",
+        date: "2024-03-13"
+    },
+    {
+        id: 3,
+        productId: 2,
+        userName: "Lê Văn C",
+        rating: 5,
+        comment: "Sách tiếng Anh rất hay, phù hợp với chương trình học.",
+        date: "2024-03-13"
+    },
+    {
+        id: 3,
+        productId: 2,
+        userName: "Lê Văn C",
+        rating: 5,
+        comment: "Sách tiếng Anh rất hay, phù hợp với chương trình học.",
+        date: "2024-03-13"
+    },
+    {
+        id: 3,
+        productId: 2,
+        userName: "Lê Văn C",
+        rating: 5,
+        comment: "Sách tiếng Anh rất hay, phù hợp với chương trình học.",
+        date: "2024-03-13"
+    }
+];
+
+function getReviewsByProductId(productId, page = 1, perPage = 5) {
+    const productReviews = reviews.filter(review => review.productId === productId);
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    return {
+        reviews: productReviews.slice(start, end),
+        total: productReviews.length
+    };
+}
+
+function renderReviews(page = 1) {
+    const { reviews: productReviews, total } = getReviewsByProductId(productData.id, page);
+    const totalPages = Math.ceil(total / 5);
+
+    let reviewsHTML = '';
+    productReviews.forEach(review => {
+        reviewsHTML += `
+            <div class="card review-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title">${review.userName}</h5>
+                        <small class="text-muted">${new Date(review.date).toLocaleDateString('vi-VN')}</small>
+                    </div>
+                    <div class="star-rating mb-2">
+                        ${renderStars(review.rating)}
+                    </div>
+                    <p class="card-text">${review.comment}</p>
+                </div>
+            </div>
+        `;
+    });
+
+    let paginationHTML = '';
+    for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `
+            <li class="page-item ${i === page ? 'active' : ''}">
+                <a class="page-link" onclick="renderReviews(${i})">${i}</a>
+            </li>
+        `;
+    }
+
+    document.getElementById('reviews-container').innerHTML = reviewsHTML;
+    document.getElementById('pagination').innerHTML = paginationHTML;
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const params = new URLSearchParams(window.location.search);
     const productId = parseInt(params.get("id"));
@@ -135,12 +231,13 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("productId: " + productId)
     productData = getProductById(productId);
     renderProductDetails();
+    renderReviews();
     // updateCartCount();
     const addToCartBtn = document.querySelector(".add-to-cart-btn");
     if (addToCartBtn) {
         document.addEventListener("click", function (event) {
             if (event.target.classList.contains("add-to-cart-btn")) {
-                addToCart(productData);  // Đảm bảo productData được sử dụng
+                addToCart(productData);  
             }
         });
     }

@@ -30,12 +30,9 @@ body {
 .main-header {
     font-size: 13px;
     background: white;
-    /* nội dung nằm trong header */
     display: flex; 
-    /* căn phần tử trục dọc vào giữa */
     align-items: center;
     padding: 10px 20px;
-    /* ẩn nội dung bị tràn */
     overflow: hidden;
     max-height: 150px;
 }
@@ -79,9 +76,7 @@ body {
 }
 nav {
     display: flex;
-    justify-content: center; /* Căn giữa theo chiều ngang */
-    /* background: #007bff; Màu nền */
-    /* padding: 10px 0; */
+    justify-content: center;
     background-color: #f8f9fa;
 }
 nav ul {
@@ -128,15 +123,15 @@ header {
     top: 0;
     left: 0;
     width: 100%;
-    background: white; /* Màu nền để không bị trong suốt */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
-    z-index: 1000; /* Đảm bảo header luôn trên cùng */
+    background: white; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);   
+    z-index: 1000;
 }
 
 #header-container {
     display: block;
     width: 100%;
-    min-height: 80px; /* Tùy chỉnh theo chiều cao header */
+    min-height: 80px;
     margin-bottom: 70px;
 }
 

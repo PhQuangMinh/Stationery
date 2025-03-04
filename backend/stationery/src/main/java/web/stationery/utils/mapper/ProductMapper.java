@@ -1,7 +1,9 @@
 package web.stationery.utils.mapper;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import web.stationery.dto.request.productrequest.ProductRequest;
+import web.stationery.dto.response.categoryresponse.CategoryResponse;
 import web.stationery.dto.response.ProductResponse;
 import web.stationery.model.Product;
 
@@ -10,7 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ProductMapper {
+    private final BrandMapper brandMapper;
     
     public Product toEntity(ProductRequest request) {
         if (request == null) {
@@ -22,7 +26,9 @@ public class ProductMapper {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setQuantity(request.getQuantity());
-        // Set các trường khác từ request
+        product.setCountSales(request.getCountSales());
+        product.setDiscount(request.getDiscount());
+        product.setImageUrl(request.getImageUrl());
         
         return product;
     }
@@ -38,11 +44,18 @@ public class ProductMapper {
         response.setDescription(product.getDescription());
         response.setPrice(product.getPrice());
         response.setQuantity(product.getQuantity());
-
-        if (product.getBrand() != null) {
-            response.setBrandName(product.getBrand().getName());
-        }
-
+        response.setCountSales(product.getCountSales());
+        response.setDiscount(product.getDiscount());
+        response.setImageUrl(product.getImageUrl());
+        response.setCategories(product.getCategories().stream()
+            .map(category -> new CategoryResponse(
+                category.getId(),
+                category.getName(),
+                category.getParent() != null ? category.getParent().getId() : null
+            ))
+            .collect(Collectors.toList()));
+        response.setDeleteFlag(product.isDeleteFlag());
+        response.setBrandResponse(brandMapper.toResponse(product.getBrand()));
         return response;
     }
 

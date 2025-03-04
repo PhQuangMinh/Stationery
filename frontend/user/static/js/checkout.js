@@ -1,10 +1,8 @@
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-// Format price to VND
 function formatPrice(price) {
     return new Intl.NumberFormat('vi-VN').format(price) + ' đ';
 }
 
-// Calculate total price
 function calculateTotal() {
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     document.getElementById('subtotal').textContent = formatPrice(subtotal);
@@ -12,7 +10,6 @@ function calculateTotal() {
     document.getElementById('totalItems').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
 }
 
-// Render cart items
 function renderCart() {
     const orderItems = document.getElementById('orderItems');
     orderItems.innerHTML = cart.map(item => `
@@ -38,7 +35,6 @@ function renderCart() {
     calculateTotal();
 }
 
-// Update quantity
 function updateQuantity(id, change) {
     const item = cart.find(item => item.id === id);
     if (item) {
@@ -50,7 +46,6 @@ function updateQuantity(id, change) {
     }
 }
 
-// Update quantity directly
 function updateQuantityDirect(id, newQuantity) {
     const item = cart.find(item => item.id === id);
     if (item && newQuantity > 0) {
@@ -59,13 +54,11 @@ function updateQuantityDirect(id, newQuantity) {
     }
 }
 
-// Remove item from cart
 function removeItem(id) {
     cart = cart.filter(item => item.id !== id);
     renderCart();
 }
 
-// Handle payment method selection
 document.querySelectorAll('.payment-option').forEach(option => {
     option.addEventListener('click', function() {
         document.querySelectorAll('.payment-option').forEach(opt => {
@@ -76,10 +69,8 @@ document.querySelectorAll('.payment-option').forEach(option => {
     });
 });
 
-// Handle form submission
 document.getElementById('checkoutForm').addEventListener('submit', function(e) {
     e.preventDefault();
-    // Add your form submission logic here
     const formData = new FormData(this);
     const orderData = {
         customerInfo: Object.fromEntries(formData),
@@ -90,5 +81,4 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
     alert('Đơn hàng đã được đặt thành công!');
 });
 
-// Initial render
 renderCart();

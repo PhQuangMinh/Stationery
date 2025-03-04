@@ -21,9 +21,6 @@ public class UpdateUserRequest {
     @Email(message = "INVALID_EMAIL")
     private String email;
 
-    @Size(min = 8, message = "INVALID_PASSWORD")
-    private String password;
-
     private String phone;
 
     private String address;

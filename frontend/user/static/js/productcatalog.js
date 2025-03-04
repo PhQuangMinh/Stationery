@@ -57,7 +57,6 @@ const categories = [
     { id: 6, name: 'Khác' }
 ];
 
-// Sample product data
 const products = [
     {
         id: 1,

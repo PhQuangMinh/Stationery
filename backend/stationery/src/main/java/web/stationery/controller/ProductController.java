@@ -44,12 +44,11 @@ public class ProductController {
 
     @PutMapping("/admin/products")
     public CustomResponse<?> updateProduct(@RequestBody AdminProductRequest productRequest){
-        System.out.println(productRequest);
         return new CustomResponse<>(productService.updateAdmin(productRequest));
     }
 
     @DeleteMapping("/admin/products/{id}")
-    public CustomResponse<?> deleteProduct(@PathVariable String id){
-        return new CustomResponse<>(productService.deleteById(id));
+    public void deleteProduct(@PathVariable String id){
+        productService.deleteById(id);
     }
 }

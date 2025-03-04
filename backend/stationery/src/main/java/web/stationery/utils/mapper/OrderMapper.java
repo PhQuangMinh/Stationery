@@ -7,6 +7,7 @@ import web.stationery.dto.request.OrderItemRequest;
 import web.stationery.dto.request.OrderRequest;
 import web.stationery.dto.response.OrderItemResponse;
 import web.stationery.dto.response.OrderResponse;
+import web.stationery.dto.response.UserResponse;
 import web.stationery.model.OrderItem;
 import web.stationery.model.Product;
 import web.stationery.model.User;
@@ -51,13 +52,12 @@ public class OrderMapper {
                 , getTotalAmount(userOrder.getOrderItems())
                 , userOrder.getStatus()
                 , userOrder.getShippingAddress()
+                , new UserResponse(userOrder.getUser().getId(), userOrder.getUser().getFirstName(), userOrder.getUser().getLastName(), userOrder.getUser().getPhone())
                 , orderItemResponses);
     }
 
     public void updateOrder(UserOrder userOrder, OrderRequest orderRequest){
-        userOrder.setStatus(orderRequest.getStatus());
-        userOrder.setOrderDate(orderRequest.getOrderDate());
-        userOrder.setShippingAddress(orderRequest.getShippingAddress());
+        updateOrderAdmin(userOrder, orderRequest);
         for (OrderItemRequest orderItemRequest: orderRequest.getOrderItemRequests()){
             Optional<OrderItem> findOrderItem = userOrder.getOrderItems().stream()
                    .filter(orderItem -> String.valueOf(orderItem.getId()).equals(orderItemRequest.getId()))
@@ -65,6 +65,13 @@ public class OrderMapper {
             findOrderItem.ifPresent(orderItem -> orderItem.setQuantity(orderItemRequest.getQuantity()));
         }
     }
+
+    public void updateOrderAdmin(UserOrder userOrder, OrderRequest orderRequest){
+        userOrder.setStatus(orderRequest.getStatus());
+        userOrder.setOrderDate(orderRequest.getOrderDate());
+        userOrder.setShippingAddress(orderRequest.getShippingAddress());
+    }
+
 
     public UserOrder toEntity(OrderRequest orderRequest, User user, ProductRepository productRepository){
         UserOrder userOrder = new UserOrder();

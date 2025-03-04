@@ -3,10 +3,10 @@ package web.stationery.utils.mapper;
 import org.springframework.stereotype.Component;
 import web.stationery.dto.request.brandrequest.AdminBrandRequest;
 import web.stationery.dto.request.brandrequest.BrandRequest;
-import web.stationery.dto.response.BrandResponse;
+import web.stationery.dto.response.brandresponse.BrandAdminResponse;
+import web.stationery.dto.response.brandresponse.BrandResponse;
 import web.stationery.model.Brand;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,11 +46,30 @@ public class BrandMapper {
                 .collect(Collectors.toList());
     }
 
+    private BrandAdminResponse toBrandAdminResponse(Brand brand){
+        BrandAdminResponse response = new BrandAdminResponse();
+        response.setId(brand.getId());
+        response.setName(brand.getName());
+        response.setDeleteFlag(brand.isDeleteFlag());
+        return response;
+    }
+
+    public List<BrandAdminResponse> toAdminResponseList(List<Brand> brands) {
+        if (brands == null) {
+            return Collections.emptyList();
+        }
+        return brands.stream()
+                .map(this::toBrandAdminResponse)
+                .collect(Collectors.toList());
+    }
+
     public void updateBrand(Brand brand, BrandRequest brandRequest) {
-        // Implementation of updateBrand method
+        brand.setName(brandRequest.getName());
+        brand.setDeleteFlag(brandRequest.isDeleteFlag());
     }
 
     public void updateBrand(Brand brand, AdminBrandRequest adminBrandRequest) {
-        // Implementation of updateBrand method
+        brand.setName(adminBrandRequest.getName());
+        brand.setDeleteFlag(adminBrandRequest.isDeleteFlag());
     }
 }

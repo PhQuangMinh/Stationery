@@ -10,9 +10,13 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import web.stationery.common.exception.AuthorizingException;
+import web.stationery.dto.request.userrequest.RegisterUserAdminRequest;
+import web.stationery.dto.request.userrequest.RegisterUserRequest;
+import web.stationery.dto.request.userrequest.UpdateUserAdminRequest;
 import web.stationery.dto.request.userrequest.UpdateUserRequest;
 import web.stationery.dto.request.userrequest.UserDeleteRequest;
 import web.stationery.dto.response.CustomResponse;
+import web.stationery.dto.response.UserResponse;
 import web.stationery.model.User;
 import web.stationery.service.UserService;
 
@@ -53,22 +57,37 @@ public class UserController {
         throw new AuthorizingException("Unauthenticated");
     }
 
-    @DeleteMapping("/admin/delete-user")
-    public CustomResponse<?> deleteUser(@RequestBody UserDeleteRequest userDeleteRequest){
-        return new CustomResponse<>(userService.deleteUserByUsername(userDeleteRequest.getUsername()), HttpStatus.OK);
+    @DeleteMapping("/admin/users/{id}")
+    public void deleteUser(@PathVariable String id) {
+        userService.deleteById(id);
     }
 
     @GetMapping("/admin/users")
-    public CustomResponse<Page<User>> findAll(
+    public CustomResponse<Page<UserResponse>> findAll(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "id") String sortBy) {
         return new CustomResponse<>(userService.findAll(size, page, sortBy));
     }
 
+    @PostMapping("/admin/add-user-admin")
+    public CustomResponse<UserResponse> addUserAdmin(@RequestBody RegisterUserAdminRequest userRequest){
+        return new CustomResponse<>(userService.addUserAdmin(userRequest));
+    }
+
     @GetMapping("/{username}/total-spending")
     public CustomResponse<Integer> getTotalSpending(@PathVariable String username){
         return new CustomResponse<>(userService.getTotalSpending(username), HttpStatus.OK);
+    }
+
+    @PutMapping("/admin/users/update/{id}")
+    public CustomResponse<?> updateUserAdmin(
+            @PathVariable String id,
+            @Valid @RequestBody UpdateUserAdminRequest userRequest) {
+        return new CustomResponse<>(
+            userService.updateUserAdmin(id, userRequest),
+            HttpStatus.OK.toString()
+        );
     }
 
 }
