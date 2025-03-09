@@ -1,18 +1,18 @@
-document.getElementById('loginForm').addEventListener('submit', function(event) {
+document.getElementById('loginForm').addEventListener('submit', async function(event) {
     event.preventDefault();
     
     this.classList.remove('was-validated');
     
-    const email = document.getElementById('email');
+    const username = document.getElementById('username');
     const password = document.getElementById('password');
     
     let isValid = true;
     
-    if (!email.value || !email.value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    if (!username.value.trim()) {
         isValid = false;
-        email.setCustomValidity('Email không hợp lệ');
+        username.setCustomValidity('Tên đăng nhập không được để trống');
     } else {
-        email.setCustomValidity('');
+        username.setCustomValidity('');
     }
     
     if (!password.value) {
@@ -25,11 +25,40 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     this.classList.add('was-validated');
     
     if (isValid) {
-        console.log('Form submitted', {
-            email: email.value,
-            password: password.value
-        });
-        
-        alert('Đăng nhập thành công!');
+        try {
+            const loginData = {
+                username: username.value.trim(),
+                password: password.value
+            };
+
+            const response = await fetch(`${BASE_API_URL}/login`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginData)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Đăng nhập thất bại');
+            }
+
+            // Lưu token và username vào localStorage
+            if (data.data) {
+                localStorage.setItem('accessToken', data.data);
+                localStorage.setItem('username', loginData.username);
+                // Thêm thời gian hết hạn token (ví dụ: 1 giờ)
+                const expirationTime = new Date().getTime() + 60 * 60 * 1000; // 1 giờ
+                localStorage.setItem('tokenExpiration', expirationTime);
+            }
+
+            window.location.href = '/templates/landingpage/landingpage.html';
+
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message || 'Tên đăng nhập hoặc mật khẩu không đúng');
+        }
     }
 });

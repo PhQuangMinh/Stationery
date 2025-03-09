@@ -20,6 +20,7 @@ import web.stationery.service.BrandService;
 import web.stationery.service.ProductService;
 import web.stationery.utils.mapper.ProductMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,11 +47,9 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponse> findAllByName(int size, int page, String sortBy, String name) {
-        Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
-        Page<Product> products = productRepository.findByNameContainingIgnoreCase(name, pageable);
-        List<ProductResponse> productResponses = productMapper.toResponseList(products.getContent());
-        return new PageImpl<>(productResponses, pageable, products.getTotalElements());
+    public List<ProductResponse> findAllByName(String name) {
+        List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
+        return productMapper.toResponseList(products);
     }
 
     @Override
@@ -128,6 +127,32 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setDeleteFlag(productRequest.isDeleteFlag());
 
         return productRepository.save(existingProduct);
+    }
+
+    @Override
+    public List<ProductResponse> getRandomProductsByCategory(String categoryName) {
+        List<Product> products = productRepository.findRandomProductsByCategory(categoryName);
+        if (products.isEmpty()) {
+            return new ArrayList<ProductResponse>();
+        }
+        return productMapper.toResponseList(products);
+    }
+
+    @Override
+    public List<ProductResponse> getRandomDiscountProducts() {
+        List<Product> products = productRepository.findRandomDiscountProducts();
+        if (products.isEmpty()) {
+            throw new NotFoundException("No discount products found");
+        }
+        return productMapper.toResponseList(products);
+    }
+
+    @Override
+    public Page<ProductResponse> findByCategoryName(int size, int page, String sortBy, String categoryName) {
+        Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
+        Page<Product> products = productRepository.findByCategoryName(categoryName, pageable);
+        List<ProductResponse> productResponses = productMapper.toResponseList(products.getContent());
+        return new PageImpl<>(productResponses, pageable, products.getTotalElements());
     }
 
 }

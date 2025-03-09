@@ -1,7 +1,34 @@
+// API URLs
+const ORDER_API = {
+    GET_ALL: "http://localhost:8080/admin/orders/all",
+    UPDATE: "http://localhost:8080/admin/orders/update",
+    DELETE: "http://localhost:8080/admin/orders"
+};
+
 let currentPage = 0;
 const pageSize = 10;
 let totalPages = 1;
 let orders = [];
+
+// Thêm các constant cho trạng thái
+const ORDER_STATUSES = {
+    COD: {
+        PENDING: 'Chờ xác nhận',
+        PROCESSING: 'Đang xử lý',
+        SHIPPING: 'Đang giao hàng',
+        COMPLETED: 'Đã hoàn thành',
+        CANCELLED: 'Đã hủy'
+    },
+    VNPAY: {
+        PENDING: 'Chờ thanh toán',
+        PAID: 'Đã thanh toán',
+        PROCESSING: 'Đang xử lý',
+        SHIPPING: 'Đang giao hàng',
+        COMPLETED: 'Đã hoàn thành',
+        FAILED: 'Thanh toán thất bại',
+        CANCELLED: 'Đã hủy'
+    }
+};
 
 // Hàm gọi API lấy danh sách đơn hàng
 async function fetchOrders(page = 0) {
@@ -36,6 +63,17 @@ async function fetchOrders(page = 0) {
     }
 }
 
+// Hàm cập nhật options cho select trạng thái
+function updateStatusOptions() {
+    const paymentMethod = document.getElementById('editPaymentMethod').value;
+    const statusSelect = document.getElementById('editStatus');
+    const statuses = ORDER_STATUSES[paymentMethod] || ORDER_STATUSES.COD;
+    
+    statusSelect.innerHTML = Object.entries(statuses)
+        .map(([value, label]) => `<option value="${value}">${label}</option>`)
+        .join('');
+}
+
 // Hàm hiển thị danh sách đơn hàng
 function renderOrders() {
     const tableBody = document.getElementById('orderTableBody');
@@ -43,15 +81,27 @@ function renderOrders() {
         const fullName = order.userResponse ? 
             `${order.userResponse.firstName} ${order.userResponse.lastName}` : 'N/A';
         
+        // Xử lý payment method
+        const paymentMethod = order.paymentMethod || 'COD';
+        const paymentMethodLabel = paymentMethod === 'COD' ? 
+            'Thanh toán khi nhận hàng' : 'Thanh toán VNPay';
+        
+        // Xử lý status một cách an toàn hơn
+        let statusLabel = order.status || 'PENDING';
+        if (ORDER_STATUSES[paymentMethod] && ORDER_STATUSES[paymentMethod][order.status]) {
+            statusLabel = ORDER_STATUSES[paymentMethod][order.status];
+        }
+        
         return `
         <tr onclick="editOrder(${index})">
             <td>#${order.id}</td>
             <td>${fullName}</td>
             <td>${order.userResponse ? order.userResponse.phone : 'N/A'}</td>
             <td>${formatDate(order.orderDate)}</td>
-            <td>${order.addressShipping}</td>
+            <td>${order.addressShipping || ''}</td>
             <td>${formatCurrency(order.totalAmount)} VND</td>
-            <td>${order.status}</td>
+            <td>${paymentMethodLabel}</td>
+            <td>${statusLabel}</td>
         </tr>
     `}).join('');
 }
@@ -79,11 +129,11 @@ function editOrder(index) {
     document.getElementById('editDate').value = order.orderDate ? new Date(order.orderDate).toISOString().split('T')[0] : '';
     document.getElementById('editAddress').value = order.addressShipping || '';
     document.getElementById('editTotalPrice').value = order.totalAmount || '';
+    document.getElementById('editPaymentMethod').value = order.paymentMethod || 'COD';
+    
+    // Cập nhật options trạng thái dựa trên phương thức thanh toán
+    updateStatusOptions();
     document.getElementById('editStatus').value = order.status || '';
-
-    // Thêm hiển thị chi tiết đơn hàng nếu cần
-    const orderItems = order.orderItemResponses || [];
-    // TODO: Hiển thị danh sách orderItems trong modal nếu cần
 
     document.getElementById('saveOrderChanges').setAttribute('data-index', index);
 
@@ -124,11 +174,11 @@ document.getElementById('saveOrderChanges').addEventListener('click', async func
     const index = this.getAttribute('data-index');
     const order = orders[index];
 
-    // Tạo object chứa thông tin cập nhật
     const updatedOrder = {
         orderDate: order.orderDate,
         totalAmount: order.totalAmount,
         status: document.getElementById('editStatus').value,
+        paymentMethod: document.getElementById('editPaymentMethod').value,
         shippingAddress: document.getElementById('editAddress').value,
     };
 
@@ -148,7 +198,6 @@ document.getElementById('saveOrderChanges').addEventListener('click', async func
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // Cập nhật lại danh sách đơn hàng
         await fetchOrders(currentPage);
         document.getElementById('editOrderModal').querySelector('.btn-close').click();
     } catch (error) {

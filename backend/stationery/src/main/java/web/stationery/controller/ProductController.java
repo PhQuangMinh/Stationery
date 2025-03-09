@@ -24,12 +24,8 @@ public class ProductController {
     }
 
     @GetMapping("/products/all-name")
-    public CustomResponse<?> findAllByName(
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam String name) {
-        return new CustomResponse<>(productService.findAllByName(size, page, sortBy, name));
+    public CustomResponse<?> findAllByName(@RequestParam String name) {
+        return new CustomResponse<>(productService.findAllByName(name));
     }
 
     @GetMapping("/products/{id}")
@@ -50,5 +46,24 @@ public class ProductController {
     @DeleteMapping("/admin/products/{id}")
     public void deleteProduct(@PathVariable String id){
         productService.deleteById(id);
+    }
+
+    @GetMapping("/products/random/{categoryName}")
+    public CustomResponse<?> getRandomProductsByCategory(@PathVariable String categoryName) {
+        return new CustomResponse<>(productService.getRandomProductsByCategory(categoryName));
+    }
+
+    @GetMapping("/products/random-discount")
+    public CustomResponse<?> getRandomDiscountProducts() {
+        return new CustomResponse<>(productService.getRandomDiscountProducts());
+    }
+
+    @GetMapping("/products/category")
+    public CustomResponse<?> findByCategoryName(
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam String categoryName) {
+        return new CustomResponse<>(productService.findByCategoryName(size, page, sortBy, categoryName));
     }
 }

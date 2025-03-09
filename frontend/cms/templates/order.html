@@ -30,6 +30,7 @@
                             <th>Ngày</th>
                             <th>Địa chỉ giao hàng</th>
                             <th>Giá trị đơn hàng</th>
+                            <th>Hình thức thanh toán</th>
                             <th>Trạng thái đơn hàng</th>
                         </tr>
                     </thead>
@@ -83,12 +84,15 @@
                     <label>Giá trị đơn hàng:</label>
                     <input type="text" id="editTotalPrice" class="form-control">
                     
+                    <label>Hình thức thanh toán:</label>
+                    <select id="editPaymentMethod" class="form-select" onchange="updateStatusOptions()">
+                        <option value="COD">Thanh toán khi nhận hàng (COD)</option>
+                        <option value="VNPAY">Thanh toán qua VNPay</option>
+                    </select>
+                    
                     <label>Trạng thái đơn hàng:</label>
                     <select id="editStatus" class="form-select">
-                        <option value="Chờ xác nhận">Chờ xác nhận</option>
-                        <option value="Đang giao">Đang giao</option>
-                        <option value="Đã giao">Đã giao</option>
-                        <option value="Đã hủy">Đã hủy</option>
+                        <!-- Options sẽ được cập nhật động bằng JavaScript -->
                     </select>
                 </div>
                 <div class="modal-footer">

@@ -50,6 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public List<CategoryAdminResponse> getCategoriesTree() {
         List<Category> rootCategories = categoryRepository.findByParentIsNull();
+        System.out.println(rootCategories);
         return buildCategoryTree(rootCategories);
     }
 

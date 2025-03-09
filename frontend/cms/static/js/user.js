@@ -1,3 +1,11 @@
+// API URLs
+const USER_API = {
+    GET_ALL: "http://localhost:8080/admin/users",
+    CREATE: "http://localhost:8080/admin/add-user-admin",
+    UPDATE: "http://localhost:8080/admin/users/update",
+    DELETE: "http://localhost:8080/admin/users"
+};
+
 let currentPage = 0;
 const pageSize = 10;
 let totalPages = 1;
