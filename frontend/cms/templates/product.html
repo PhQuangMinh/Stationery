@@ -36,15 +36,31 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Tên</th>
-                            <th>Danh mục</th>
-                            <th>Thương hiệu</th>
-                            <th>Giá</th>
-                            <th>Giảm giá</th>
-                            <th>Số lượng</th>
-                            <th>Số lượt mua</th>
+                            <th class="sortable" data-sort="name">
+                                Tên <i class="bi bi-arrow-down-up"></i>
+                            </th>
+                            <th class="sortable" data-sort="category">
+                                Danh mục <i class="bi bi-arrow-down-up"></i>
+                            </th>
+                            <th class="sortable" data-sort="brand">
+                                Thương hiệu <i class="bi bi-arrow-down-up"></i>
+                            </th>
+                            <th class="sortable" data-sort="price">
+                                Giá <i class="bi bi-arrow-down-up"></i>
+                            </th>
+                            <th class="sortable" data-sort="discount">
+                                Giảm giá <i class="bi bi-arrow-down-up"></i>
+                            </th>
+                            <th class="sortable" data-sort="quantity">
+                                Số lượng <i class="bi bi-arrow-down-up"></i>
+                            </th>
+                            <th class="sortable" data-sort="countSales">
+                                Số lượt mua <i class="bi bi-arrow-down-up"></i>
+                            </th>
                             <th>Ảnh</th>
-                            <th>Trạng thái</th>
+                            <th class="sortable" data-sort="status">
+                                Trạng thái <i class="bi bi-arrow-down-up"></i>
+                            </th>
                             <th>Miêu tả</th>
                         </tr>
                     </thead>
@@ -53,7 +69,23 @@
                 </table>
             </div>
 
-            <div id="pagination" class="d-flex justify-content-center mt-3"></div>
+            <div id="pagination" class="d-flex justify-content-center mt-3">
+                <nav>
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <button class="page-link" id="prevPage" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </button>
+                        </li>
+                        <!-- Các nút số trang sẽ được thêm vào đây bằng JavaScript -->
+                        <li class="page-item">
+                            <button class="page-link" id="nextPage" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>
     </div>
 

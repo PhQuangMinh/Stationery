@@ -1,3 +1,12 @@
+// API URLs
+const PRODUCT_API = {
+    GET_ALL: "http://localhost:8080/products/all",
+    CREATE: "http://localhost:8080/admin/products",
+    UPDATE: "http://localhost:8080/admin/products",
+    DELETE: "http://localhost:8080/admin/products",
+    UPLOAD_IMAGE: "http://localhost:8080/upload"
+};
+
 let currentPage = 0;
 const pageSize = 10;
 let totalPages = 1;
@@ -5,6 +14,24 @@ let products = [];
 let brands = [];
 let categories = [];
 let editingProductId = null;
+
+// Thêm biến để theo dõi trạng thái sắp xếp
+let currentSort = {
+    column: null,
+    direction: 'asc'
+};
+
+// Thêm mapping cho tên cột và tên trường database
+const columnMapping = {
+    'name': 'name',
+    'category': 'categories',
+    'brand': 'brand',
+    'price': 'price',
+    'discount': 'discount',
+    'quantity': 'quantity',
+    'countSales': 'countSales',
+    'status': 'deleteFlag'
+};
 
 // Thêm hàm kiểm tra response
 function handleResponse(response) {
@@ -32,10 +59,17 @@ async function fetchBrands() {
 // Gọi API lấy danh sách danh mục
 async function fetchCategories() {
     try {
-        const response = await fetch(`http://localhost:8080/categories/all?page=0&size=100&sortBy=id`);
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(`http://localhost:8080/categories/tree`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
         handleResponse(response);
         const result = await response.json();
-        categories = result.data.content;
+        categories = result.data;
         console.log('Categories loaded:', categories);
         renderCategoryOptions();
     } catch (error) {
@@ -52,25 +86,120 @@ function renderBrandOptions() {
     }
 }
 
-// Đổ danh sách danh mục vào <select>
+// Thêm hàm mới để lấy các danh mục tầng cuối
+function getLeafCategories(categories) {
+    let leafCategories = [];
+    
+    function traverse(category) {
+        // Nếu không có children hoặc children rỗng, đây là danh mục tầng cuối
+        if (!category.children || category.children.length === 0) {
+            leafCategories.push(category);
+        } else {
+            // Nếu có children, duyệt qua từng children
+            category.children.forEach(child => traverse(child));
+        }
+    }
+    
+    categories.forEach(category => traverse(category));
+    return leafCategories;
+}
+
+// Sửa lại hàm renderCategoryOptions
 function renderCategoryOptions() {
     const selectCategory = document.getElementById('newProductCategory');
     if (selectCategory && categories.length > 0) {
+        // Lấy danh sách các danh mục tầng cuối
+        const leafCategories = getLeafCategories(categories);
+        
         selectCategory.innerHTML = '<option value="">Chọn danh mục</option>' + 
-            categories.map(category => `<option value="${category.id}">${category.name}</option>`).join('');
+            leafCategories.map(category => `<option value="${category.id}">${category.name}</option>`).join('');
     }
 }
 
-// Gọi danh sách sản phẩm
+// Thêm hàm render phân trang
+function renderPagination() {
+    const pagination = document.querySelector('.pagination');
+    const prevButton = document.getElementById('prevPage').parentElement;
+    const nextButton = document.getElementById('nextPage').parentElement;
+    
+    // Xóa các nút số trang cũ
+    const pageButtons = pagination.querySelectorAll('.page-numbers');
+    pageButtons.forEach(button => button.remove());
+    
+    // Thêm các nút số trang mới
+    const maxVisiblePages = 5;
+    let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+    
+    // Điều chỉnh startPage nếu endPage đã đạt giới hạn
+    startPage = Math.max(0, Math.min(startPage, totalPages - maxVisiblePages));
+    
+    // Thêm dấu ... ở đầu nếu cần
+    if (startPage > 0) {
+        const ellipsis = document.createElement('li');
+        ellipsis.className = 'page-item';
+        ellipsis.innerHTML = '<span class="page-link">...</span>';
+        pagination.insertBefore(ellipsis, nextButton);
+    }
+    
+    // Thêm các nút số trang
+    for (let i = startPage; i <= endPage; i++) {
+        const pageItem = document.createElement('li');
+        pageItem.className = `page-item page-numbers ${i === currentPage ? 'active' : ''}`;
+        pageItem.innerHTML = `<button class="page-link">${i + 1}</button>`;
+        
+        pageItem.querySelector('button').addEventListener('click', () => {
+            currentPage = i;
+            fetchProducts(currentPage);
+        });
+        
+        pagination.insertBefore(pageItem, nextButton);
+    }
+    
+    // Thêm dấu ... ở cuối nếu cần
+    if (endPage < totalPages - 1) {
+        const ellipsis = document.createElement('li');
+        ellipsis.className = 'page-item';
+        ellipsis.innerHTML = '<span class="page-link">...</span>';
+        pagination.insertBefore(ellipsis, nextButton);
+    }
+    
+    // Cập nhật trạng thái nút Previous/Next
+    prevButton.classList.toggle('disabled', currentPage === 0);
+    nextButton.classList.toggle('disabled', currentPage >= totalPages - 1);
+}
+
+// Cập nhật lại hàm fetchProducts
 async function fetchProducts(page = 0) {
     try {
-        const response = await fetch(`http://localhost:8080/products/all?page=${page}&size=${pageSize}&sortBy=id`);
+        const token = localStorage.getItem('accessToken');
+        let url = `${PRODUCT_API.GET_ALL}?page=${page}&size=${pageSize}`;
+        
+        // Thêm tham số sắp xếp nếu có, sử dụng mapping
+        if (currentSort.column) {
+            const dbColumn = columnMapping[currentSort.column];
+            url += `&sortBy=${dbColumn}&sortDir=${currentSort.direction}`;
+        }
+
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         handleResponse(response);
         const result = await response.json();
-        products = result.data.content;
-        totalPages = result.data.totalPages;
-        console.log("products: ", products);
-        renderProducts();
+        
+        if (result.data && result.data.content) {
+            products = result.data.content;
+            totalPages = result.data.totalPages;
+            currentPage = page;
+            
+            renderProducts();
+            renderPagination();
+            updateSortIcons();
+        } else {
+            console.error('Invalid response format:', result);
+        }
     } catch (error) {
         console.error('Lỗi khi lấy sản phẩm:', error);
     }
@@ -84,10 +213,10 @@ function renderProducts() {
             <td>${product.name}</td>
             <td>${product.categories.length > 0 ? product.categories[0].name : 'N/A'}</td>
             <td>${product.brandResponse.name ? product.brandResponse.name : 'N/A'}</td>
-            <td>${product.price}</td>
-            <td>${product.discount}</td>
+            <td>${product.price.toLocaleString('vi-VN')} đ</td>
+            <td>${product.discount}%</td>
             <td>${product.quantity}</td>
-            <td>${product.countSales}</td>
+            <td>${product.countSales || 0}</td>
             <td><img src="${product.imageUrl}" class="product-image" alt="Sản phẩm"></td>
             <td>${product.deleteFlag ? 'Không hoạt động' : 'Hoạt động'}</td>
             <td>${product.description}</td>
@@ -102,10 +231,6 @@ async function deleteProduct(productId) {
     }
 
     const token = localStorage.getItem('accessToken');
-    if (!token) {
-        alert('Bạn cần đăng nhập để thực hiện chức năng này!');
-        return;
-    }
 
     try {
         const response = await fetch(`http://localhost:8080/admin/products/${productId}`, {
@@ -120,7 +245,6 @@ async function deleteProduct(productId) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        alert('Xóa sản phẩm thành công!');
         fetchProducts(currentPage);
     } catch (error) {
         console.error('Lỗi khi xóa sản phẩm:', error);
@@ -154,6 +278,19 @@ function editProduct(productId) {
         previewImage.style.display = 'block';
     } else {
         previewImage.style.display = 'none';
+    }
+
+    // Cập nhật selected category
+    if (product.categories && product.categories.length > 0) {
+        const categorySelect = document.getElementById('newProductCategory');
+        const categoryId = product.categories[0].id;
+        
+        // Đợi một chút để đảm bảo categories đã được render
+        setTimeout(() => {
+            if (categorySelect.querySelector(`option[value="${categoryId}"]`)) {
+                categorySelect.value = categoryId;
+            }
+        }, 100);
     }
 
     // Hiển thị modal (sửa cách khởi tạo)
@@ -260,8 +397,8 @@ async function saveProduct() {
         document.getElementById('previewImage').style.display = 'none';
         editingProductId = null;
 
-        // Thông báo thành công
-        alert(editingProductId ? 'Cập nhật sản phẩm thành công!' : 'Thêm sản phẩm thành công!');
+        // // Thông báo thành công
+        // alert(editingProductId ? 'Cập nhật sản phẩm thành công!' : 'Thêm sản phẩm thành công!');
         
         // Tải lại danh sách sản phẩm
         fetchProducts(currentPage);
@@ -378,5 +515,106 @@ document.getElementById('btnDeleteProduct').addEventListener('click', function()
         // Đóng modal sau khi xóa
         const modal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
         modal.hide();
+    }
+});
+
+// Hàm sắp xếp sản phẩm
+function sortProducts(column) {
+    if (currentSort.column === column) {
+        // Đảo ngược hướng sắp xếp nếu click vào cùng một cột
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+        // Đặt cột mới và hướng mặc định là tăng dần
+        currentSort.column = column;
+        currentSort.direction = 'asc';
+    }
+
+    // Sắp xếp mảng sản phẩm
+    products.sort((a, b) => {
+        let valueA, valueB;
+
+        switch (column) {
+            case 'name':
+                valueA = a.name;
+                valueB = b.name;
+                break;
+            case 'category':
+                valueA = a.categories.length > 0 ? a.categories[0].name : '';
+                valueB = b.categories.length > 0 ? b.categories[0].name : '';
+                break;
+            case 'brand':
+                valueA = a.brandResponse ? a.brandResponse.name : '';
+                valueB = b.brandResponse ? b.brandResponse.name : '';
+                break;
+            case 'price':
+                valueA = a.price;
+                valueB = b.price;
+                break;
+            case 'discount':
+                valueA = a.discount;
+                valueB = b.discount;
+                break;
+            case 'quantity':
+                valueA = a.quantity;
+                valueB = b.quantity;
+                break;
+            case 'countSales':
+                valueA = a.countSales || 0;
+                valueB = b.countSales || 0;
+                break;
+            case 'status':
+                valueA = a.deleteFlag ? 1 : 0;
+                valueB = b.deleteFlag ? 1 : 0;
+                break;
+            default:
+                return 0;
+        }
+
+        // So sánh các giá trị
+        if (valueA === valueB) return 0;
+        
+        const comparison = valueA > valueB ? 1 : -1;
+        return currentSort.direction === 'asc' ? comparison : -comparison;
+    });
+
+    // Cập nhật giao diện
+    updateSortIcons();
+    renderProducts();
+}
+
+// Hàm cập nhật icons sắp xếp
+function updateSortIcons() {
+    document.querySelectorAll('th.sortable').forEach(th => {
+        const column = th.dataset.sort;
+        th.classList.remove('sort-asc', 'sort-desc');
+        
+        if (column === currentSort.column) {
+            th.classList.add(`sort-${currentSort.direction}`);
+        }
+    });
+}
+
+// Thêm event listeners cho các cột có thể sắp xếp
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('th.sortable').forEach(th => {
+        th.addEventListener('click', function() {
+            const column = this.dataset.sort;
+            sortProducts(column);
+        });
+    });
+});
+
+// Thêm event listeners cho nút Previous và Next
+document.getElementById('prevPage').addEventListener('click', () => {
+    if (currentPage > 0) {
+        currentPage--;
+        fetchProducts(currentPage);
+    }
+});
+
+document.getElementById('nextPage').addEventListener('click', () => {
+    if (currentPage < totalPages - 1) {
+        currentPage++;
+        fetchProducts(currentPage);
     }
 });

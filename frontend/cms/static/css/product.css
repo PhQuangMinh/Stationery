@@ -3,20 +3,30 @@
     padding: 2rem;
     background-color: #198754;
     background: linear-gradient(to bottom, #4facfe, #00f2fe);
-    min-height: 100vh; 
+    min-height: 100vh;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    width: calc(100% - 250px);
 }
 .table-container {
-    max-height: 70vh; /* Giới hạn chiều cao bảng */
-    overflow-y: auto; /* Thanh cuộn dọc */
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
     border-radius: 5px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     overflow-x: auto;
+    background: white;
+    margin-bottom: 1rem;
 }
 
 /* Đảm bảo bảng chiếm toàn bộ không gian trong container */
 .table {
     border-collapse: collapse;
-    min-width: 1500px; 
+    min-width: 1500px;
+    margin-bottom: 0;
 }
 
 /* Cố định header khi cuộn */
@@ -80,4 +90,34 @@
 
 .modal-footer {
     flex-shrink: 0;
+}
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortable:hover {
+    background-color: #e9ecef;
+}
+
+.sortable i {
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+
+.sort-asc i::before {
+    content: "\F282" !important; /* Bootstrap icon for arrow up */
+}
+
+.sort-desc i::before {
+    content: "\F286" !important; /* Bootstrap icon for arrow down */
+}
+
+/* Thêm style cho phần pagination */
+#pagination {
+    background: white;
+    padding: 1rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }

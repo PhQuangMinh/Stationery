@@ -8,6 +8,7 @@ import web.stationery.dto.response.categoryresponse.CategoryResponse;
 import web.stationery.dto.response.categoryresponse.CategoryUserResponse;
 import web.stationery.model.Category;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,14 +34,13 @@ public class CategoryMapper {
         CategoryUserResponse response = new CategoryUserResponse();
         response.setId(category.getId());
         response.setName(category.getName());
-        response.setId(category.getId());
 
-        if (category.getSubcategories() != null) {
+        if (category.getSubcategories() != null && !category.getSubcategories().isEmpty()) {
             response.setChildren(category.getSubcategories().stream()
                     .map(this::toResponse)
                     .collect(Collectors.toList()));
         }
-        
+
         return response;
     }
 
@@ -55,7 +55,7 @@ public class CategoryMapper {
         response.setId(category.getId());
         response.setDeleteFlag(category.isDeleteFlag());
 
-        if (category.getSubcategories() != null) {
+        if (category.getSubcategories() != null && !category.getSubcategories().isEmpty()) {
             response.setChildren(category.getSubcategories().stream()
                     .map(this::toAdminResponse)
                     .collect(Collectors.toList()));
@@ -68,9 +68,11 @@ public class CategoryMapper {
         if (categories == null) {
             return Collections.emptyList();
         }
-        return categories.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+        ArrayList<CategoryResponse> categoryResponses = new ArrayList<>();
+        for (Category category : categories) {
+            categoryResponses.add(new CategoryResponse(category.getId(), category.getName(), null));
+        }
+        return categoryResponses;
     }
 
     public void updateCategory(Category category, AdminCategoryRequest adminCategoryRequest) {

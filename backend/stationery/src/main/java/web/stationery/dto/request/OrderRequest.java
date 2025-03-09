@@ -17,5 +17,7 @@ public class OrderRequest {
     private long totalAmount;
     private String status;
     private String shippingAddress;
+    private String paymentMethod;
+    private String txnRef;
     private List<OrderItemRequest> orderItemRequests;
 }

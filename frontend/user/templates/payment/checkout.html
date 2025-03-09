@@ -32,16 +32,27 @@
                             <input type="tel" class="form-control" placeholder="Số điện thoại" required>
                         </div>
                         <div class="mb-3">
-                            <input type="text" class="form-control" placeholder="Địa chỉ" required>
+                            <select class="form-select" id="province" required>
+                                <option value="">Chọn Tỉnh/Thành phố</option>
+                            </select>
                         </div>
                         <div class="mb-3">
-                            <input type="text" class="form-control" placeholder="Tỉnh thành" required>
+                            <select class="form-select" id="district" required disabled>
+                                <option value="">Chọn Quận/Huyện</option>
+                            </select>
                         </div>
                         <div class="mb-3">
-                            <input type="text" class="form-control" placeholder="Quận huyện" required>
+                            <select class="form-select" id="ward" required disabled>
+                                <option value="">Chọn Phường/Xã</option>
+                            </select>
                         </div>
                         <div class="mb-3">
-                            <input type="text" class="form-control" placeholder="Phường xã" required>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="specificAddress" 
+                                   name="specificAddress" 
+                                   placeholder="Địa chỉ cụ thể (Số nhà, tên đường, thôn/xóm...)" 
+                                   required>
                         </div>
                         <div class="mb-3">
                             <textarea class="form-control" rows="3" placeholder="Ghi chú (Tùy chọn)"></textarea>
@@ -55,19 +66,10 @@
                         <div class="card-body">
                             <!-- Payment Methods -->
                             <div class="payment-methods mb-4">
-                                <div class="payment-option selected">
-                                    <div class="d-flex align-items-center">
-                                        <input type="radio" name="payment" value="vnpay" checked>
-                                        <span class="ms-2">Thanh toán qua VNPAY</span>
-                                        <img src="../../static/img/logo/logo-vnpay.png" alt="VNPAY" height="30" class="ms-auto">
-                                    </div>
-                                </div>
-                                <div class="payment-option">
-                                    <div class="d-flex align-items-center">
-                                        <input type="radio" name="payment" value="cod">
-                                        <span class="ms-2">Thanh toán khi nhận hàng</span>
-                                    </div>
-                                </div>
+                                <select class="form-select" name="payment" id="paymentMethod" required>
+                                    <option value="COD">Thanh toán khi nhận hàng (COD)</option>
+                                    <option value="VNPAY">Thanh toán qua VNPay</option>
+                                </select>
                             </div>
     
                             <!-- Order Details -->

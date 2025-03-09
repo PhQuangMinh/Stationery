@@ -41,6 +41,12 @@ public class UserOrder {
     @UpdateTimestamp
     private Timestamp updateAt;
 
+    @Column(name = "payment_method", nullable = false)
+    private String paymentMethod;
+
+    @Column(name = "txn_ref")
+    private String txnRef;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<OrderItem> orderItems;

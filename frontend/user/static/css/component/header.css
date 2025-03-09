@@ -135,5 +135,24 @@ header {
     margin-bottom: 70px;
 }
 
+/* Thêm style cho container giỏ hàng và đơn hàng */
+.cart-order-container {
+    display: flex;
+    gap: 20px;
+}
+
+.cart, .order {
+    cursor: pointer;
+}
+
+.order {
+    padding-left: 0;  /* Ghi đè padding mặc định */
+}
+
+/* Cập nhật style cho cart */
+.cart {
+    padding-left: 0;  /* Ghi đè padding mặc định */
+}
+
 
 

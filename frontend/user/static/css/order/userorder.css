@@ -4,8 +4,12 @@
 }
 .table td {
     text-align: center;
+    vertical-align: middle;
 }
 .price {
     color: red;
     font-weight: bold;
+}
+.btn-danger {
+    padding: 0.25rem 0.5rem;
 }

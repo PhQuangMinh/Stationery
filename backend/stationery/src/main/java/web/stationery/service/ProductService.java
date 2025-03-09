@@ -7,6 +7,7 @@ import web.stationery.dto.response.ProductResponse;
 import web.stationery.model.Product;
 
 import javax.swing.text.Element;
+import java.util.List;
 
 public interface ProductService {
     Page<ProductResponse> findAll(int size, int page, String sortBy);
@@ -18,4 +19,7 @@ public interface ProductService {
     ProductResponse getBestSellingProduct();
     Product saveAdmin(AdminProductRequest productRequest);
     Product updateAdmin(AdminProductRequest productRequest);
+    List<ProductResponse> getRandomProductsByCategory(String categoryName);
+    List<ProductResponse> getRandomDiscountProducts();
+    Page<ProductResponse> findByCategoryName(int size, int page, String sortBy, String categoryName);
 }

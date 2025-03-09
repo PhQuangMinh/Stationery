@@ -3,74 +3,90 @@ function getOrderIdFromURL() {
     return urlParams.get('id');
 }
 
-const products = [
-    {
-        id: 1,
-        orderId: 12345,
-        image: "/lovable-uploads/d9c4729c-6dc2-4d61-9360-d7906496a46b.png",
-        name: "Hướng dẫn học và làm bài ngữ văn 7 tập 1",
-        price: 39190,
-        quantity: 1
-    },
-    {
-        id: 2,
-        orderId: 12345,
-        image: "/lovable-uploads/d9c4729c-6dc2-4d61-9360-d7906496a46b.png",
-        name: "Sách giáo khoa Toán lớp 7",
-        price: 45000,
-        quantity: 2
-    },
-    {
-        id: 3,
-        orderId: 67890,
-        image: "/lovable-uploads/d9c4729c-6dc2-4d61-9360-d7906496a46b.png",
-        name: "Sách bài tập Tiếng Anh 7",
-        price: 35000,
-        quantity: 1
-    }
-];
-
 const productReviews = new Map(); 
 
 function formatPrice(price) {
     return price.toLocaleString('vi-VN') + ' đ';
 }
 
-function calculateTotal() {
-    return products.reduce((sum, product) => {
-        return sum + (product.price * product.quantity);
-    }, 0);
+async function fetchOrderDetails() {
+    try {
+        const orderId = getOrderIdFromURL();
+        const username = localStorage.getItem('username');
+        
+        if (!orderId || !username) {
+            throw new Error('Không tìm thấy thông tin đơn hàng');
+        }
+
+        const response = await fetch(`${BASE_API_URL}/user/orders/${username}/${orderId}`, {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Không thể tải thông tin đơn hàng');
+        }
+
+        const result = await response.json();
+        if (result.data) {
+            console.log(result.data);
+            renderOrderDetails(result.data);
+        }
+    } catch (error) {
+        console.error('Lỗi:', error);
+        alert('Có lỗi xảy ra khi tải thông tin đơn hàng');
+    }
 }
 
-function renderProducts() {
-    const orderId = getOrderIdFromURL();
-    const orderProducts = products.filter(product => product.orderId === parseInt(orderId));
-    
+function renderOrderDetails(orderData) {
+    // Render thông tin đơn hàng
+    document.getElementById('orderId').textContent = orderData.id;
+    document.getElementById('orderDate').textContent = new Date(orderData.orderDate).toLocaleDateString('vi-VN');
+    document.getElementById('orderStatus').textContent = orderData.status;
+    document.getElementById('shippingAddress').textContent = orderData.addressShipping;
+    document.getElementById('paymentMethod').textContent = orderData.paymentMethod;
+
+    // Render danh sách sản phẩm
     const productList = document.getElementById('productList');
     let html = '';
 
-    orderProducts.forEach(product => {
-        const isReviewed = productReviews.has(product.id);
+    orderData.orderItemResponses.forEach(item => {
+        const isReviewed = productReviews.has(item.productId);
+        const canReview = orderData.status === 'COMPLETED'; // Kiểm tra trạng thái đơn hàng
+
         html += `
-            <tr>
+            <tr data-product-id="${item.productId}">
                 <td style="width: 150px">
                     <img 
-                        src="${product.image}"
-                        alt="${product.name}"
+                        src="${item.imageUrl}"
+                        alt="${item.name}"
                         class="img-fluid"
                     />
                 </td>
-                <td>${product.name}</td>
-                <td class="text-danger">${formatPrice(product.price)}</td>
-                <td>${product.quantity}</td>
-                <td class="text-danger">${formatPrice(product.price * product.quantity)}</td>
+                <td>${item.name}</td>
+                <td class="text-danger">${formatPrice(item.price)}</td>
+                <td>${item.quantity}</td>
+                <td class="text-danger">${formatPrice(item.price * item.quantity)}</td>
                 <td>
-                    <button 
-                        class="review-btn ${isReviewed ? 'reviewed' : ''}"
-                        onclick="openReviewModal(${product.id})"
-                    >
-                        ${isReviewed ? 'Đã đánh giá' : 'Đánh giá'}
-                    </button>
+                    ${canReview ? `
+                        <button 
+                            class="review-btn ${isReviewed ? 'reviewed' : ''}"
+                            onclick="openReviewModal('${item.productId}', '${item.imageUrl}', '${item.name}')"
+                            data-product-id="${item.productId}"
+                            ${isReviewed ? 'disabled' : ''}
+                        >
+                            ${isReviewed ? 'Đã đánh giá' : 'Đánh giá'}
+                        </button>
+                    ` : `
+                        <button 
+                            class="review-btn disabled" 
+                            disabled 
+                            title="Chỉ có thể đánh giá khi đơn hàng đã hoàn thành"
+                        >
+                            Chưa thể đánh giá
+                        </button>
+                    `}
                 </td>
             </tr>
         `;
@@ -78,20 +94,26 @@ function renderProducts() {
 
     productList.innerHTML = html;
     
+    // Render tổng tiền
     const totalAmount = document.getElementById('totalAmount');
-    const total = orderProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
-    totalAmount.textContent = formatPrice(total);
+    totalAmount.textContent = formatPrice(orderData.totalAmount);
 }
 
 let currentProductId = null;
 let currentRating = 0;
 
-function openReviewModal(productId) {
-    currentProductId = productId;
-    const product = products.find(p => p.id === productId);
+function openReviewModal(productId, imageUrl, productName) {
+    // Thêm kiểm tra trạng thái đơn hàng
+    const orderStatus = document.getElementById('orderStatus').textContent;
+    if (orderStatus !== 'COMPLETED') {
+        alert('Chỉ có thể đánh giá khi đơn hàng đã hoàn thành!');
+        return;
+    }
+
+    currentProductId = String(productId);
     
-    document.getElementById('modalProductImage').src = product.image;
-    document.getElementById('modalProductName').textContent = product.name;
+    document.getElementById('modalProductImage').src = imageUrl;
+    document.getElementById('modalProductName').textContent = productName;
     
     document.querySelectorAll('.stars i').forEach(star => star.classList.remove('active'));
     document.getElementById('reviewComment').value = '';
@@ -128,25 +150,61 @@ function updateStars(rating) {
     });
 }
 
-document.getElementById('submitReview').addEventListener('click', function() {
+document.getElementById('submitReview').addEventListener('click', async function() {
     if (currentRating === 0) {
         alert('Vui lòng chọn số sao đánh giá!');
         return;
     }
 
     const comment = document.getElementById('reviewComment').value;
+    const username = localStorage.getItem('username');
     
-    productReviews.set(currentProductId, {
-        rating: currentRating,
-        comment: comment,
-        date: new Date()
-    });
+    if (!username) {
+        alert('Vui lòng đăng nhập để đánh giá sản phẩm!');
+        return;
+    }
+    
+    try {
+        console.log("Sending review for product ID:", currentProductId);
+        const reviewRequest = {
+            rating: parseInt(currentRating),
+            comment: comment
+        };
 
-    bootstrap.Modal.getInstance(document.getElementById('reviewModal')).hide();
-    
-    renderProducts();
+        const response = await fetch(`${BASE_API_URL}/user/reviews/${currentProductId}/${username}/create`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            },
+            body: JSON.stringify(reviewRequest)
+        });
+
+        if (!response.ok) {
+            throw new Error('Không thể gửi đánh giá');
+        }
+
+        const result = await response.json();
+        if (result.data) {
+            alert('Đánh giá của bạn đã được gửi thành công!');
+            productReviews.set(currentProductId, {
+                rating: currentRating,
+                comment: comment,
+                date: new Date()
+            });
+            
+            // Đóng modal
+            bootstrap.Modal.getInstance(document.getElementById('reviewModal')).hide();
+            
+            // Cập nhật lại giao diện
+            fetchOrderDetails();
+        }
+    } catch (error) {
+        console.error('Lỗi khi gửi đánh giá:', error);
+        alert('Có lỗi xảy ra khi gửi đánh giá!');
+    }
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    renderProducts();
+    fetchOrderDetails();
 });

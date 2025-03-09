@@ -1,13 +1,17 @@
 package web.stationery.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import web.stationery.dto.response.CustomResponse;
-import web.stationery.dto.response.PaymentResponse;
+import web.stationery.service.OrderService;
 import web.stationery.service.PaymentService;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("${spring.application.api-prefix}/payment")
@@ -15,17 +19,20 @@ import web.stationery.service.PaymentService;
 public class PaymentController {
     private final PaymentService paymentService;
 
+    private final OrderService orderService;
+
+
     @GetMapping("/vn-pay")
     public CustomResponse<?> getPayment(HttpServletRequest request){
         return new CustomResponse<>(paymentService.createVNPayPayment(request), "success");
     }
 
     @GetMapping("/vn-pay-callback")
-    public CustomResponse<?> callbackVNPayPayment(HttpServletRequest request){
-        String status = request.getParameter("vnp_ResponseCode");
-        if ("00".equals(status)) {
-            return new CustomResponse<>(new PaymentResponse("00", "Success", ""), "success");
-        }
-        return new CustomResponse<>("failed");
+    public void vnPayCallback(
+            @RequestParam("vnp_ResponseCode") String responseCode, HttpServletResponse response,
+            @RequestParam("vnp_TxnRef") String txnRef
+    ) throws IOException {
+        orderService.updateOrderAfterPayment(txnRef, responseCode);
+        response.sendRedirect("http://127.0.0.1:5501/templates/order/userorder.html");
     }
 }

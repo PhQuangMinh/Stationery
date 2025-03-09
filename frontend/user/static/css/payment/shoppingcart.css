@@ -1,8 +1,85 @@
 th, td {
     text-align: center;
-    vertical-align: middle; 
+    vertical-align: middle !important; 
 }
 
-.checkout-btn{
+.table {
+    width: 90% !important;
+    margin: 0 auto !important;
+}
+
+.checkout-section {
+    width: 90% !important;
+    margin: 20px auto !important;
+}
+
+.checkout-btn {
     background-color: brown;
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1.1rem;
+}
+
+.product-info {
+    text-align: center;
+}
+
+.product-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.price-info {
+    text-align: center;
+}
+
+.current-price {
+    font-weight: 500;
+    color: #dc3545;
+}
+
+.stock-warning {
+    margin-top: 5px;
+    font-size: 12px;
+}
+
+img {
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: block;
+    margin: 0 auto;
+}
+
+.quantity {
+    margin: 0 auto !important;
+    display: block !important;
+}
+
+.summary-table {
+    width: 100% !important;
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+}
+
+.breadcrumb-section {
+    width: 90%;
+    margin: 0 auto;
+    padding: 15px 0;
+}
+
+.checkout-btn-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    opacity: 0.9;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+    cursor: pointer;
 }
