@@ -1,62 +1,29 @@
-const products = [
-    {
-        id: 1,
-        name: "Sách khoa học tự nhiên 9 - Kết nối tri thức",
-        image: "abc",
-        brand: "Nhà XB giáo dục Việt Nam",
-        stockStatus: "Còn hàng",
-        rating: 4,
-        price: 39000,
-        originalPrice: 41000,
-        discount: 10,
-        quantity: 1,
-        features: [
-            "Nhiều tính năng đặc biệt, dùng được cho nhiều cấp học từ học sinh đến sinh viên.",
-            "Thiết kế: Nắp trượt",
-            "Màu sắc: Đen, xanh, hồng.",
-            "Bảo hành 7 năm."
-        ]
-    },
-    {
-        id: 2,
-        name: "Sách Tiếng Anh 12 - Chân trời sáng tạo",
-        image: "abc",
-        brand: "Nhà XB giáo dục Việt Nam",
-        stockStatus: "Còn hàng",
-        rating: 5,
-        price: 45000,
-        originalPrice: 50000,
-        discount: 10,
-        quantity: 1,
-        features: [
-            "Nội dung bám sát chương trình SGK mới.",
-            "Bài tập thực hành phong phú, dễ hiểu.",
-            "Sách màu, hình ảnh sinh động."
-        ]
-    },
-    {
-        id: 3,
-        name: "Sách Toán Cao Cấp - Đại số tuyến tính",
-        image: "abc",
-        brand: "NXB Đại học Quốc gia",
-        stockStatus: "Hết hàng",
-        rating: 4.5,
-        price: 75000,
-        originalPrice: 80000,
-        discount: 6,
-        quantity: 1,
-        features: [
-            "Dành cho sinh viên đại học chuyên ngành kỹ thuật.",
-            "Lý thuyết đầy đủ, có ví dụ minh họa.",
-            "Tác giả nổi tiếng, uy tín trong ngành."
-        ]
-    }
-];
-
 let productData;
 
-function getProductById(productId) {
-    return products.find(product => product.id === productId);
+async function getProductById(productId) {
+    try {
+        const response = await fetch(`${BASE_API_URL}/products/${productId}`);
+        const data = await response.json();
+        if (data.data) {
+            return {
+                id: data.data.id,
+                name: data.data.name,
+                brand: data.data.brandResponse.name || "Chưa có thương hiệu",
+                stockStatus: data.data.stockStatus || "Còn hàng",
+                rating: data.data.rating || 5,
+                price: data.data.price,
+                originalPrice: data.data.originalPrice || data.data.price,
+                discount: data.data.discount || 0,
+                imageUrl: data.data.imageUrl,
+                description: data.data.description || "Chưa có mô tả",
+                quantity: 1
+            };
+        }
+        return null;
+    } catch (error) {
+        console.error('Error fetching product:', error);
+        return null;
+    }
 }
 
 function renderStars(rating) {
@@ -67,7 +34,15 @@ function renderStars(rating) {
     return stars;
 }
 
-function renderProductDetails() {
+async function renderProductDetails() {
+    if (!productData) return;
+
+    const discountPrice = productData.price * (100 - productData.discount) / 100;
+    
+    const productImage = document.getElementById('product-image');
+    productImage.src = productData.imageUrl;
+    productImage.alt = productData.name;
+    
     const productHTML = `
         <h1 class="h2 mb-3">${productData.name}</h1>
         <div class="mb-3">
@@ -78,16 +53,22 @@ function renderProductDetails() {
             ${renderStars(productData.rating)}
         </div>
         <div class="mb-4">
-            <span class="price">${productData.price.toLocaleString()} đ</span>
-            <span class="original-price">${productData.originalPrice.toLocaleString()} đ</span>
-            <span class="discount-badge">-${productData.discount}%</span>
+            <span class="price">${formatPrice(discountPrice)} đ</span>
+            ${productData.discount > 0 ? 
+                `<span class="original-price">${formatPrice(productData.price)} đ</span>
+                 <span class="discount-badge">-${productData.discount}%</span>` 
+                : ''}
+        </div>
+        <div class="product-description mb-4">
+            <h4>Mô tả sản phẩm:</h4>
+            <p class="text-muted">${productData.description}</p>
         </div>
         <div class="d-flex align-items-center mb-4">
             <button class="btn btn-outline-secondary btn-sm" onclick="decreaseQuantity()">-</button>
             <input type="number" id="quantity" class="form-control mx-2 quantity-input" value="1" min="1">
             <button class="btn btn-outline-secondary btn-sm" onclick="increaseQuantity()">+</button>
         </div>
-        <button class="btn btn-success add-to-cart-btn"">
+        <button class="btn btn-success add-to-cart-btn">
             <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
         </button>
     `;
@@ -108,138 +89,179 @@ function increaseQuantity() {
 
 function addToCart(productData) {
     const quantity = parseInt(document.getElementById('quantity').value);
-    console.log("add to cart: ", productData);
     if (!productData || Object.keys(productData).length === 0) {
         alert("Sản phẩm không tồn tại!");
         return;
     }
-    console.log("Chay o day nua")
+    
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let existingProduct = cart.find(item => item.id === productData.id);
+    
+    const cartItem = {
+        id: productData.id,
+        name: productData.name,
+        price: productData.price,
+        imageUrl: productData.imageUrl,
+        discount: productData.discount,
+        brand: productData.brand,
+        description: productData.description,
+        stockQuantity: productData.quantity,
+        quantity: quantity
+    };
+
     if (existingProduct) {
         existingProduct.quantity += quantity;
     } else {
-        cart.push({ ...productData, quantity: quantity });
+        cart.push(cartItem);
     }
+    
     localStorage.setItem("cart", JSON.stringify(cart));
     updateCartCount();
     alert("Sản phẩm đã được thêm vào giỏ hàng! 🛒");
 }
 
-const reviews = [
-    {
-        id: 1,
-        productId: 2,
-        userName: "Nguyễn Văn A",
-        rating: 5,
-        comment: "Sách rất hay và chất lượng, nội dung dễ hiểu.",
-        date: "2024-03-15"
-    },
-    {
-        id: 2,
-        productId: 2,
-        userName: "Trần Thị B",
-        rating: 4,
-        comment: "Sách tốt, giao hàng nhanh. Tuy nhiên giá hơi cao.",
-        date: "2024-03-14"
-    },
-    {
-        id: 3,
-        productId: 2,
-        userName: "Lê Văn C",
-        rating: 5,
-        comment: "Sách tiếng Anh rất hay, phù hợp với chương trình học.",
-        date: "2024-03-13"
-    },
-    {
-        id: 3,
-        productId: 2,
-        userName: "Lê Văn C",
-        rating: 5,
-        comment: "Sách tiếng Anh rất hay, phù hợp với chương trình học.",
-        date: "2024-03-13"
-    },
-    {
-        id: 3,
-        productId: 2,
-        userName: "Lê Văn C",
-        rating: 5,
-        comment: "Sách tiếng Anh rất hay, phù hợp với chương trình học.",
-        date: "2024-03-13"
-    },
-    {
-        id: 3,
-        productId: 2,
-        userName: "Lê Văn C",
-        rating: 5,
-        comment: "Sách tiếng Anh rất hay, phù hợp với chương trình học.",
-        date: "2024-03-13"
+async function getReviewsByProductId(productId, page = 0, size = 5) {
+    try {
+        const response = await fetch(`${BASE_API_URL}/reviews/product/${productId}?page=${page}&size=${size}&sortBy=id`);
+        if (!response.ok) {
+            throw new Error('Không thể tải đánh giá');
+        }
+        const data = await response.json();
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        return null;
     }
-];
-
-function getReviewsByProductId(productId, page = 1, perPage = 5) {
-    const productReviews = reviews.filter(review => review.productId === productId);
-    const start = (page - 1) * perPage;
-    const end = start + perPage;
-    return {
-        reviews: productReviews.slice(start, end),
-        total: productReviews.length
-    };
 }
 
-function renderReviews(page = 1) {
-    const { reviews: productReviews, total } = getReviewsByProductId(productData.id, page);
-    const totalPages = Math.ceil(total / 5);
+async function renderReviews(page = 0) {
+    try {
+        const reviewData = await getReviewsByProductId(productData.id, page);
+        if (!reviewData) {
+            document.getElementById('reviews-container').innerHTML = '<p>Chưa có đánh giá nào.</p>';
+            return;
+        }
 
-    let reviewsHTML = '';
-    productReviews.forEach(review => {
-        reviewsHTML += `
-            <div class="card review-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between">
-                        <h5 class="card-title">${review.userName}</h5>
-                        <small class="text-muted">${new Date(review.date).toLocaleDateString('vi-VN')}</small>
+        const { content, totalPages, number } = reviewData;
+
+        let reviewsHTML = '';
+        content.forEach(review => {
+            const reviewDate = new Date(review.createdAt).toLocaleDateString('vi-VN');
+            reviewsHTML += `
+                <div class="card review-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h5 class="card-title">Khách hàng</h5>
+                            <small class="text-muted">${reviewDate}</small>
+                        </div>
+                        <div class="star-rating mb-2">
+                            ${renderStars(review.rating)}
+                        </div>
+                        <p class="card-text">${review.comment}</p>
                     </div>
-                    <div class="star-rating mb-2">
-                        ${renderStars(review.rating)}
-                    </div>
-                    <p class="card-text">${review.comment}</p>
                 </div>
-            </div>
-        `;
-    });
+            `;
+        });
 
-    let paginationHTML = '';
-    for (let i = 1; i <= totalPages; i++) {
-        paginationHTML += `
-            <li class="page-item ${i === page ? 'active' : ''}">
-                <a class="page-link" onclick="renderReviews(${i})">${i}</a>
-            </li>
-        `;
+        let paginationHTML = '';
+        if (totalPages > 1) {
+            paginationHTML += `
+                <li class="page-item ${number === 0 ? 'disabled' : ''}">
+                    <a class="page-link" onclick="renderReviews(${number - 1})" ${number === 0 ? 'tabindex="-1"' : ''}>Trước</a>
+                </li>
+            `;
+
+            for (let i = 0; i < totalPages; i++) {
+                paginationHTML += `
+                    <li class="page-item ${i === number ? 'active' : ''}">
+                        <a class="page-link" onclick="renderReviews(${i})">${i + 1}</a>
+                    </li>
+                `;
+            }
+
+            paginationHTML += `
+                <li class="page-item ${number === totalPages - 1 ? 'disabled' : ''}">
+                    <a class="page-link" onclick="renderReviews(${number + 1})" ${number === totalPages - 1 ? 'tabindex="-1"' : ''}>Sau</a>
+                </li>
+            `;
+        }
+
+        document.getElementById('reviews-container').innerHTML = reviewsHTML;
+        document.getElementById('pagination').innerHTML = paginationHTML;
+    } catch (error) {
+        console.error('Error rendering reviews:', error);
+        document.getElementById('reviews-container').innerHTML = '<p>Có lỗi xảy ra khi tải đánh giá.</p>';
+    }
+}
+
+async function initializeProductDetails() {
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get("id");
+
+    if (!productId) {
+        console.error("Invalid product ID:", productId);
+        alert("Không tìm thấy sản phẩm!");
+        window.location.href = "/templates/landingpage/landingpage.html";
+        return;
     }
 
-    document.getElementById('reviews-container').innerHTML = reviewsHTML;
-    document.getElementById('pagination').innerHTML = paginationHTML;
+    try {
+        productData = await getProductById(productId);
+        if (!productData) {
+            alert("Không tìm thấy sản phẩm!");
+            window.location.href = "/templates/landingpage/landingpage.html";
+            return;
+        }
+        
+        await renderProductDetails();
+        await renderReviews();
+    } catch (error) {
+        console.error('Error:', error);
+        alert("Có lỗi xảy ra khi tải thông tin sản phẩm!");
+    }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const params = new URLSearchParams(window.location.search);
-    const productId = parseInt(params.get("id"));
-    if (productId === undefined || productId==null | isNaN(productId)){
-        productId = 2;
-    }
-    console.log("productId: " + productId)
-    productData = getProductById(productId);
-    renderProductDetails();
-    renderReviews();
-    // updateCartCount();
-    const addToCartBtn = document.querySelector(".add-to-cart-btn");
-    if (addToCartBtn) {
-        document.addEventListener("click", function (event) {
-            if (event.target.classList.contains("add-to-cart-btn")) {
-                addToCart(productData);  
-            }
-        });
-    }
-
+    initializeProductDetails();
+    
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("add-to-cart-btn")) {
+            addToCart(productData);  
+        }
+    });
 });
+
+function formatPrice(price) {
+    return new Intl.NumberFormat('vi-VN').format(price);
+}
+
+const style = document.createElement('style');
+style.textContent = `
+    .product-image {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .product-description {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+    
+    .product-description h4 {
+        font-size: 18px;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    .product-description p {
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+`;
+document.head.appendChild(style);

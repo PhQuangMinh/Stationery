@@ -1,194 +1,307 @@
 document.addEventListener("DOMContentLoaded", () => {
-    renderCategoryMenu(categories)
-    renderProductGrid(products)
-  })
-  
-  const categories = [
-    {
-      id: 1,
-      name: "Sách giáo khoa",
-      children: [
-        {
-          id: 11,
-          name: "Lớp 1",
-          children: [
-            { id: 111, name: "Cánh diều" },
-            { id: 112, name: "Kết nối tri thức" },
-            { id: 113, name: "Chân trời sáng tạo" },
-          ],
-        },
-        { id: 12, name: "Lớp 2" },
-        { id: 13, name: "Lớp 3" },
-        { id: 14, name: "Lớp 4" },
-        { id: 15, name: "Lớp 5" },
-      ],
-    },
-    { id: 2, name: "Sách tham khảo" },
-    { id: 3, name: "Vở ghi" },
-    { id: 4, name: "Máy tính cầm tay" },
-    { id: 5, name: "Đồ dùng học tập" },
-    { id: 6, name: "Khác" },
-  ]
-  
-  const products = [
-    {
-      id: 1,
-      title: "Toán 1 tập 1 Cánh Diều",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZrGVUPT1uIcTSqwYLpBSDUkjX5JeKA.png",
-      rating: 5,
-      price: "39.000 đ",
-      categories: [1, 11, 111] // SGK -> Lớp 1 -> Cánh diều
-    },
-    {
-      id: 2,
-      title: "Tiếng Việt 1 tập 1 Kết nối tri thức",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZrGVUPT1uIcTSqwYLpBSDUkjX5JeKA.png",
-      rating: 4,
-      price: "35.000 đ",
-      categories: [1, 11, 112] // SGK -> Lớp 1 -> Kết nối tri thức
-    },
-    {
-      id: 3,
-      title: "Vở ô ly 96 trang Campus",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZrGVUPT1uIcTSqwYLpBSDUkjX5JeKA.png",
-      rating: 5,
-      price: "12.000 đ",
-      categories: [3] // Vở ghi
-    },
-    {
-      id: 4,
-      title: "Tự Nhiên và Xã Hội 1 Chân trời sáng tạo",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZrGVUPT1uIcTSqwYLpBSDUkjX5JeKA.png",
-      rating: 4,
-      price: "32.000 đ",
-      categories: [1, 11, 113] // SGK -> Lớp 1 -> Chân trời sáng tạo
-    },
-    {
-      id: 5,
-      title: "Casio FX-580VN X",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZrGVUPT1uIcTSqwYLpBSDUkjX5JeKA.png",
-      rating: 5,
-      price: "685.000 đ",
-      categories: [4] // Máy tính cầm tay
-    },
-    {
-      id: 6,
-      title: "Bộ thước kẻ 4 chi tiết",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZrGVUPT1uIcTSqwYLpBSDUkjX5JeKA.png",
-      rating: 4,
-      price: "25.000 đ",
-      categories: [5] // Đồ dùng học tập
-    },
-    {
-      id: 7,
-      title: "Toán nâng cao lớp 1",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZrGVUPT1uIcTSqwYLpBSDUkjX5JeKA.png",
-      rating: 5,
-      price: "45.000 đ",
-      categories: [2, 11] // Sách tham khảo -> Lớp 1
-    },
-    {
-      id: 8,
-      title: "Vở kẻ ngang 200 trang",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-ZrGVUPT1uIcTSqwYLpBSDUkjX5JeKA.png",
-      rating: 3,
-      price: "15.000 đ",
-      categories: [3] // Vở ghi
-    }
-  ]
-  
-  function renderCategoryMenu(categories, parentElement = document.getElementById("categoryMenu")) {
-    categories.forEach((category) => {
-      const menuItem = document.createElement("div")
-      menuItem.className = "menu-item"
-  
-      const menuHeader = document.createElement("div") 
-      menuHeader.className = "menu-header"
-  
-      const nameSpan = document.createElement("span")
-      nameSpan.textContent = category.name
-      menuHeader.appendChild(nameSpan)
-  
-      menuItem.appendChild(menuHeader)
-  
-      if (category.children && category.children.length > 0) {
-        const toggle = document.createElement("span")
-        toggle.className = "menu-toggle"
-        toggle.innerHTML = '<i class="bi bi-chevron-right"></i>'
-        menuHeader.appendChild(toggle)
-  
-        const submenu = document.createElement("div")
-        submenu.className = "submenu"
-        menuItem.appendChild(submenu)
-  
-        menuHeader.addEventListener("click", (e) => {
-          e.stopPropagation()
-          
-          const allSubmenus = document.querySelectorAll('.submenu.active')
-          allSubmenus.forEach(sub => {
-            if (sub !== submenu) {
-              sub.classList.remove('active')
-              const icon = sub.parentElement.querySelector('.menu-toggle i')
-              if (icon) {
-                icon.classList.remove('bi-chevron-down')
-                icon.classList.add('bi-chevron-right')
-              }
+    // Lấy category từ URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryFromUrl = urlParams.get('category');
+    
+    // Fetch categories và sau đó xử lý category từ URL nếu có
+    fetchCategories().then(() => {
+        if (categoryFromUrl) {
+            // Tìm category item từ URL
+            const categoryItem = document.querySelector(`.category-item[data-name="${categoryFromUrl}"]`);
+            if (categoryItem) {
+                const subcategory = categoryItem.nextElementSibling;
+                
+                // Kiểm tra xem category có children không
+                if (subcategory && subcategory.classList.contains('subcategory')) {
+                    // Nếu có children, lấy category con đầu tiên
+                    const firstChildCategory = subcategory.querySelector('.category-item');
+                    if (firstChildCategory) {
+                        // Mở submenu
+                        subcategory.style.display = 'block';
+                        const toggle = categoryItem.querySelector('.category-toggle');
+                        if (toggle) {
+                            toggle.textContent = '▼';
+                        }
+
+                        // Highlight category con đầu tiên
+                        const firstChildHeader = firstChildCategory.querySelector('.menu-header');
+                        document.querySelectorAll('.menu-header').forEach(header => 
+                            header.classList.remove('active')
+                        );
+                        firstChildHeader.classList.add('active');
+
+                        // Fetch sản phẩm của category con đầu tiên
+                        const firstChildName = firstChildCategory.getAttribute('data-name');
+                        fetchProductsByCategory(firstChildName);
+                        document.querySelector('.category-title').textContent = firstChildName;
+                    }
+                } else {
+                    // Nếu không có children, xử lý như bình thường
+                    const menuHeader = categoryItem.querySelector('.menu-header');
+                    document.querySelectorAll('.menu-header').forEach(header => 
+                        header.classList.remove('active')
+                    );
+                    menuHeader.classList.add('active');
+                    
+                    // Mở các submenu parent nếu category nằm trong submenu
+                    let parent = categoryItem.closest('.subcategory');
+                    while (parent) {
+                        parent.style.display = 'block';
+                        const toggle = parent.previousElementSibling.querySelector('.category-toggle');
+                        if (toggle) {
+                            toggle.textContent = '▼';
+                        }
+                        parent = parent.parentElement.closest('.subcategory');
+                    }
+                    
+                    fetchProductsByCategory(categoryFromUrl);
+                }
             }
-          })
-  
-          submenu.classList.toggle("active")
-          
-          const icon = toggle.querySelector("i")
-          icon.classList.toggle("bi-chevron-right")
-          icon.classList.toggle("bi-chevron-down")
+        } else {
+            // Nếu không có category trong URL, xử lý mặc định như cũ
+            const firstCategory = document.querySelector('.category-item');
+            if (firstCategory) {
+                const subcategory = firstCategory.nextElementSibling;
+                if (subcategory && subcategory.classList.contains('subcategory')) {
+                    // Nếu category đầu tiên có children
+                    const firstChildCategory = subcategory.querySelector('.category-item');
+                    if (firstChildCategory) {
+                        // Mở submenu
+                        subcategory.style.display = 'block';
+                        const toggle = firstCategory.querySelector('.category-toggle');
+                        if (toggle) {
+                            toggle.textContent = '▼';
+                        }
 
-          filterAndRenderProducts(category.id)
+                        // Highlight category con đầu tiên
+                        const firstChildHeader = firstChildCategory.querySelector('.menu-header');
+                        firstChildHeader.classList.add('active');
+
+                        // Fetch sản phẩm của category con đầu tiên
+                        const firstChildName = firstChildCategory.getAttribute('data-name');
+                        fetchProductsByCategory(firstChildName);
+                        document.querySelector('.category-title').textContent = firstChildName;
+                    }
+                } else {
+                    // Nếu category đầu tiên không có children
+                    const categoryName = firstCategory.getAttribute('data-name');
+                    const menuHeader = firstCategory.querySelector('.menu-header');
+                    menuHeader.classList.add('active');
+                    fetchProductsByCategory(categoryName);
+                    document.querySelector('.category-title').textContent = categoryName;
+                }
+            }
+        }
+    });
+});
+
+function fetchCategories() {
+    // Return Promise từ hàm fetch
+    return fetch(BASE_API_URL + '/categories/tree')
+        .then(response => response.json())
+        .then(response => {
+            if (response.data) {
+                console.log(response.data);
+                const categoryMenu = document.getElementById("categoryMenu");
+                categoryMenu.innerHTML = response.data.map(category => createCategoryHTML(category)).join('');
+                addCategoryEventListeners();
+            }
         })
-  
-        renderCategoryMenu(category.children, submenu)
+        .catch(error => console.error('Error fetching categories:', error));
+}
+
+function createCategoryHTML(category, level = 0) {
+    const hasChildren = category.children && category.children.length > 0;
+    
+    let html = `
+        <div class="category-container">
+            <div class="category-item" data-id="${category.id}" data-name="${category.name}">
+                <div class="menu-header d-flex align-items-center">
+                    ${hasChildren ? 
+                        `<span class="category-toggle">▼</span>` : 
+                        `<span style="margin-left: 1rem"></span>`
+                    }
+                    <span class="category-name">${category.name}</span>
+                </div>
+            </div>
+            ${hasChildren ? `
+                <div class="subcategory">
+                    ${category.children.map(child => createCategoryHTML(child, level + 1)).join('')}
+                </div>
+            ` : ''}
+        </div>
+    `;
+
+    return html;
+}
+
+function addCategoryEventListeners() {
+    // Xử lý click vào category-toggle
+    document.querySelectorAll('.category-toggle').forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const categoryContainer = e.target.closest('.category-container');
+            const subcategory = categoryContainer.querySelector('.subcategory');
+            if (subcategory) {
+                subcategory.style.display = subcategory.style.display === 'none' ? 'block' : 'none';
+                e.target.textContent = subcategory.style.display === 'none' ? '▶' : '▼';
+            }
+        });
+    });
+
+    // Xử lý click vào category-item
+    document.querySelectorAll('.category-item').forEach(item => {
+        const menuHeader = item.querySelector('.menu-header');
+        const categoryName = item.getAttribute('data-name');
+        const categoryContainer = item.closest('.category-container');
+        const subcategory = categoryContainer.querySelector('.subcategory');
+
+        menuHeader.addEventListener('click', (e) => {
+            e.stopPropagation();
+
+            // Nếu click vào toggle button, không xử lý
+            if (e.target.classList.contains('category-toggle')) {
+                return;
+            }
+
+            // Nếu category có children
+            if (subcategory) {
+                const firstChildCategory = subcategory.querySelector('.category-item');
+                if (firstChildCategory) {
+                    const firstChildName = firstChildCategory.getAttribute('data-name');
+                    fetchProductsByCategory(firstChildName);
+                    document.querySelector('.category-title').textContent = firstChildName;
+
+                    // Highlight category được chọn
+                    document.querySelectorAll('.menu-header').forEach(header => 
+                        header.classList.remove('active')
+                    );
+                    firstChildCategory.querySelector('.menu-header').classList.add('active');
+                }
       } else {
-        menuHeader.addEventListener("click", (e) => {
-          e.stopPropagation()
-          document.querySelectorAll(".menu-header").forEach((item) => 
-            item.classList.remove("active")
-          )
-          menuHeader.classList.add("active")
+                // Nếu category không có children
+                fetchProductsByCategory(categoryName);
+                document.querySelector('.category-title').textContent = categoryName;
 
-          filterAndRenderProducts(category.id)
+                // Highlight category được chọn
+                document.querySelectorAll('.menu-header').forEach(header => 
+                    header.classList.remove('active')
+                );
+                menuHeader.classList.add('active');
+            }
+        });
+    });
+}
+
+// Thêm biến để quản lý state phân trang
+let currentPage = 0;
+let totalPages = 0;
+let currentCategory = '';
+const PAGE_SIZE = 12; // Số sản phẩm mỗi trang
+
+function fetchProductsByCategory(categoryName, page = 0) {
+    currentCategory = categoryName;
+    const url = new URL(`${BASE_API_URL}/products/category`);
+    url.searchParams.append('categoryName', categoryName);
+    url.searchParams.append('page', page);
+    url.searchParams.append('size', PAGE_SIZE);
+    url.searchParams.append('sortBy', 'id');
+
+    fetch(url)
+        .then(response => response.json())
+        .then(response => {
+            if (response.data) {
+                const { content, totalPages: total, number } = response.data;
+                currentPage = number;
+                totalPages = total;
+                renderProductGrid(content);
+                renderPagination(total, number);
+                document.querySelector('.category-title').textContent = categoryName;
+            }
         })
-      }
-  
-      parentElement.appendChild(menuItem)
-    })
-  }
-  
-  function filterAndRenderProducts(categoryId) {
-    const filteredProducts = products.filter(product => 
-      product.categories.includes(categoryId)
-    )
-    renderProductGrid(filteredProducts)
+        .catch(error => {
+            console.error('Error fetching products:', error);
+        });
+}
+
+function renderPagination(totalPages, currentPage) {
+    const paginationContainer = document.getElementById('pagination');
+    let html = '<nav aria-label="Product pagination"><ul class="pagination justify-content-center">';
+
+    // Nút Previous
+    html += `
+        <li class="page-item ${currentPage === 0 ? 'disabled' : ''}">
+            <a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>
+        </li>
+    `;
+
+    // Các nút số trang
+    for (let i = 0; i < totalPages; i++) {
+        html += `
+            <li class="page-item ${currentPage === i ? 'active' : ''}">
+                <a class="page-link" href="#" data-page="${i}">${i + 1}</a>
+            </li>
+        `;
+    }
+
+    // Nút Next
+    html += `
+        <li class="page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}">
+            <a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>
+        </li>
+    `;
+
+    html += '</ul></nav>';
+    paginationContainer.innerHTML = html;
+
+    // Thêm event listeners cho các nút phân trang
+    paginationContainer.querySelectorAll('.page-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const page = parseInt(e.target.dataset.page);
+            if (page >= 0 && page < totalPages) {
+                fetchProductsByCategory(currentCategory, page);
+            }
+        });
+    });
   }
   
   function renderProductGrid(products) {
-    const grid = document.getElementById("productGrid")
+    const grid = document.getElementById("productGrid");
+    if (products.length === 0) {
+        grid.innerHTML = '<p class="text-center w-100">Không có sản phẩm nào trong danh mục này</p>';
+        return;
+    }
+
     grid.innerHTML = products
       .map(
         (product) =>
-          `<div class="product-card">
-              <a href="#" class="product-title">
-                  <img src="${product.image}" alt="${product.title}" class="product-image">
-                  <div>${product.title}</div>
-              </a>
-              <div class="rating">
-                  ${Array(product.rating).fill("★").join("")}
-                  ${Array(5 - product.rating)
-                    .fill("☆")
-                    .join("")}
-              </div>
-              <div class="price">${product.price}</div>
-          </div>`,
-      )
-      .join("")
+                `<div class="product-card" data-id="${product.id}">
+                    <a href="/templates/detailproduct.html?id=${product.id}" class="product-title text-decoration-none">
+                        <img src="${product.imageUrl}" alt="${product.name}" class="product-image">
+                        <div class="product-name text-dark">${product.name}</div>
+                        <div class="price">${formatPrice(product.price)}đ</div>
+                        ${product.discount > 0 ? 
+                            `<div class="discount">Giảm ${product.discount}%</div>` : 
+                            ''
+                        }
+                    </a>
+                </div>`
+        )
+        .join("");
+
+    // Thêm event listener cho các product cards
+    document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            e.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ a
+            const productId = this.getAttribute('data-id');
+            window.location.href = `/templates/detailproduct.html?id=${productId}`;
+        });
+    });
+}
+
+function formatPrice(price) {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
   
   

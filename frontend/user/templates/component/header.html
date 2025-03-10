@@ -24,9 +24,16 @@
                     <img src="../../static/img/logo.png" alt="VP Logo" class="logo">
                 </div>
                 <div class="col-lg-7">
-                    <div class="search-bar d-flex">
-                        <input type="text" class="form-control me-2" placeholder="Tìm kiếm sản phẩm...">
-                        <button class="btn btn-primary">🔍</button>
+                    <div class="search-container">
+                        <div class="search-bar d-flex">
+                            <input type="text" 
+                                   id="searchInput"
+                                   class="form-control me-2" 
+                                   placeholder="Tìm kiếm sản phẩm..."
+                                   autocomplete="off">
+                            <button class="btn btn-primary">🔍</button>
+                        </div>
+                        <div id="searchResults" class="search-results"></div>
                     </div>
                 </div>
                 <div class="col-lg-3">
@@ -35,8 +42,8 @@
                             <p class="mb-0">📞 Gọi đặt hàng</p>
                             <strong>06677028</strong>
                         </div>
-                        <div class="cart">
-                            <a id="cart-link" class="text-danger text-decoration-none" target="_self">🛒 Giỏ hàng (0 sản phẩm)</a>
+                        <div class="cart-order-container d-flex gap-3">
+                            <!-- Nội dung sẽ được thêm động bởi checkLoginStatus() -->
                         </div>
                     </div>
                 </div>

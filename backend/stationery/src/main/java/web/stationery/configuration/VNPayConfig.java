@@ -35,8 +35,7 @@ public class VNPayConfig {
     @Value("${payment.orderType}")
     private String orderType;
 
-    public Map<String, String> getVNPayConfig() {
-        String txnRef = VNPayUtil.getRandomNumber(8);
+    public Map<String, String> getVNPayConfig(String txnRef) {
         Map<String, String> config = new HashMap<>();
         config.put("vnp_Version", this.version);
         config.put("vnp_Command", this.command);

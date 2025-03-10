@@ -24,6 +24,7 @@ public class OrderMapper {
     public List<OrderResponse> toResponseList(List<UserOrder> userOrderList){
         List<OrderResponse> orderResponses = new ArrayList<>();
         for (UserOrder userOrder:userOrderList){
+            if (userOrder.isDeleteFlag()) continue;
             orderResponses.add(toResponse(userOrder));
         }
         return orderResponses;
@@ -44,7 +45,8 @@ public class OrderMapper {
                     , orderItem.getProduct().getName()
                     , orderItem.getQuantity()
                     , orderItem.getProduct().getPrice()
-                    , orderItem.getProduct().getImageUrl()));
+                    , orderItem.getProduct().getImageUrl()
+                    , orderItem.getProduct().getId()));
         }
         return new OrderResponse(
                 String.valueOf(userOrder.getId())
@@ -52,6 +54,8 @@ public class OrderMapper {
                 , getTotalAmount(userOrder.getOrderItems())
                 , userOrder.getStatus()
                 , userOrder.getShippingAddress()
+                , userOrder.getPaymentMethod()
+                , userOrder.getTxnRef()
                 , new UserResponse(userOrder.getUser().getId(), userOrder.getUser().getFirstName(), userOrder.getUser().getLastName(), userOrder.getUser().getPhone())
                 , orderItemResponses);
     }
@@ -70,6 +74,8 @@ public class OrderMapper {
         userOrder.setStatus(orderRequest.getStatus());
         userOrder.setOrderDate(orderRequest.getOrderDate());
         userOrder.setShippingAddress(orderRequest.getShippingAddress());
+        userOrder.setPaymentMethod(orderRequest.getPaymentMethod());
+        userOrder.setTxnRef(orderRequest.getTxnRef());
     }
 
 
@@ -80,6 +86,8 @@ public class OrderMapper {
         userOrder.setOrderDate(orderRequest.getOrderDate());
         userOrder.setStatus(orderRequest.getStatus());
         userOrder.setShippingAddress(orderRequest.getShippingAddress());
+        userOrder.setPaymentMethod(orderRequest.getPaymentMethod());
+        userOrder.setTxnRef(orderRequest.getTxnRef());
         for (OrderItemRequest orderItemRequest: orderRequest.getOrderItemRequests()){
             OrderItem orderItem = new OrderItem();
             Optional<Product> findProduct = productRepository.findById(String.valueOf(orderItemRequest.getProductId()));

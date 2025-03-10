@@ -6,10 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import web.stationery.common.exception.AuthorizingException;
 import web.stationery.common.exception.NotFoundException;
 import web.stationery.common.utils.PageableUtils;
 import web.stationery.dto.request.OrderRequest;
-import web.stationery.dto.response.CartResponse;
 import web.stationery.dto.response.OrderResponse;
 import web.stationery.model.User;
 import web.stationery.model.UserOrder;
@@ -52,27 +52,21 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponse getOrderUser(User user) {
-        Optional<UserOrder> findOrder = orderRepository.findByUser(user);
+    public List<OrderResponse> getOrderUser(User user) {
+        Optional<List<UserOrder>> findOrder = orderRepository.findByUser(user);
         if (findOrder.isEmpty()){
             throw new NotFoundException("Order not found for user - " + user.getId());
         }
-        return orderMapper.toResponse(findOrder.get());
-    }
-
-    @Override
-    public OrderResponse updateOrder(User user, OrderRequest orderRequest) {
-        Optional<UserOrder> findOrder = orderRepository.findByUser(user);
-        if (findOrder.isEmpty()){
-            throw new NotFoundException("Order not found for user - " + user.getId());
-        }
-        orderMapper.updateOrder(findOrder.get(), orderRequest);
-        return orderMapper.toResponse(orderRepository.save(findOrder.get()));
+        return orderMapper.toResponseList(findOrder.get());
     }
 
     @Override
     public OrderResponse save(User user, OrderRequest orderRequest) {
-        return orderMapper.toResponse(orderRepository.save(orderMapper.toEntity(orderRequest, user, productRepository)));
+        String txnRef = String.valueOf(System.currentTimeMillis()).substring(5); 
+        orderRequest.setTxnRef(txnRef);
+        
+        UserOrder order = orderMapper.toEntity(orderRequest, user, productRepository);
+        return orderMapper.toResponse(orderRepository.save(order));
     }
 
     @Override
@@ -111,5 +105,46 @@ public class OrderServiceImpl implements OrderService {
         }
         orderMapper.updateOrderAdmin(findOrder.get(), orderRequest);
         return orderMapper.toResponse(orderRepository.save(findOrder.get()));
+    }
+
+    @Override
+    public OrderResponse cancelOrder(String orderId) {
+        Optional<UserOrder> order = orderRepository.findById(orderId);
+        if (order.isEmpty()) {
+            throw new NotFoundException("Order not found - " + orderId);
+        }
+        
+        order.get().setDeleteFlag(true);
+        order.get().setStatus("Hủy");
+        return orderMapper.toResponse(orderRepository.save(order.get()));
+    }
+
+    @Override
+    public void updateOrderAfterPayment(String txnRef, String status) {
+        Optional<UserOrder> order = orderRepository.findByTxnRef(txnRef);
+        if (order.isEmpty()) {
+            throw new NotFoundException("Order not found with transaction reference: " + txnRef);
+        }
+
+        if ("00".equals(status)) {
+            order.get().setStatus("Đã thanh toán");
+        }
+        orderRepository.save(order.get());
+    }
+
+    @Override
+    public OrderResponse getOrderDetailByUser(String username, String orderId) {
+        User user = userService.findUserByUsername(username);
+        Optional<UserOrder> order = orderRepository.findById(orderId);
+        
+        if (order.isEmpty()) {
+            throw new NotFoundException("Order not found - " + orderId);
+        }
+
+        if (!order.get().getUser().getId().equals(user.getId())) {
+            throw new AuthorizingException("You don't have permission to view this order");
+        }
+        
+        return orderMapper.toResponse(order.get());
     }
 }

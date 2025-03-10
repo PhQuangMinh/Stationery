@@ -4,22 +4,48 @@ function renderCart() {
 
     cartBody.innerHTML = "";
     if (cart.length === 0) {
-        cartBody.innerHTML = "<tr><td colspan='6'>Giỏ hàng của bạn đang trống! 😢</td></tr>";
+        cartBody.innerHTML = "<tr><td colspan='7'>Giỏ hàng của bạn đang trống! 😢</td></tr>";
+        return;
     }
-    console.log("cart: " + cart)
 
     cart.forEach((item, index) => {
-        console.log(item)
+        const discountPrice = item.price * (100 - item.discount) / 100;
+        const totalPrice = discountPrice * item.quantity;
+        
         let row = document.createElement("tr");
         row.innerHTML = `
-            <td><img src="${item.image}" alt="Sản phẩm" width="150px"></td>
-            <td>${item.name}</td>
-            <td>${item.price.toLocaleString('vi-VN')} đ</td>
-            <td class="text-center">
-                <input type="number" value="${item.quantity}" min="1" class="form-control quantity" data-index="${index}" style="width: 80px; text-align: center;">
+            <td>
+                <img src="${item.imageUrl}" alt="${item.name}" 
+                     style="max-width: 100px; max-height: 100px; object-fit: contain;">
             </td>
-            <td>${(item.price * item.quantity).toLocaleString('vi-VN')} đ</td>
-            <td><button class="btn btn-danger btn-sm delete" data-index="${index}">Xóa</button></td>
+            <td>
+                <div class="product-info">
+                    <div class="product-name">${item.name}</div>
+                    <div class="product-brand text-muted small">Thương hiệu: ${item.brand}</div>
+                </div>
+            </td>
+            <td>
+                <div class="price-info">
+                    ${formatPrice(item.price)} đ
+                </div>
+            </td>
+            <td class="text-center">
+                ${item.discount}%
+            </td>
+            <td class="text-center">
+                <input type="number" value="${item.quantity}" min="1" max="${item.stockQuantity}"
+                       class="form-control quantity" data-index="${index}" 
+                       style="width: 60px; text-align: center; margin: 0 auto;">
+                ${item.stockQuantity < 5 ? 
+                    `<div class="stock-warning text-danger small">Chỉ còn ${item.stockQuantity} sản phẩm</div>` 
+                    : ''}
+            </td>
+            <td>${formatPrice(totalPrice)} đ</td>
+            <td>
+                <button class="btn btn-danger btn-sm delete" data-index="${index}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
         `;
         cartBody.appendChild(row);
     });
@@ -59,15 +85,57 @@ function attachEventListeners() {
         }
         window.location.href = "../payment/checkout.html";
     });
+
+    document.querySelectorAll(".decrease-qty").forEach(button => {
+        button.addEventListener("click", function() {
+            const index = this.getAttribute("data-index");
+            const input = document.querySelector(`.quantity[data-index="${index}"]`);
+            if (input.value > 1) {
+                input.value = parseInt(input.value) - 1;
+                input.dispatchEvent(new Event('change'));
+            }
+        });
+    });
+
+    document.querySelectorAll(".increase-qty").forEach(button => {
+        button.addEventListener("click", function() {
+            const index = this.getAttribute("data-index");
+            const input = document.querySelector(`.quantity[data-index="${index}"]`);
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            if (parseInt(input.value) < cart[index].stockQuantity) {
+                input.value = parseInt(input.value) + 1;
+                input.dispatchEvent(new Event('change'));
+            }
+        });
+    });
 }
 
 function updateTotal() {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    document.getElementById("subtotal").innerText = subtotal.toLocaleString('vi-VN') + " đ";
-    document.getElementById("total").innerText = subtotal.toLocaleString('vi-VN') + " đ";
+    
+    // Tính tổng tiền gốc và tổng tiền sau giảm giá
+    let originalTotal = 0;
+    let finalTotal = 0;
+    
+    cart.forEach(item => {
+        const originalItemTotal = item.price * item.quantity;
+        const discountPrice = item.price * (100 - item.discount) / 100;
+        const discountedItemTotal = discountPrice * item.quantity;
+        
+        originalTotal += originalItemTotal;
+        finalTotal += discountedItemTotal;
+    });
+
+    // Hiển thị tạm tính (tổng tiền gốc)
+    document.getElementById("subtotal").innerText = formatPrice(originalTotal) + " đ";
+    
+    // Hiển thị tổng số tiền (sau khi áp dụng giảm giá)
+    document.getElementById("total").innerText = formatPrice(finalTotal) + " đ";
 }
 
+function formatPrice(price) {
+    return new Intl.NumberFormat('vi-VN').format(price);
+}
 
 document.addEventListener("DOMContentLoaded", () =>{
     renderCart();

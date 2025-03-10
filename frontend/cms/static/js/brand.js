@@ -1,6 +1,10 @@
-const CREATE_API_URL = 'http://localhost:8080/admin/brands';
-const GET_ALL_API_URL = 'http://localhost:8080/admin/brands/all-full';
-const UPDATE_API_URL = 'http://localhost:8080/admin/brands';
+// API URLs
+const BRAND_API = {
+    GET_ALL: "http://localhost:8080/admin/brands/all-full",
+    CREATE: "http://localhost:8080/admin/brands",
+    UPDATE: "http://localhost:8080/admin/brands",
+    DELETE: "http://localhost:8080/admin/brands"
+};
 
 let brands = [];
 let editingBrandId = null;
@@ -17,7 +21,7 @@ function handleResponse(response) {
 async function fetchBrands() {
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(GET_ALL_API_URL, {
+        const response = await fetch(BRAND_API.GET_ALL, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -111,7 +115,7 @@ document.getElementById('btnSaveBrand').addEventListener('click', async function
     try {
         let response;
         if (editingBrandId) {
-            response = await fetch(`${UPDATE_API_URL}/${editingBrandId}`, {
+            response = await fetch(`${BRAND_API.UPDATE}/${editingBrandId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -120,7 +124,7 @@ document.getElementById('btnSaveBrand').addEventListener('click', async function
                 body: JSON.stringify(brandData)
             });
         } else {
-            response = await fetch(CREATE_API_URL, {
+            response = await fetch(BRAND_API.CREATE, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -153,7 +157,7 @@ document.getElementById('btnDeleteBrand').addEventListener('click', async functi
 
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`${UPDATE_API_URL}/${editingBrandId}`, {
+        const response = await fetch(`${BRAND_API.DELETE}/${editingBrandId}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`

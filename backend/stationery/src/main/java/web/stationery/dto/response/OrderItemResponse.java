@@ -15,4 +15,5 @@ public class OrderItemResponse {
     private int quantity;
     private int price;
     private String imageUrl;
+    private int productId;
 }

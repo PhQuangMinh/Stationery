@@ -135,5 +135,61 @@ header {
     margin-bottom: 70px;
 }
 
+/* Thêm style cho container giỏ hàng và đơn hàng */
+.cart-order-container {
+    display: flex;
+    gap: 20px;
+}
+
+.cart, .order {
+    cursor: pointer;
+}
+
+.order {
+    padding-left: 0;  /* Ghi đè padding mặc định */
+}
+
+/* Cập nhật style cho cart */
+.cart {
+    padding-left: 0;  /* Ghi đè padding mặc định */
+}
+
+/* Thêm style cho container tìm kiếm */
+.search-container {
+    position: relative;
+    flex: 1;
+}
+
+/* Style cho dropdown kết quả tìm kiếm */
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1001;
+    display: none;
+}
+
+.search-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.search-item:hover {
+    background-color: #f5f5f5;
+}
+
+/* Đảm bảo header luôn nằm trên cùng */
+header {
+    z-index: 1000;
+}
+
 
 

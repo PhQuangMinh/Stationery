@@ -17,7 +17,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponse createVNPayPayment(HttpServletRequest request) {
-        Map<String, String> params = vnPayConfig.getVNPayConfig();
+        Map<String, String> params = vnPayConfig.getVNPayConfig(request.getParameter("txnRef"));
         params.put("vnp_Amount", String.valueOf(Integer.parseInt(request.getParameter("amount")) * 100L));
         if (request.getParameter("bankCode") != null && !request.getParameter("bankCode").isEmpty()) {
             params.put("vnp_BankCode", request.getParameter("bankCode"));

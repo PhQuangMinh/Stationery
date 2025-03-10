@@ -1,8 +1,11 @@
 let selectedCategory = null; // Lưu danh mục đang chọn
-const CATEGORY_TREE_API_URL = "http://localhost:8080/categories/tree";
-const SAVE_CATEGORY_API_URL = "http://localhost:8080/admin/categories";
-const UPDATE_CATEGORY_API_URL = "http://localhost:8080/admin/categories";
-const DELETE_CATEGORY_API_URL = "http://localhost:8080/admin/categories";
+const CATEGORY_API = {
+    GET_TREE: "http://localhost:8080/categories/tree",
+    GET_ALL: "http://localhost:8080/admin/categories/all-full",
+    CREATE: "http://localhost:8080/admin/categories",
+    UPDATE: "http://localhost:8080/admin/categories",
+    DELETE: "http://localhost:8080/admin/categories"
+};
 
 // Thêm hàm kiểm tra response
 function handleResponse(response) {
@@ -16,7 +19,7 @@ function handleResponse(response) {
 // 🟢 Lấy danh mục từ backend
 async function fetchCategories() {
     try {
-        let response = await fetch(CATEGORY_TREE_API_URL);
+        let response = await fetch(CATEGORY_API.GET_TREE);
         handleResponse(response);
         let data = await response.json();
         console.log(data)
@@ -32,7 +35,7 @@ async function saveCategoryToBackend(name, parentId = null) {
     console.log("save token: ", localStorage.getItem('accessToken'))
     try {
         const token = localStorage.getItem('accessToken');
-        let response = await fetch(SAVE_CATEGORY_API_URL, {
+        let response = await fetch(CATEGORY_API.CREATE, {
             method: "POST",
             headers: { 
                 "Content-Type": "application/json",
@@ -106,29 +109,25 @@ async function updateCategory(id, name, parentId = null, deleteFlag) {
 // 🟢 Tạo HTML cho danh mục
 function createCategoryHTML(category, level = 0) {
     const hasSubcategories = category.children && category.children.length > 0;
-    console.log(category.deleteFlag)
-    console.log("category: ", category.deleteFlag ? ' <span class="badge bg-danger ms-2">Không hoạt động</span>' : ' <span class="badge bg-success ms-2">Hoạt động</span>')
     const statusClass = category.deleteFlag ? 'text-muted' : '';
     
     let html = `
-        <div class="category-item ${statusClass}" data-id="${category.id}" data-name="${category.name}" data-parent-id="${category.parentId || ''}" data-status="${category.deleteFlag}">
-            <div class="d-flex align-items-center">
-                ${hasSubcategories ? `<span class="category-toggle">▼</span>` : `<span style="margin-left: 1rem"></span>`}
-                <span class="category-name">${category.name}</span>
-                ${category.deleteFlag ? ' <span class="badge bg-danger ms-2">Không hoạt động</span>' : ' <span class="badge bg-success ms-2">Hoạt động</span>'}
+        <div class="category-container">
+            <div class="category-item ${statusClass}" data-id="${category.id}" data-name="${category.name}" data-parent-id="${category.parentId || ''}" data-status="${category.deleteFlag}">
+                <div class="d-flex align-items-center" style="margin-left: ${level * 20}px">
+                    ${hasSubcategories ? `<span class="category-toggle">▼</span>` : `<span style="margin-left: 1rem"></span>`}
+                    <span class="category-name">${category.name}</span>
+                    ${category.deleteFlag ? ' <span class="badge bg-danger ms-2">Không hoạt động</span>' : ' <span class="badge bg-success ms-2">Hoạt động</span>'}
+                </div>
             </div>
+            ${hasSubcategories ? `
+                <div class="subcategory" style="display: block;">
+                    ${category.children.map(subCategory => createCategoryHTML(subCategory, level + 1)).join('')}
+                </div>
+            ` : ''}
         </div>
     `;
 
-    if (hasSubcategories) {
-        html += '<div class="subcategory">';
-        category.children.forEach(subCategory => {
-            html += createCategoryHTML(subCategory, level + 1);
-        });
-        html += '</div>';
-    }
-
-    html += '</div>';
     return html;
 }
 
@@ -151,8 +150,8 @@ function addCategoryEventListeners() {
     // Xử lý click vào category-toggle
     document.querySelectorAll('.category-toggle').forEach(toggle => {
         toggle.addEventListener('click', (e) => {
-            const categoryItem = e.target.closest('.category-item');
-            const subcategory = categoryItem.querySelector('.subcategory');
+            const categoryContainer = e.target.closest('.category-container');
+            const subcategory = categoryContainer.querySelector('.subcategory');
             if (subcategory) {
                 subcategory.style.display = subcategory.style.display === 'none' ? 'block' : 'none';
                 e.target.textContent = subcategory.style.display === 'none' ? '▶' : '▼';
@@ -252,8 +251,8 @@ function populateParentSelect(categories, excludeId = null) {
     function addOptions(cats, level = 0) {
         cats.forEach(category => {
             if (!excludeId || category.id !== excludeId) {
-                const prefix = '- '.repeat(level);
-                const option = new Option(prefix + category.name, category.id);
+                const indent = '\u00A0\u00A0\u00A0\u00A0'.repeat(level); // Sử dụng khoảng trắng để thụt lề
+                const option = new Option(indent + category.name, category.id);
                 select.add(option);
                 
                 if (category.children && category.children.length > 0) {

@@ -21,6 +21,21 @@
         <div class="container py-5">
             <h1 class="mb-4">Đơn hàng của bạn</h1>
             
+            <!-- Thêm phần thông tin đơn hàng -->
+            <div class="order-info mb-4">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Mã đơn hàng:</strong> <span id="orderId"></span></p>
+                        <p><strong>Ngày đặt:</strong> <span id="orderDate"></span></p>
+                        <p><strong>Trạng thái:</strong> <span id="orderStatus"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Địa chỉ giao hàng:</strong> <span id="shippingAddress"></span></p>
+                        <p><strong>Phương thức thanh toán:</strong> <span id="paymentMethod"></span></p>
+                    </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-bordered">
                     <thead>

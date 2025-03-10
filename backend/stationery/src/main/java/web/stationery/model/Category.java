@@ -14,7 +14,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -56,4 +55,10 @@ public class Category {
     public void setId(String id) {
         this.id = id != null ? Integer.parseInt(id) : null;
     }
+
+    @Override
+    public String toString() {
+        return "Category{id=" + id + ", name='" + name + "', subcategories=" + subcategories + "}";
+    }
+
 }
