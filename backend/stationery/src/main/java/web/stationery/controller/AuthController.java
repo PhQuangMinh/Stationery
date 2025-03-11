@@ -21,24 +21,23 @@ import web.stationery.common.exception.IncorrectDataException;
 import web.stationery.dto.request.userrequest.AuthRequest;
 import web.stationery.dto.request.userrequest.ForgotPasswordRequest;
 import web.stationery.dto.request.userrequest.RegisterUserRequest;
+import web.stationery.dto.response.AuthResponse;
 import web.stationery.dto.response.CustomResponse;
 import web.stationery.model.User;
 import web.stationery.service.AuthService;
 import web.stationery.service.JWTTokenService;
+import web.stationery.service.RedisService;
 import web.stationery.service.UserService;
 import web.stationery.utils.BCryptEncoder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
 @Validated
 public class AuthController {
     private final AuthService authService;
-
-    private final AuthenticationManager authenticationManager;
-
-    private final UserService userService;
-
-    private final JWTTokenService jwtTokenService;
 
     @PostMapping("/register")
     public CustomResponse<?> register(@Valid @RequestBody RegisterUserRequest userRequest){
@@ -47,22 +46,18 @@ public class AuthController {
 
     @PostMapping("/login")
     public CustomResponse<?> login(@Valid @RequestBody AuthRequest authRequest){
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        } catch (BadCredentialsException e) {
-            throw new IncorrectDataException("Incorrect username or password");
-        }
-        final UserDetails userDetails = userService.loadUserByUserName(authRequest.getUsername());
-        final String jwt = jwtTokenService.generateToken(userDetails);
-        return new CustomResponse<>(jwt, HttpStatus.OK);
+        return new CustomResponse<>(authService.login(authRequest));
     }
 
     @PostMapping("/forgot-password")
     public ResponseEntity<CustomResponse<?>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
         authService.forgotPassword(forgotPasswordRequest);
         return new ResponseEntity<>(new CustomResponse<>("Password reset link sent to your email"), HttpStatus.OK);
+    }
+
+    @PostMapping("/logout")
+    public void logout(@RequestBody String accessToken) {
+        authService.logout(accessToken);
     }
 
 }

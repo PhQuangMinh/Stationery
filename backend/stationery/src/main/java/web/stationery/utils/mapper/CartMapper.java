@@ -1,6 +1,5 @@
 package web.stationery.utils.mapper;
 
-import org.mapstruct.Mapper;
 import web.stationery.dto.response.CartResponse;
 import web.stationery.model.Cart;
 import web.stationery.model.CartItem;

@@ -2,8 +2,12 @@ package web.stationery.service;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Map;
+
 public interface JWTTokenService {
-    String generateToken(UserDetails userDetails);
+    String generateAccessToken(UserDetails userDetails, Map<String, Object> claims);
+
+    String generateRefreshToken(UserDetails userDetails, Map<String, Object> claims);
 
     String extractUsername(String token);
 

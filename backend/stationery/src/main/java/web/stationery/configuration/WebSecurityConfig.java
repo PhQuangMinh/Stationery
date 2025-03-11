@@ -49,8 +49,9 @@ public class WebSecurityConfig {
         "/reviews/**", 
         "/api/v1/**", 
         "/api/email/**",
-        "/ws/**",  // Thêm WebSocket endpoints
-        "/topic/**"
+        "/ws/**",
+        "/topic/**",
+            "/redis/**",
     };
 
     @Bean
