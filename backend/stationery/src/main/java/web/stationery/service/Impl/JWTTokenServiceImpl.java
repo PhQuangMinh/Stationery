@@ -7,24 +7,39 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import web.stationery.common.constant.Constant;
 import web.stationery.service.JWTTokenService;
 
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class JWTTokenServiceImpl implements JWTTokenService {
-    private final long expirationTimeInMillis = 1000 * 60 * 60;
-    private final Date now = new Date();
-    private final Date expiration = new Date(now.getTime() + expirationTimeInMillis);
     private final SecretKey secretKey = secretKey();
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateAccessToken(UserDetails userDetails, Map<String, Object> claims) {
+        Instant now = Instant.now();
+        Instant expiration = Instant.now().plusSeconds(Constant.ACCESS_TOKEN_EXPIRATION);
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities())
-                .setIssuedAt(now)
-                .setExpiration(expiration)
+                .setIssuedAt(Date.from(now))
+                .setExpiration(Date.from(expiration))
+                .signWith(secretKey)
+                .compact();
+    }
+
+    @Override
+    public String generateRefreshToken(UserDetails userDetails, Map<String, Object> claims) {
+        Instant expiration = Instant.now().plusSeconds(Constant.REFRESH_TOKEN_EXPIRATION);
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(userDetails.getUsername())
+                .setExpiration(Date.from(expiration))
                 .signWith(secretKey)
                 .compact();
     }
