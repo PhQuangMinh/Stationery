@@ -42,3 +42,62 @@
     text-decoration: underline;
     color: #000;
 }
+
+/* Thêm style cho nút đăng nhập Google */
+.btn-google {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    color: #757575;
+    padding: 8px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+
+.btn-google:hover {
+    background-color: #f1f1f1;
+    border-color: #ddd;
+    color: #757575;
+}
+
+.btn-google img {
+    width: 18px;
+    height: 18px;
+}
+
+/* Thêm divider */
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.divider-text {
+    background-color: #fff;
+    padding: 0 10px;
+    color: #757575;
+    display: inline-block;
+    position: relative;
+}

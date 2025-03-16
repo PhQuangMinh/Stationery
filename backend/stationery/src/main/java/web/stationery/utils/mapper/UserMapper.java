@@ -24,8 +24,7 @@ public class UserMapper {
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setPassword(request.getPassword());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        user.setName(request.getName());
         user.setPhone(request.getPhone());
         user.setAddress(request.getAddress());
 
@@ -52,8 +51,7 @@ public class UserMapper {
         response.setUsername(user.getUsername());
         response.setEmail(user.getEmail());
         response.setPhone(user.getPhone());
-        response.setFirstName(user.getFirstName());
-        response.setLastName(user.getLastName());
+        response.setName(user.getName());
         response.setAddress(user.getAddress());
         response.setRole(String.valueOf(user.getRole()));
         
@@ -72,8 +70,7 @@ public class UserMapper {
     public void updateUser(User user, UpdateUserRequest userRequest) {
         user.setEmail(userRequest.getEmail());
         user.setPhone(userRequest.getPhone());
-        user.setFirstName(userRequest.getFirstName());
-        user.setLastName(userRequest.getLastName());
+        user.setName(user.getName());
         user.setAddress(userRequest.getAddress());
     }
 }

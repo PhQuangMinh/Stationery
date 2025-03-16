@@ -56,7 +56,7 @@ public class OrderMapper {
                 , userOrder.getShippingAddress()
                 , userOrder.getPaymentMethod()
                 , userOrder.getTxnRef()
-                , new UserResponse(userOrder.getUser().getId(), userOrder.getUser().getFirstName(), userOrder.getUser().getLastName(), userOrder.getUser().getPhone())
+                , new UserResponse(userOrder.getUser().getId(), userOrder.getUser().getName(), userOrder.getUser().getPhone())
                 , orderItemResponses);
     }
 

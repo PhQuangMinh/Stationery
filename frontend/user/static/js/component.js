@@ -1,12 +1,6 @@
 const BASE_URL = window.location.origin;
 const BASE_API_URL = 'http://localhost:8080';
 
-// Thêm hàm kiểm tra token hết hạn
-function isTokenExpired() {
-    const expiration = localStorage.getItem('tokenExpiration');
-    if (!expiration) return true;
-    return new Date().getTime() > parseInt(expiration);
-}
 
 // Hàm logout
 function logout() {
@@ -18,14 +12,27 @@ function logout() {
 
 // Cập nhật hàm kiểm tra trạng thái đăng nhập
 function checkLoginStatus() {
-    const token = localStorage.getItem('accessToken');
-    const username = localStorage.getItem('username');
+    let token = localStorage.getItem('accessToken');
+    let username = localStorage.getItem('username');
+    console.log('Token:', token);
+    if (!token) {
+        console.log('Token is null or undefined');
+        const urlParams = new URLSearchParams(window.location.search);
+        token = urlParams.get('token');
+        username = urlParams.get('username');
+        if (token && username) {
+            localStorage.setItem('accessToken', token);
+            localStorage.setItem('username', username);
+            console.log('Token:', token);
+            console.log('Username:', username);
+        }
+    }
     const userOptions = document.querySelector('.user-options');
     const cartContainer = document.querySelector('.cart-order-container');
     
     console.log('Checking login status:', { token, username }); // Debug log
 
-    if (token && username && !isTokenExpired()) {
+    if (token && username) {
         console.log('User is logged in'); // Debug log
         userOptions.innerHTML = `
             <span style="color: white;">${username}</span> | 

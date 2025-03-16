@@ -13,17 +13,15 @@ import java.sql.Timestamp;
 @Setter
 public class UserResponse {
     private long id;
-    private String firstName;
-    private String lastName;
     private String username;
     private String email;
+    private String name;
     private String phone;
     private String address;
     private String role;
-    public UserResponse(long id, String firstName, String lastName, String phone){
+    public UserResponse(long id, String name, String phone){
         this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        this.name = name;
         this.phone = phone;
     }
 }
