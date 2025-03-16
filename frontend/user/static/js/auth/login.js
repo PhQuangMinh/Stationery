@@ -49,16 +49,34 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             if (data.data) {
                 localStorage.setItem('accessToken', data.data);
                 localStorage.setItem('username', loginData.username);
-                // Thêm thời gian hết hạn token (ví dụ: 1 giờ)
-                const expirationTime = new Date().getTime() + 60 * 60 * 1000; // 1 giờ
-                localStorage.setItem('tokenExpiration', expirationTime);
+                window.location.href = '/templates/landingpage/landingpage.html';
             }
 
-            window.location.href = '/templates/landingpage/landingpage.html';
 
         } catch (error) {
             console.error('Error:', error);
             alert(error.message || 'Tên đăng nhập hoặc mật khẩu không đúng');
         }
     }
+});
+
+// Thêm hàm kiểm tra URL để xử lý callback từ Google
+function handleGoogleCallback() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const username = urlParams.get('username');
+    
+    if (token && username) {
+        // Lưu thông tin đăng nhập
+        localStorage.setItem('accessToken', token);
+        localStorage.setItem('username', username);
+        
+        // Chuyển hướng về trang chủ
+        window.location.href = '/templates/landingpage/landingpage.html';
+    }
+}
+
+// Gọi hàm kiểm tra khi trang được load
+document.addEventListener('DOMContentLoaded', function() {
+    handleGoogleCallback();
 });

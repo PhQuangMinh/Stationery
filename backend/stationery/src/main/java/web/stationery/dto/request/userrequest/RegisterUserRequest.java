@@ -12,9 +12,7 @@ import web.stationery.utils.validator.StrongPassword;
 @AllArgsConstructor
 @ToString
 public class RegisterUserRequest {
-    private String firstName;
-
-    private String lastName;
+    private String name;
 
     private String username;
 

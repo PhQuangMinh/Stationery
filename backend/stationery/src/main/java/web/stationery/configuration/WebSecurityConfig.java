@@ -24,6 +24,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import web.stationery.common.handler.CustomOAuth2FailureHandler;
+import web.stationery.common.handler.CustomOAuth2SuccessHandler;
+import web.stationery.service.JWTTokenService;
+import web.stationery.service.RedisService;
 import web.stationery.service.UserService;
 import web.stationery.utils.BCryptEncoder;
 
@@ -37,7 +41,11 @@ import java.util.List;
 public class WebSecurityConfig {
     private final UserService userService;
 
+    private final RedisService redisService;
+
     private final JWTFilter jwtFilter;
+
+    private final JWTTokenService jwtTokenService;
 
     // Tách các constant ra
     private static final String[] PUBLIC_URLS = {
@@ -55,26 +63,33 @@ public class WebSecurityConfig {
     };
 
     @Bean
+    public CustomOAuth2SuccessHandler customOAuth2SuccessHandler() {
+        return new CustomOAuth2SuccessHandler(jwtTokenService, userService, redisService);
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authorizeHttpRequests(requests -> requests
-                .requestMatchers(PUBLIC_URLS).permitAll()
-                .requestMatchers("/users/**").hasRole("USER")
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            )
-            .exceptionHandling(handling -> handling
-                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            .authenticationProvider(authenticationProvider())
-            .addFilterBefore(
-                    jwtFilter, UsernamePasswordAuthenticationFilter.class
-            );
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .authorizeHttpRequests(requests -> requests
+                        .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers("/users/**").hasRole("USER")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
+                .exceptionHandling(handling -> handling
+                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(customOAuth2SuccessHandler())
+                        .failureHandler(new CustomOAuth2FailureHandler())
+                )
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
