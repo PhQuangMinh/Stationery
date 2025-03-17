@@ -47,8 +47,8 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
             user = userService.save(user);
         }
 
-        String accessToken = jwtTokenService.generateAccessToken((UserDetails) user, new HashMap<>());
-        String refreshToken = jwtTokenService.generateRefreshToken((UserDetails) user, new HashMap<>());
+        String accessToken = jwtTokenService.generateAccessToken(user, new HashMap<>());
+        String refreshToken = jwtTokenService.generateRefreshToken(user, new HashMap<>());
         redisService.saveToken(user.getUsername(), refreshToken);
 
         String redirectUrl = String.format(

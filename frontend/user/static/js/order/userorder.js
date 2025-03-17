@@ -14,15 +14,36 @@ const ORDER_STATUSES = {
     CANCELED: 'Đã hủy'
 };
 
+// Hàm kiểm tra và lấy thông tin từ URL
+function checkUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const username = urlParams.get('username');
+    
+    if (username) {
+        const token = localStorage.getItem('accessToken');
+
+        if (!localStorage.getItem('username')) {
+            localStorage.setItem('username', username);
+            
+            // Nếu cần, có thể chuyển hướng đến trang login 
+            // hoặc xử lý khôi phục phiên làm việc
+            console.log('Đã khôi phục username từ URL');
+        }
+    }
+}
+
 async function loadOrders() {
+    // Kiểm tra thông tin từ URL trước
+    checkUrlParams();
+    
     const tableBody = document.getElementById("orderTableBody");
     const token = localStorage.getItem('accessToken');
     const username = localStorage.getItem('username');
     
     try {
         let orders = [];
-        
-        if (token && username && !isTokenExpired()) {
+        console.log(token, username);
+        if (token && username) {
             // Nếu đã đăng nhập, lấy đơn hàng từ API
             const response = await fetch(`${BASE_API_URL}/user/orders/${username}/get-order`, {
                 headers: {
@@ -111,12 +132,6 @@ function translateStatus(status) {
     return statusMap[status] || status;
 }
 
-// Hàm kiểm tra token hết hạn
-function isTokenExpired() {
-    const expiration = localStorage.getItem('tokenExpiration');
-    if (!expiration) return true;
-    return new Date().getTime() > parseInt(expiration);
-}
 
 function goToOrderDetail(orderId) {
     window.location.href = `detailorder.html?id=${orderId}`;

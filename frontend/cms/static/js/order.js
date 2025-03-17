@@ -78,8 +78,7 @@ function updateStatusOptions() {
 function renderOrders() {
     const tableBody = document.getElementById('orderTableBody');
     tableBody.innerHTML = orders.map((order, index) => {
-        const fullName = order.userResponse ? 
-            `${order.userResponse.firstName} ${order.userResponse.lastName}` : 'N/A';
+        const fullName = order.userResponse ? order.userResponse.name : 'N/A';
         
         // Xử lý payment method
         const paymentMethod = order.paymentMethod || 'COD';
@@ -121,8 +120,7 @@ function formatCurrency(amount) {
 // Hàm mở modal chỉnh sửa đơn hàng
 function editOrder(index) {
     const order = orders[index];
-    const fullName = order.userResponse ? 
-        `${order.userResponse.firstName} ${order.userResponse.lastName}` : '';
+    const fullName = order.userResponse ? order.userResponse.name : '';
 
     document.getElementById('editCustomerName').value = fullName;
     document.getElementById('editPhone').value = order.userResponse ? order.userResponse.phone : '';

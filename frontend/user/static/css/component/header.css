@@ -33,7 +33,7 @@ body {
     display: flex; 
     align-items: center;
     padding: 10px 20px;
-    overflow: hidden;
+    overflow: visible !important;
     max-height: 150px;
 }
 
@@ -158,6 +158,7 @@ header {
 .search-container {
     position: relative;
     flex: 1;
+    z-index: 9999;  /* Tăng z-index lên cao nhất */
 }
 
 /* Style cho dropdown kết quả tìm kiếm */
@@ -169,11 +170,25 @@ header {
     background: white;
     border: 1px solid #ccc;
     border-radius: 0 0 5px 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    max-height: 300px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    max-height: 400px;
     overflow-y: auto;
-    z-index: 1001;
+    z-index: 9999;  /* Tăng z-index lên cao nhất */
     display: none;
+}
+
+/* Thêm style để đẩy kết quả tìm kiếm lên trên các phần tử khác */
+.search-container:focus-within .search-results {
+    display: block;
+}
+
+/* Đảm bảo kết quả tìm kiếm hiển thị đúng kể cả khi search-container có overflow */
+.search-container {
+    overflow: visible !important;
+}
+
+.main-header {
+    overflow: visible !important;  /* Cho phép các phần tử con vượt ra ngoài */
 }
 
 .search-item {
@@ -186,7 +201,34 @@ header {
     background-color: #f5f5f5;
 }
 
-/* Đảm bảo header luôn nằm trên cùng */
+.search-item-content {
+    display: flex;
+    align-items: center;
+}
+
+.search-thumbnail {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+.search-item-details {
+    flex: 1;
+}
+
+.search-item-name {
+    font-weight: 500;
+    margin-bottom: 3px;
+}
+
+.search-item-price {
+    color: #e63946;
+    font-weight: 600;
+}
+
+/* Đảm bảo header luôn nằm trên cùng nhưng kết quả tìm kiếm vẫn hiển thị */
 header {
     z-index: 1000;
 }

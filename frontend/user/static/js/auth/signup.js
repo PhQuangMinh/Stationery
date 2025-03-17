@@ -3,8 +3,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     
     this.classList.remove('was-validated');
     
-    const firstName = document.getElementById('firstName');
-    const lastName = document.getElementById('lastName');
+    const name = document.getElementById('name');
     const email = document.getElementById('email');
     const password = document.getElementById('password');
     const phone = document.getElementById('phone');
@@ -12,20 +11,12 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     
     let isValid = true;
     
-    // Validate firstName
-    if (!firstName.value.trim()) {
+    // Validate name
+    if (!name.value.trim()) {
         isValid = false;
-        firstName.setCustomValidity('Tên không được để trống');
+        name.setCustomValidity('Họ tên không được để trống');
     } else {
-        firstName.setCustomValidity('');
-    }
-    
-    // Validate lastName
-    if (!lastName.value.trim()) {
-        isValid = false;
-        lastName.setCustomValidity('Họ và tên đệm không được để trống');
-    } else {
-        lastName.setCustomValidity('');
+        name.setCustomValidity('');
     }
     
     // Validate email
@@ -67,10 +58,9 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     if (isValid) {
         try {
             const registerData = {
-                firstName: firstName.value.trim(),
-                lastName: lastName.value.trim(),
-                email: email.value.trim(),
+                name: name.value.trim(),
                 username: email.value.trim(), // Đặt username bằng email
+                email: email.value.trim(),
                 password: password.value,
                 address: address.value.trim(),
                 phone: phone.value.trim()

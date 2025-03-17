@@ -6,7 +6,6 @@ const BASE_API_URL = 'http://localhost:8080';
 function logout() {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('username');
-    localStorage.removeItem('tokenExpiration');
     window.location.href = '/templates/auth/login.html';
 }
 
@@ -14,19 +13,20 @@ function logout() {
 function checkLoginStatus() {
     let token = localStorage.getItem('accessToken');
     let username = localStorage.getItem('username');
-    console.log('Token:', token);
-    if (!token) {
-        console.log('Token is null or undefined');
+    
+    // Kiểm tra thông tin từ URL
+    if (!token || !username) {
         const urlParams = new URLSearchParams(window.location.search);
-        token = urlParams.get('token');
-        username = urlParams.get('username');
-        if (token && username) {
-            localStorage.setItem('accessToken', token);
+        const urlUsername = urlParams.get('username');
+        
+        if (urlUsername) {
+            // Nếu có username từ URL, sử dụng nó
+            username = urlUsername;
             localStorage.setItem('username', username);
-            console.log('Token:', token);
-            console.log('Username:', username);
+            console.log('Khôi phục username từ URL:', username);
         }
     }
+    
     const userOptions = document.querySelector('.user-options');
     const cartContainer = document.querySelector('.cart-order-container');
     
@@ -98,35 +98,43 @@ function getAuthHeader() {
 fetch(BASE_URL + "/templates/component/header.html")
 .then(response => response.text())
 .then(data => {
-    document.getElementById("header-container").innerHTML = data;
-    
-    // Đợi một chút để đảm bảo DOM đã được cập nhật
-    setTimeout(() => {
-        checkLoginStatus(); // Kiểm tra trạng thái đăng nhập
-        updateCartCount();
-        fetchCategories();
+    const headerContainer = document.getElementById("header-container");
+    if (headerContainer) {
+        headerContainer.innerHTML = data;
         
-        // Cập nhật các link
-        document.querySelectorAll("#header-container a").forEach(link => {
-            if (link.getAttribute("href") && !link.getAttribute("href").startsWith("http")) {
-                link.href = BASE_URL + "/" + link.getAttribute("href").replace(/^\/+/, "");
+        // Đợi một chút để đảm bảo DOM đã được cập nhật
+        setTimeout(() => {
+            checkLoginStatus(); // Kiểm tra trạng thái đăng nhập
+            updateCartCount();
+            fetchCategories();
+            
+            // Cập nhật các link
+            document.querySelectorAll("#header-container a").forEach(link => {
+                if (link.getAttribute("href") && !link.getAttribute("href").startsWith("http")) {
+                    link.href = BASE_URL + "/" + link.getAttribute("href").replace(/^\/+/, "");
+                }
+            });
+
+            const cartLink = document.querySelector("#header-container .cart a");
+            if (cartLink) {
+                cartLink.href = BASE_URL + "/templates/payment/shoppingcart.html"; 
             }
-        });
 
-        const cartLink = document.querySelector("#header-container .cart a");
-        if (cartLink) {
-            cartLink.href = BASE_URL + "/templates/payment/shoppingcart.html"; 
-        }
+            const homeLink = document.getElementById("home-link");
+            if (homeLink) homeLink.href = BASE_URL + "/templates/landingpage/landingpage.html";
 
-        const homeLink = document.getElementById("home-link");
-        if (homeLink) homeLink.href = BASE_URL + "/templates/landingpage/landingpage.html";
+            const registerLink = document.getElementById("register-link");
+            if (registerLink) registerLink.href = BASE_URL + "/templates/auth/signup.html";
 
-        const registerLink = document.getElementById("register-link");
-        if (registerLink) registerLink.href = BASE_URL + "/templates/auth/signup.html";
-
-        const loginLink = document.getElementById("login-link");
-        if (loginLink) loginLink.href = BASE_URL + "/templates/auth/login.html";
-    }, 100);
+            const loginLink = document.getElementById("login-link");
+            if (loginLink) loginLink.href = BASE_URL + "/templates/auth/login.html";
+            
+            // Khởi tạo chức năng tìm kiếm sau khi header đã được tải
+            setupSearchFunctionality();
+        }, 100);
+    } else {
+        console.error("Không tìm thấy phần tử có id='header-container'");
+    }
 });
 
 fetch(BASE_URL + "/templates/component/footer.html")
@@ -223,9 +231,10 @@ function initHeaderMenu(categories) {
 // Thêm hàm tìm kiếm sản phẩm
 async function searchProducts(query) {
     try {
-        const response = await fetch(`${BASE_API_URL}/products/all-name?name=${encodeURIComponent(query)}`);
+        const response = await fetch(`${BASE_API_URL}/products/search?name=${encodeURIComponent(query)}&size=10&page=0&sortBy=id`);
         const data = await response.json();
-        return data.data || [];
+        console.log(data);
+        return data.data && data.data.content ? data.data.content : [];
     } catch (error) {
         console.error('Error searching products:', error);
         return [];
@@ -256,19 +265,32 @@ function displaySearchResults(products) {
     searchResults.innerHTML = products
         .map(product => `
             <div class="search-item" data-id="${product.id}">
-                ${product.name}
+                <div class="search-item-content">
+                    <img src="${product.imageUrl || product.image || 'https://via.placeholder.com/50'}" 
+                         alt="${product.name}" 
+                         class="search-thumbnail">
+                    <div class="search-item-details">
+                        <div class="search-item-name">${product.name}</div>
+                        <div class="search-item-price">${new Intl.NumberFormat('vi-VN', {
+                            style: 'currency',
+                            currency: 'VND'
+                        }).format(product.price || 0)}</div>
+                    </div>
+                </div>
             </div>
         `)
         .join('');
     searchResults.style.display = 'block';
 }
 
-// Thêm event listeners cho tìm kiếm
-document.addEventListener('DOMContentLoaded', function() {
+// Tách hàm thiết lập chức năng tìm kiếm để có thể gọi sau khi header được tải
+function setupSearchFunctionality() {
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
 
-    if (searchInput) {
+    if (searchInput && searchResults) {
+        console.log('Thiết lập chức năng tìm kiếm');
+        
         // Xử lý input với debounce
         const debouncedSearch = debounce(async (query) => {
             if (query.length >= 2) {
@@ -280,6 +302,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
 
         searchInput.addEventListener('input', (e) => {
+            console.log('Input event:', e.target.value);
             debouncedSearch(e.target.value);
         });
 
@@ -298,5 +321,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 searchResults.style.display = 'none';
             }
         });
+    } else {
+        console.error('Không tìm thấy phần tử tìm kiếm:', { searchInput, searchResults });
     }
-});
+}
+
+// Xóa event listener cũ để tránh xung đột
+document.removeEventListener('DOMContentLoaded', setupSearchFunctionality);
