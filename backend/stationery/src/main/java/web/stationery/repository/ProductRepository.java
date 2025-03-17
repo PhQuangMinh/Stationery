@@ -8,6 +8,8 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import web.stationery.model.Product;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,4 +25,5 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     List<Product> findRandomDiscountProducts();
     @Query("SELECT p FROM Product p JOIN p.categories c WHERE c.name = :categoryName AND p.deleteFlag = false")
     Page<Product> findByCategoryName(@Param("categoryName") String categoryName, Pageable pageable);
+    List<Product> findByUpdatedAtAfter(Timestamp lastSyncTime);
 }

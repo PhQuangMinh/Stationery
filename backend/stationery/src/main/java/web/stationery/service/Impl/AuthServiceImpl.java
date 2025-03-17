@@ -54,8 +54,8 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(Role.ROLE_USER);
         user.setAddress(userRequest.getAddress());
         user.getCart().setUser(user);
-        String accessToken = jwtTokenService.generateAccessToken((UserDetails) user, new HashMap<>());
-        String refreshToken = jwtTokenService.generateRefreshToken((UserDetails)user, new HashMap<>());
+        String accessToken = jwtTokenService.generateAccessToken(user, new HashMap<>());
+        String refreshToken = jwtTokenService.generateRefreshToken(user, new HashMap<>());
         return new AuthResponse(accessToken, refreshToken, false);
     }
 
@@ -104,8 +104,8 @@ public class AuthServiceImpl implements AuthService {
         }
         String username = jwtTokenService.extractUsername(refreshToken);
         User user = userService.findUserByUsername(username);
-        final String accessToken = jwtTokenService.generateAccessToken((UserDetails) user, new HashMap<>());
-        final String newRefreshToken = jwtTokenService.generateRefreshToken((UserDetails)user, new HashMap<>());
+        final String accessToken = jwtTokenService.generateAccessToken(user, new HashMap<>());
+        final String newRefreshToken = jwtTokenService.generateRefreshToken(user, new HashMap<>());
         redisService.saveToken(username, newRefreshToken);
         return new AuthResponse(
                 accessToken
