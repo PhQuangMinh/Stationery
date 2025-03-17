@@ -9,8 +9,10 @@ import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -48,20 +50,22 @@ public class Product {
     @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
     private boolean deleteFlag = false;
 
-    @Column(name = "create_at", updatable = false)
     @CreationTimestamp
-    private Timestamp createAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "create_at", updatable = false, nullable = false)
+    private Timestamp createdAt;
 
-    @Column(name = "update_at")
     @UpdateTimestamp
-    private Timestamp updateAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "update_at", nullable = false)
+    private Timestamp updatedAt;
 
     @ManyToOne
     @JoinColumn(name = "brand_id")
     @JsonIgnore
     private Brand brand;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     @JoinTable(
             name = "category_product",
             joinColumns = @JoinColumn(name = "product_id"),

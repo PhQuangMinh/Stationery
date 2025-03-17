@@ -2,18 +2,24 @@ package web.stationery.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import web.stationery.common.utils.PageableUtils;
 import web.stationery.dto.request.productrequest.AdminProductRequest;
 import web.stationery.dto.request.productrequest.ProductRequest;
 import web.stationery.dto.response.CustomResponse;
 import web.stationery.dto.response.ProductResponse;
 import web.stationery.model.Product;
+import web.stationery.service.Impl.elasticsearch.ProductESService;
 import web.stationery.service.ProductService;
 
 @RequiredArgsConstructor
 @RestController
 public class ProductController {
     private final ProductService productService;
+
+    private final ProductESService productESService;
 
     @GetMapping("/products/all")
     public CustomResponse<?> findAll(
@@ -23,9 +29,16 @@ public class ProductController {
         return new CustomResponse<>(productService.findAll(size, page, sortBy));
     }
 
-    @GetMapping("/products/all-name")
-    public CustomResponse<?> findAllByName(@RequestParam String name) {
-        return new CustomResponse<>(productService.findAllByName(name));
+    @GetMapping("/products/search")
+    public CustomResponse<?> searchProducts(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "id") String sortBy
+    ) {
+        Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
+        Page<ProductResponse> results = productESService.searchProductsByName(name, pageable);
+        return new CustomResponse<>(results);
     }
 
     @GetMapping("/products/{id}")

@@ -40,7 +40,7 @@ public class JWTFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         return PUBLIC_PATHS.stream()
-                .anyMatch(publicPath -> path.startsWith(publicPath));
+                .anyMatch(path::startsWith);
     }
 
     @Override
