@@ -18,15 +18,22 @@ async function login() {
 
         if (response.ok) {
             const result = await response.json();
+            console.log("Dữ liệu nhận được:", result);
+
+            // AuthResponse chứa accessToken, refreshToken và isAdmin
             if (result.data) {
-                localStorage.setItem("accessToken", result.data);
-                // Kiểm tra role sau khi đăng nhập
-                const payload = JSON.parse(atob(result.data.split(".")[1]));
-                console.log(payload.roles)
-                if (payload.roles && payload.roles[0].authority.includes('ROLE_ADMIN')) {
+                // Lưu accessToken vào localStorage
+                localStorage.setItem("accessToken", result.data.accessToken);
+          
+                // Kiểm tra quyền admin
+                if (result.data.admin) {
+                    // Người dùng là admin, chuyển hướng tới trang admin
                     window.location.href = "product.html";
                 } else {
+                    // Người dùng không phải admin, xóa token và hiển thị thông báo
                     localStorage.removeItem("accessToken");
+                    document.getElementById('errorMessage').innerText = "Bạn không có quyền truy cập!";
+                    document.getElementById('errorMessage').style.display = "block";
                 }
             }
         } else {

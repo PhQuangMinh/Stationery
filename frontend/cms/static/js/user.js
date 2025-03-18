@@ -59,17 +59,17 @@ async function fetchUsers(page = 0) {
 
 // Hàm hiển thị danh sách người dùng
 function renderUsers() {
+    console.log("Users: ", users);
     const tableBody = document.getElementById('userTableBody');
     tableBody.innerHTML = users.map((user, index) => `
         <tr onclick="editUser(${index})">
             <td>${user.id}</td>
-            <td>${user.firstName}</td>
-            <td>${user.lastName}</td>
-            <td>${user.username}</td>
-            <td>${user.email}</td>
-            <td>${user.address}</td>
-            <td>${user.phone}</td>
-            <td>${user.role}</td>
+            <td>${user.name || 'N/A'}</td>
+            <td>${user.username || 'N/A'}</td>
+            <td>${user.email || 'N/A'}</td>
+            <td>${user.address || 'N/A'}</td>
+            <td>${user.phone || 'N/A'}</td>
+            <td>${user.role || 'N/A'}</td>
         </tr>
     `).join('');
 }
@@ -168,8 +168,7 @@ document.getElementById('btnAddUser').addEventListener('click', function() {
     document.getElementById('btnSaveUser').removeAttribute('data-index');
     
     // Reset các trường input
-    document.getElementById('userFirstName').value = '';
-    document.getElementById('userLastName').value = '';
+    document.getElementById('userName').value = '';
     document.getElementById('userEmail').value = '';
     document.getElementById('userUsername').value = '';
     document.getElementById('userPassword').value = '';
@@ -186,13 +185,12 @@ function editUser(index) {
     document.getElementById('userModalLabel').textContent = 'Chỉnh sửa người dùng';
     
     // Điền thông tin user vào form
-    document.getElementById('userFirstName').value = user.firstName || '';
-    document.getElementById('userLastName').value = user.lastName || '';
+    document.getElementById('userName').value = user.name || '';
     document.getElementById('userEmail').value = user.email || '';
     document.getElementById('userUsername').value = user.username || '';
     document.getElementById('userAddress').value = user.address || '';
     document.getElementById('userPhone').value = user.phone || '';
-    document.getElementById('userRole').value = user.role || 'USER';
+    document.getElementById('userRole').value = user.role || 'ROLE_USER';
     
     // Ẩn các trường mật khẩu khi chỉnh sửa
     document.getElementById('passwordField').style.display = 'none';
@@ -228,14 +226,13 @@ document.getElementById('btnSaveUser').addEventListener('click', async function(
 
         if (isEditing) {
             const userData = {
-                firstName: document.getElementById('userFirstName').value,
-                lastName: document.getElementById('userLastName').value,
+                name: document.getElementById('userName').value,
                 email: document.getElementById('userEmail').value,
                 address: document.getElementById('userAddress').value,
                 phone: document.getElementById('userPhone').value,
                 role: document.getElementById('userRole').value
             };
-            console.log("User data: ", users[index]);
+            console.log("User data: ", userData);
 
             const response = await fetch(`http://localhost:8080/admin/users/update/${users[index].id}`, {
                 method: 'PUT',
@@ -248,14 +245,14 @@ document.getElementById('btnSaveUser').addEventListener('click', async function(
             handleResponse(response);
 
             let responseJson = await response.json();
-            console.log(responseJson)
+            console.log(responseJson);
         } else {
             if (document.getElementById('userConfirmPassword').value != document.getElementById('userPassword').value){
+                alert("Mật khẩu xác nhận không khớp!");
                 return;
             }
             const registerData = {
-                firstName: document.getElementById('userFirstName').value,
-                lastName: document.getElementById('userLastName').value,
+                name: document.getElementById('userName').value,
                 username: document.getElementById('userUsername').value,
                 email: document.getElementById('userEmail').value,
                 password: document.getElementById('userPassword').value,

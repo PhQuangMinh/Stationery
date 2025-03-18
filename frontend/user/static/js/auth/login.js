@@ -45,14 +45,17 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
                 throw new Error(data.message || 'Đăng nhập thất bại');
             }
 
-            // Lưu token và username vào localStorage
+            // Xử lý response mới với cấu trúc accessToken, refreshToken, admin
             if (data.data) {
-                localStorage.setItem('accessToken', data.data);
+                // Lưu các token vào localStorage
+                localStorage.setItem('accessToken', data.data.accessToken);
+                localStorage.setItem('refreshToken', data.data.refreshToken);
                 localStorage.setItem('username', loginData.username);
+                localStorage.setItem('isAdmin', data.data.admin);
+                
+                // Luôn chuyển hướng đến trang chủ, không quan tâm vai trò
                 window.location.href = '/templates/landingpage/landingpage.html';
             }
-
-
         } catch (error) {
             console.error('Error:', error);
             alert(error.message || 'Tên đăng nhập hoặc mật khẩu không đúng');
@@ -62,16 +65,23 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
 
 // Thêm hàm kiểm tra URL để xử lý callback từ Google
 function handleGoogleCallback() {
+    console.log('handleGoogleCallback');
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
     const username = urlParams.get('username');
+    const isAdmin = urlParams.get('isAdmin');
     
     if (token && username) {
         // Lưu thông tin đăng nhập
         localStorage.setItem('accessToken', token);
         localStorage.setItem('username', username);
         
-        // Chuyển hướng về trang chủ
+        // Lưu trạng thái admin nếu có
+        if (isAdmin) {
+            localStorage.setItem('isAdmin', isAdmin);
+        }
+        
+        // Luôn chuyển hướng đến trang chủ, không quan tâm vai trò
         window.location.href = '/templates/landingpage/landingpage.html';
     }
 }
