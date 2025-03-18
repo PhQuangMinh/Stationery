@@ -1,7 +1,6 @@
 let selectedCategory = null; // Lưu danh mục đang chọn
 const CATEGORY_API = {
-    GET_TREE: "http://localhost:8080/categories/tree",
-    GET_ALL: "http://localhost:8080/admin/categories/all-full",
+    GET_TREE: "http://localhost:8080/admin/categories/tree",
     CREATE: "http://localhost:8080/admin/categories",
     UPDATE: "http://localhost:8080/admin/categories",
     DELETE: "http://localhost:8080/admin/categories"
@@ -19,7 +18,17 @@ function handleResponse(response) {
 // 🟢 Lấy danh mục từ backend
 async function fetchCategories() {
     try {
-        let response = await fetch(CATEGORY_API.GET_TREE);
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            window.location.href = "login.html";
+            return [];
+        }
+        
+        let response = await fetch(CATEGORY_API.GET_TREE, {
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
         handleResponse(response);
         let data = await response.json();
         console.log(data)

@@ -16,6 +16,9 @@ import web.stationery.model.Brand;
 import web.stationery.repository.BrandRepository;
 import web.stationery.service.BrandService;
 import web.stationery.utils.mapper.BrandMapper;
+import web.stationery.repository.ProductRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,11 +29,13 @@ import java.util.Optional;
 public class BrandServiceImpl implements BrandService {
     private final BrandRepository brandRepository;
     private final BrandMapper brandMapper;
+    private final ProductRepository productRepository;
+    private static final Logger logger = LoggerFactory.getLogger(BrandServiceImpl.class);
 
     @Override
-    public Page<BrandResponse> findAll(int size, int page, String sortBy) {
+    public Page<BrandResponse> findAllDeleteFlagFalse(int size, int page, String sortBy) {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
-        Page<Brand> brands = brandRepository.findAll(pageable);
+        Page<Brand> brands = brandRepository.findByDeleteFlagFalse(pageable);
         List<BrandResponse> brandResponses = brandMapper.toResponseList(brands.getContent());
         return new PageImpl<>(brandResponses, pageable, brands.getTotalElements());
     }
@@ -44,19 +49,6 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public BrandResponse findById(String id) {
-        Brand brand = findBrandById(id);
-        return brandMapper.toResponse(brand);
-    }
-
-    @Override
-    public BrandResponse findByName(String name) {
-        Optional<Brand> brand = brandRepository.findByName(name);
-        if (brand.isEmpty()) throw new NotFoundException("Brand not found - " + name);
-        return brandMapper.toResponse(brand.get());
-    }
-
-    @Override
     public List<BrandAdminResponse> findAllFull() {
         List<Brand> brands = brandRepository.findAll();
         return brandMapper.toAdminResponseList(brands);
@@ -64,15 +56,9 @@ public class BrandServiceImpl implements BrandService {
 
     @Override
     public Brand findBrandById(String id) {
-        Optional<Brand> brand = brandRepository.findById(id);
+        Optional<Brand> brand = brandRepository.findById(Integer.valueOf(id));
         if (brand.isEmpty()) throw new NotFoundException("Brand not found - " + id);
         return brand.get();
-    }
-
-    @Override
-    public BrandResponse save(BrandRequest brandRequest) {
-        Brand brand = brandMapper.toEntity(brandRequest);
-        return brandMapper.toResponse(brandRepository.save(brand));
     }
 
     @Override
@@ -83,26 +69,22 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public BrandResponse update(String id, BrandRequest brandRequest) {
-        Brand existingBrand = findBrandById(id);
-        brandMapper.updateBrand(existingBrand, brandRequest);
-        return brandMapper.toResponse(brandRepository.save(existingBrand));
-    }
-
-    @Override
     public Brand updateAdmin(String id, AdminBrandRequest brandRequest) {
         Brand existingBrand = findBrandById(id);
-        brandMapper.updateBrand(existingBrand, brandRequest);
-        return brandRepository.save(existingBrand);
+        boolean brandBeingDeleted = !existingBrand.isDeleteFlag() && brandRequest.isDeleteFlag();
+        existingBrand.setName(brandRequest.getName());
+        existingBrand.setDeleteFlag(brandRequest.isDeleteFlag());
+        Brand updatedBrand = brandRepository.save(existingBrand);
+        if (brandBeingDeleted) {
+            markProductsAsDeleted(existingBrand.getId());
+        }
+        
+        return updatedBrand;
     }
 
-    @Override
-    public void deleteById(String id) {
-        Optional<Brand> brand = brandRepository.findById(id);
-        if (brand.isEmpty()) {
-            throw new NotFoundException("Brand not found - " + id);
-        }
-        brandRepository.deleteById(id);
+    private void markProductsAsDeleted(int brandId) {
+        productRepository.updateDeleteFlagForBrand(brandId, true);
+        logger.info("Đã đánh dấu xóa tất cả sản phẩm thuộc brand ID={}", brandId);
     }
 
     @Override

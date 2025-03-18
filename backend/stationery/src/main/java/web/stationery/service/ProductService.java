@@ -11,7 +11,6 @@ import java.util.List;
 
 public interface ProductService {
     Page<ProductResponse> findAll(int size, int page, String sortBy);
-    List<ProductResponse> findAllByName(String name);
     ProductResponse findById(String id);
     Product findProductById(String id);
     ProductResponse update(String id, ProductRequest productRequest);

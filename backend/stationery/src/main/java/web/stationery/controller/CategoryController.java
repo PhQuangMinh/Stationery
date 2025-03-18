@@ -12,36 +12,19 @@ import web.stationery.service.CategoryService;
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @GetMapping("/categories/all")
-    public CustomResponse<?> findAll(
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "id") String sortBy) {
-        return new CustomResponse<>(categoryService.findAll(size, page, sortBy));
-    }
-
-    @GetMapping("/categories/all-name")
-    public CustomResponse<?> findAllByName(
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam String name) {
-        return new CustomResponse<>(categoryService.findAllByName(size, page, sortBy, name));
-    }
-
     @GetMapping("/categories/{id}")
     public CustomResponse<?> findById(@PathVariable String id) {
         return new CustomResponse<>(categoryService.findById(Integer.valueOf(id)));
     }
 
-    @GetMapping("/categories/tree")
+    @GetMapping("/admin/categories/tree")
     public CustomResponse<?> getCategoriesTree() {
         return new CustomResponse<>(categoryService.getCategoriesTree());
     }
 
-    @GetMapping("/admin/categories/all-full")
-    public CustomResponse<?> getAllCategoriesFull() {
-        return new CustomResponse<>(categoryService.findAllFull());
+    @GetMapping("/categories/tree")
+    public CustomResponse<?> getPublicCategoriesTree() {
+        return new CustomResponse<>(categoryService.getPublicCategoriesTree());
     }
 
     @PostMapping("/admin/categories")

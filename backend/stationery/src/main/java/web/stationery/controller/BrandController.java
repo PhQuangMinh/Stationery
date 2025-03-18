@@ -3,7 +3,6 @@ package web.stationery.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import web.stationery.dto.request.brandrequest.AdminBrandRequest;
-import web.stationery.dto.request.brandrequest.BrandRequest;
 import web.stationery.dto.response.CustomResponse;
 import web.stationery.service.BrandService;
 
@@ -13,11 +12,11 @@ public class BrandController {
     private final BrandService brandService;
 
     @GetMapping("/brands/all")
-    public CustomResponse<?> findAll(
+    public CustomResponse<?> findAllDeleteFlagFalse(
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "id") String sortBy) {
-        return new CustomResponse<>(brandService.findAll(size, page, sortBy));
+        return new CustomResponse<>(brandService.findAllDeleteFlagFalse(size, page, sortBy));
     }
 
     @GetMapping("/brands/all-name")
@@ -27,16 +26,6 @@ public class BrandController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam String name) {
         return new CustomResponse<>(brandService.findAllByName(size, page, sortBy, name));
-    }
-
-    @GetMapping("/brands/{id}")
-    public CustomResponse<?> findById(@PathVariable String id) {
-        return new CustomResponse<>(brandService.findById(id));
-    }
-
-    @GetMapping("/brands/name")
-    public CustomResponse<?> findByName(@RequestParam String name) {
-        return new CustomResponse<>(brandService.findByName(name));
     }
 
     @GetMapping("/admin/brands/all-full")
@@ -52,10 +41,5 @@ public class BrandController {
     @PutMapping("/admin/brands/{id}")
     public CustomResponse<?> updateBrand(@PathVariable String id, @RequestBody AdminBrandRequest brandRequest) {
         return new CustomResponse<>(brandService.updateAdmin(id, brandRequest));
-    }
-
-    @DeleteMapping("/admin/brands/{id}")
-    public void deleteBrand(@PathVariable String id) {
-        brandService.deleteById(id);
     }
 }
