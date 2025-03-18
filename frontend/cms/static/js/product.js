@@ -60,7 +60,7 @@ async function fetchBrands() {
 async function fetchCategories() {
     try {
         const token = localStorage.getItem('accessToken');
-        const response = await fetch(`http://localhost:8080/categories/tree`, {
+        const response = await fetch(`http://localhost:8080/admin/categories/tree`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -73,6 +73,7 @@ async function fetchCategories() {
         console.log('Categories loaded:', categories);
         renderCategoryOptions();
     } catch (error) {
+        alert("Error loading categories")
         console.error('Lỗi khi lấy danh mục:', error);
     }
 }

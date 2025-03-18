@@ -47,12 +47,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> findAllByName(String name) {
-        List<Product> products = productRepository.findByNameContainingIgnoreCase(name);
-        return productMapper.toResponseList(products);
-    }
-
-    @Override
     public ProductResponse findById(String id) {
         Optional<Product> product = productRepository.findById(id);
         if (product.isEmpty()) throw new NotFoundException("Product not found - " + id);

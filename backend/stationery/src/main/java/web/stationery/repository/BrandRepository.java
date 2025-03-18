@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface BrandRepository extends JpaRepository<Brand, String> {
+public interface BrandRepository extends JpaRepository<Brand, Integer> {
     Page<Brand> findByNameContainingIgnoreCase(String name, Pageable pageable);
     Optional<Brand> findByName(String name);
+    Page<Brand> findByDeleteFlagFalse(Pageable pageable);
 }

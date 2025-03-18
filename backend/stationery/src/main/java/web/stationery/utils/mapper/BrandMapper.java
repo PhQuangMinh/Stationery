@@ -62,14 +62,4 @@ public class BrandMapper {
                 .map(this::toBrandAdminResponse)
                 .collect(Collectors.toList());
     }
-
-    public void updateBrand(Brand brand, BrandRequest brandRequest) {
-        brand.setName(brandRequest.getName());
-        brand.setDeleteFlag(brandRequest.isDeleteFlag());
-    }
-
-    public void updateBrand(Brand brand, AdminBrandRequest adminBrandRequest) {
-        brand.setName(adminBrandRequest.getName());
-        brand.setDeleteFlag(adminBrandRequest.isDeleteFlag());
-    }
 }

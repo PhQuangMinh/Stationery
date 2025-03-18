@@ -30,7 +30,7 @@ public class ProductSyncService {
 
     @Scheduled(fixedRate = 60000)
     public void syncProductsToElastic() {
-        List<Product> updatedProducts = productRepository.findByUpdatedAtAfter(Timestamp.from(Instant.now().minusSeconds(60)));
+        List<Product> updatedProducts = productRepository.findByUpdatedAtAfterAndDeleteFlagFalse(Timestamp.from(Instant.now().minusSeconds(60)));
 
         for (Product product : updatedProducts) {
             ProductDocument productDoc = convertToProductDocument(product);
@@ -79,7 +79,7 @@ public class ProductSyncService {
     }
 
     public void syncAllProducts() {
-        List<Product> products = productRepository.findAll();
+        List<Product> products = productRepository.findByDeleteFlagFalse();
         List<ProductDocument> productDocuments = products.stream()
                 .map(this::convertToProductDocument)
                 .toList();

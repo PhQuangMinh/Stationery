@@ -52,7 +52,6 @@ public class CategoryMapper {
         CategoryAdminResponse response = new CategoryAdminResponse();
         response.setId(category.getId());
         response.setName(category.getName());
-        response.setId(category.getId());
         response.setDeleteFlag(category.isDeleteFlag());
 
         if (category.getSubcategories() != null && !category.getSubcategories().isEmpty()) {

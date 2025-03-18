@@ -88,6 +88,24 @@ function increaseQuantity() {
 }
 
 function addToCart(productData) {
+    // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
+    const token = localStorage.getItem('accessToken');
+    const username = localStorage.getItem('username');
+    
+    if (!token || !username) {
+        if (confirm('Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng. Đến trang đăng nhập ngay?')) {
+            // Lưu sản phẩm hiện tại vào localStorage để có thể quay lại sau khi đăng nhập
+            localStorage.setItem('pendingProduct', JSON.stringify({
+                id: productData.id,
+                quantity: parseInt(document.getElementById('quantity').value)
+            }));
+            
+            // Chuyển hướng đến trang đăng nhập
+            window.location.href = "/templates/auth/login.html";
+        }
+        return;
+    }
+    
     const quantity = parseInt(document.getElementById('quantity').value);
     if (!productData || Object.keys(productData).length === 0) {
         alert("Sản phẩm không tồn tại!");
@@ -221,8 +239,41 @@ async function initializeProductDetails() {
     }
 }
 
+// Thêm chức năng kiểm tra sản phẩm đang chờ thêm vào giỏ hàng sau khi đăng nhập
+function checkPendingProduct() {
+    const pendingProduct = localStorage.getItem('pendingProduct');
+    const token = localStorage.getItem('accessToken');
+    const username = localStorage.getItem('username');
+    
+    if (pendingProduct && token && username) {
+        const product = JSON.parse(pendingProduct);
+        
+        // Kiểm tra xem có phải đang ở trang chi tiết sản phẩm đó không
+        const params = new URLSearchParams(window.location.search);
+        const currentProductId = params.get("id");
+        
+        if (product.id === currentProductId) {
+            // Cập nhật số lượng
+            document.getElementById('quantity').value = product.quantity;
+            
+            // Xóa sản phẩm đang chờ
+            localStorage.removeItem('pendingProduct');
+            
+            // Tự động thêm vào giỏ hàng sau 1 giây
+            setTimeout(() => {
+                if (confirm('Bạn muốn thêm sản phẩm này vào giỏ hàng?')) {
+                    addToCart(productData);
+                }
+            }, 1000);
+        }
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
-    initializeProductDetails();
+    initializeProductDetails().then(() => {
+        // Kiểm tra sản phẩm đang chờ sau khi tải trang
+        checkPendingProduct();
+    });
     
     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("add-to-cart-btn")) {

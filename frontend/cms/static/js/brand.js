@@ -138,9 +138,6 @@ document.getElementById('btnSaveBrand').addEventListener('click', async function
         // Đóng modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('brandModal'));
         modal.hide();
-
-        // Thông báo và tải lại danh sách
-        alert(editingBrandId ? 'Cập nhật thương hiệu thành công!' : 'Thêm thương hiệu thành công!');
         fetchBrands();
     } catch (error) {
         console.error('Lỗi:', error);
