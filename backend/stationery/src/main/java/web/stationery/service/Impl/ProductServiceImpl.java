@@ -9,7 +9,7 @@ import web.stationery.common.exception.NotFoundException;
 import web.stationery.common.utils.PageableUtils;
 import web.stationery.dto.request.productrequest.AdminProductRequest;
 import web.stationery.dto.request.productrequest.ProductRequest;
-import web.stationery.dto.response.ProductResponse;
+import web.stationery.dto.response.productresponse.ProductResponse;
 import web.stationery.model.Brand;
 import web.stationery.model.Category;
 import web.stationery.model.Product;

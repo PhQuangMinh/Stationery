@@ -20,7 +20,6 @@ public interface UserService {
     UserDetailsService loadUserDetailsService();
     UserResponse updateUser(String username, UpdateUserRequest updateUserRequest);
     UserResponse getProfileUserByUsername(String username);
-    UserResponse deleteUserByUsername(String username);
     int getTotalSpending(String username);
     User findByEmail(String email);
     UserResponse addUserAdmin(RegisterUserAdminRequest userRequest);

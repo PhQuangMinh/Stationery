@@ -47,6 +47,9 @@ public class UserOrder {
     @Column(name = "txn_ref")
     private String txnRef;
 
+    @Column(name = "total_order")
+    private int totalOrder;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<OrderItem> orderItems;

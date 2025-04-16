@@ -3,7 +3,7 @@ package web.stationery.mapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
-import web.stationery.dto.response.ProductResponse;
+import web.stationery.dto.response.productresponse.ProductResponse;
 import web.stationery.dto.response.brandresponse.BrandResponse;
 import web.stationery.dto.response.categoryresponse.CategoryResponse;
 import web.stationery.model.elasticsearch.BrandDocument;

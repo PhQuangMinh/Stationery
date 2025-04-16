@@ -15,7 +15,6 @@ public interface OrderService {
     OrderResponse save(User user, OrderRequest orderRequest);
     void deleteById(String id);
     OrderResponse getLastOrder(String username);
-    UserOrder findOrderById(String id);
     OrderResponse updateOrderAdmin(String id, OrderRequest orderRequest);
     OrderResponse cancelOrder(String orderId);
     void updateOrderAfterPayment(String txnRef, String status);

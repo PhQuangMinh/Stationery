@@ -1,5 +1,6 @@
 package web.stationery.dto.request.productrequest;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import web.stationery.dto.request.brandrequest.BrandRequest;
 import web.stationery.dto.request.categoryrequest.CategoryRequest;
@@ -10,6 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @ToString
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductRequest {
     private int id;
     private String name;

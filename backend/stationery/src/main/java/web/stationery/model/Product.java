@@ -19,7 +19,6 @@ import java.util.List;
 @Table(name = "products")
 @Getter
 @Setter
-@ToString
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,4 +84,21 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<Review> reviews;
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "updatedAt=" + updatedAt +
+                ", createdAt=" + createdAt +
+                ", deleteFlag=" + deleteFlag +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", discount=" + discount +
+                ", countSales=" + countSales +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                ", name='" + name + '\'' +
+                ", id=" + id +
+                '}';
+    }
 }

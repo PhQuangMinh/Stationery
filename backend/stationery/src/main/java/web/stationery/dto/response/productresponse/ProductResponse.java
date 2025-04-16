@@ -1,4 +1,4 @@
-package web.stationery.dto.response;
+package web.stationery.dto.response.productresponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

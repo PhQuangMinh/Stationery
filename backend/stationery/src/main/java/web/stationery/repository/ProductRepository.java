@@ -8,10 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import web.stationery.dto.response.productresponse.ProductStatisticProjection;
+import web.stationery.dto.response.productresponse.ProductStatisticResponse;
 import web.stationery.model.Product;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,11 +29,23 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     Page<Product> findByCategoryName(@Param("categoryName") String categoryName, Pageable pageable);
     List<Product> findByUpdatedAtAfterAndDeleteFlagFalse(Timestamp lastSyncTime);
     List<Product> findByDeleteFlagFalse();
-    List<Product> findByBrandId(int brandId);
-    
-    // Phương thức tối ưu để cập nhật deleteFlag hàng loạt
+
     @Modifying
     @Transactional
     @Query("UPDATE Product p SET p.deleteFlag = :deleteFlag WHERE p.brand.id = :brandId")
-    int updateDeleteFlagForBrand(@Param("brandId") int brandId, @Param("deleteFlag") boolean deleteFlag);
+    void updateDeleteFlagForBrand(@Param("brandId") int brandId, @Param("deleteFlag") boolean deleteFlag);
+
+    @Query(value = """
+    SELECT p.name AS name,
+           SUM(od.quantity) AS soldQuantity,
+           SUM(od.quantity * p.price) AS revenue
+    FROM orderitems od
+    JOIN products p ON od.product_id = p.id
+    JOIN userorders o ON od.order_id = o.id
+    WHERE o.status = 'Đã thanh toán'
+    GROUP BY p.name
+    ORDER BY soldQuantity DESC
+    LIMIT 5
+    """, nativeQuery = true)
+    List<ProductStatisticProjection> findTop5BestSellingProducts();
 }

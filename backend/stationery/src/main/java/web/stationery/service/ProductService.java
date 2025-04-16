@@ -3,10 +3,9 @@ package web.stationery.service;
 import org.springframework.data.domain.Page;
 import web.stationery.dto.request.productrequest.AdminProductRequest;
 import web.stationery.dto.request.productrequest.ProductRequest;
-import web.stationery.dto.response.ProductResponse;
+import web.stationery.dto.response.productresponse.ProductResponse;
 import web.stationery.model.Product;
 
-import javax.swing.text.Element;
 import java.util.List;
 
 public interface ProductService {

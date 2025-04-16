@@ -165,9 +165,34 @@ fetch(BASE_URL + "/templates/component/footer.html")
     if (loginLink) loginLink.href = BASE_URL + "/templates/auth/login.html";
 });
 
-function updateCartCount() {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    document.getElementById("cart-link").innerText = `🛒 Giỏ hàng (${cart.length} sản phẩm)`;
+async function updateCartCount() {
+    const token = localStorage.getItem('accessToken');
+    const username = localStorage.getItem('username');
+
+    if (!token || !username) {
+        document.getElementById("cart-link").innerText = `🛒 Giỏ hàng (0 sản phẩm)`;
+        return;
+    }
+
+    try {
+        const response = await fetch(`${BASE_API_URL}/user/${username}/carts/get-cart`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Không thể tải giỏ hàng');
+        }
+
+        const data = await response.json();
+        const cartItems = data.data.cartItems || [];
+        console.log(cartItems);
+        document.getElementById("cart-link").innerText = `🛒 Giỏ hàng (${cartItems.length} sản phẩm)`;
+    } catch (error) {
+        console.error('Error fetching cart:', error);
+        document.getElementById("cart-link").innerText = `🛒 Giỏ hàng (0 sản phẩm)`;
+    }
 }
 
 function fetchCategories() {

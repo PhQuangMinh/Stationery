@@ -16,7 +16,7 @@ async function getProductById(productId) {
                 discount: data.data.discount || 0,
                 imageUrl: data.data.imageUrl,
                 description: data.data.description || "Chưa có mô tả",
-                quantity: 1
+                quantity: data.data.quantity
             };
         }
         return null;
@@ -47,7 +47,7 @@ async function renderProductDetails() {
         <h1 class="h2 mb-3">${productData.name}</h1>
         <div class="mb-3">
             Thương hiệu: <a href="#" class="brand-link">${productData.brand}</a> | 
-            Tình trạng: <span class="stock-status">${productData.stockStatus}</span>
+            Số lượng còn lại: <span class="product-quantity">${productData.quantity}</span>
         </div>
         <div class="star-rating mb-3">
             ${renderStars(productData.rating)}
@@ -87,7 +87,7 @@ function increaseQuantity() {
     input.value = parseInt(input.value) + 1;
 }
 
-function addToCart(productData) {
+async function addToCart(productData) {
     // Kiểm tra đăng nhập trước khi thêm vào giỏ hàng
     const token = localStorage.getItem('accessToken');
     const username = localStorage.getItem('username');
@@ -112,30 +112,47 @@ function addToCart(productData) {
         return;
     }
     
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let existingProduct = cart.find(item => item.id === productData.id);
-    
-    const cartItem = {
-        id: productData.id,
-        name: productData.name,
-        price: productData.price,
-        imageUrl: productData.imageUrl,
-        discount: productData.discount,
-        brand: productData.brand,
-        description: productData.description,
-        stockQuantity: productData.quantity,
-        quantity: quantity
-    };
+    try {
+        const productRequest = {
+            id: productData.id,
+            name: productData.name,
+            description: productData.description,
+            price: productData.price,
+            quantity: quantity,  // Số lượng người dùng muốn thêm vào giỏ hàng
+            countSales: 0,  // Giả sử không cần thiết cho việc thêm vào giỏ hàng
+            discount: productData.discount,
+            imageUrl: productData.imageUrl,
+            brand: {
+                name: productData.brand
+            },
+            categories: []  // Giả sử không cần thiết cho việc thêm vào giỏ hàng
+        };
 
-    if (existingProduct) {
-        existingProduct.quantity += quantity;
-    } else {
-        cart.push(cartItem);
+        const response = await fetch(`${BASE_API_URL}/user/${username}/carts/add-products`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(productRequest)
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Không thể thêm sản phẩm vào giỏ hàng');
+        }
+
+        const data = await response.json();
+        console.log('Giỏ hàng đã được cập nhật:', data);
+        
+        // Cập nhật số lượng sản phẩm trong giỏ hàng từ DB
+        updateCartCount();
+        
+        alert(`Sản phẩm đã được thêm vào giỏ hàng với số lượng ${quantity}! 🛒`);
+    } catch (error) {
+        console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
+        alert(error.message || 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
     }
-    
-    localStorage.setItem("cart", JSON.stringify(cart));
-    updateCartCount();
-    alert("Sản phẩm đã được thêm vào giỏ hàng! 🛒");
 }
 
 async function getReviewsByProductId(productId, page = 0, size = 5) {

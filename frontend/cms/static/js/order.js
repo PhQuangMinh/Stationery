@@ -77,6 +77,7 @@ function updateStatusOptions() {
 // Hàm hiển thị danh sách đơn hàng
 function renderOrders() {
     const tableBody = document.getElementById('orderTableBody');
+    console.log(orders);
     tableBody.innerHTML = orders.map((order, index) => {
         const fullName = order.userResponse ? order.userResponse.name : 'N/A';
         
@@ -172,14 +173,22 @@ document.getElementById('saveOrderChanges').addEventListener('click', async func
     const index = this.getAttribute('data-index');
     const order = orders[index];
 
+    // Chuẩn bị danh sách orderItemRequests
+    const orderItemRequests = order.orderItemResponses.map(item => ({
+        id: item.id,
+        quantity: item.quantity
+    }));
+
     const updatedOrder = {
         orderDate: order.orderDate,
         totalAmount: order.totalAmount,
         status: document.getElementById('editStatus').value,
         paymentMethod: document.getElementById('editPaymentMethod').value,
         shippingAddress: document.getElementById('editAddress').value,
+        orderItemRequests: orderItemRequests // Thêm danh sách orderItemRequests
     };
 
+    console.log(updatedOrder);
     try {
         const token = localStorage.getItem('accessToken');
         const response = await fetch(`http://localhost:8080/admin/orders/update/${order.id}`, {
