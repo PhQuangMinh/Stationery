@@ -18,7 +18,11 @@ import java.util.Objects;
 
 @Service
 public class JWTTokenServiceImpl implements JWTTokenService {
-    private final SecretKey secretKey = secretKey();
+
+    // Sử dụng một chuỗi khóa bí mật cố định
+    private static final String SECRET_KEY_STRING = "your-256-bit-secret-your-256-bit-secret"; // Đảm bảo đủ 256 bit
+
+    private final SecretKey secretKey = Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes());
 
     public String generateAccessToken(UserDetails userDetails, Map<String, Object> claims) {
         Instant now = Instant.now();
@@ -71,10 +75,5 @@ public class JWTTokenServiceImpl implements JWTTokenService {
                 .getExpiration()
                 .before(new Date());
 
-    }
-
-    @Bean
-    public SecretKey secretKey(){
-        return Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 }

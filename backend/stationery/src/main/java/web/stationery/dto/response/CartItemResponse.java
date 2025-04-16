@@ -15,4 +15,6 @@ public class CartItemResponse {
     private int price;
     private String imageUrl;
     private int quantity;
+    private int discount;
+    private int productId;
 }

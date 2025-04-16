@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -36,12 +37,22 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
-    @JsonBackReference
     private Product product;
 
     @ManyToOne
     @JoinColumn(name = "cart_id")
     private Cart cart;
 
+    @Override
+    public String toString() {
+        return "CartItem{" +
+                "cart=" + cart +
+                ", id=" + id +
+                ", quantity=" + quantity +
+                ", createAt=" + createAt +
+                ", updateAt=" + updateAt +
+                ", deleteFlag=" + deleteFlag +
+                '}';
+    }
 }
 

@@ -3,11 +3,13 @@ package web.stationery.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import web.stationery.dto.request.CartItemRequest;
 import web.stationery.dto.request.CartRequest;
 import web.stationery.dto.request.productrequest.ProductRequest;
 import web.stationery.dto.response.CartResponse;
 import web.stationery.dto.response.CustomResponse;
 import web.stationery.model.Cart;
+import web.stationery.model.CartItem;
 import web.stationery.service.CartService;
 import web.stationery.service.UserService;
 
@@ -42,7 +44,7 @@ public class CartController {
     }
 
     @DeleteMapping("/user/{username}/carts/remove-products")
-    public CustomResponse<?> removeProductFromCart(@PathVariable String username, @RequestBody ProductRequest productRequest){
-        return new CustomResponse<>(cartService.removeProductFromCart(userService.findUserByUsername(username), productRequest));
+    public CustomResponse<?> removeProductFromCart(@PathVariable String username, @RequestBody CartItemRequest cartItemRequest){
+        return new CustomResponse<>(cartService.removeProductFromCart(userService.findUserByUsername(username), cartItemRequest));
     }
 }

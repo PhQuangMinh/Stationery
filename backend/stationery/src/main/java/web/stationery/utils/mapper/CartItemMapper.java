@@ -12,10 +12,9 @@ public class CartItemMapper {
         cartItemResponse.setName(cartItem.getProduct().getName());
         cartItemResponse.setPrice(cartItem.getProduct().getPrice());
         cartItemResponse.setImageUrl(cartItem.getProduct().getImageUrl());
+        cartItemResponse.setDiscount(cartItem.getProduct().getDiscount());
+        cartItemResponse.setProductId(cartItem.getProduct().getId());
         return cartItemResponse;
     }
-
-//    CartItemResponse toResponse(CartItem cartItem);
-//    CartItem toEntity(CartItemResponse cartItemResponse);
 
 }

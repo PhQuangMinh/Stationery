@@ -6,9 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import web.stationery.model.elasticsearch.ProductDocument;
 import web.stationery.repository.elasticsearch.ProductElasticRepository;
-import web.stationery.dto.response.ProductResponse;
-
-import java.util.List;
+import web.stationery.dto.response.productresponse.ProductResponse;
 
 @Service
 @RequiredArgsConstructor

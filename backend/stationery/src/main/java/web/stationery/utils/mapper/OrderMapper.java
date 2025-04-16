@@ -60,16 +60,6 @@ public class OrderMapper {
                 , orderItemResponses);
     }
 
-    public void updateOrder(UserOrder userOrder, OrderRequest orderRequest){
-        updateOrderAdmin(userOrder, orderRequest);
-        for (OrderItemRequest orderItemRequest: orderRequest.getOrderItemRequests()){
-            Optional<OrderItem> findOrderItem = userOrder.getOrderItems().stream()
-                   .filter(orderItem -> String.valueOf(orderItem.getId()).equals(orderItemRequest.getId()))
-                   .findFirst();
-            findOrderItem.ifPresent(orderItem -> orderItem.setQuantity(orderItemRequest.getQuantity()));
-        }
-    }
-
     public void updateOrderAdmin(UserOrder userOrder, OrderRequest orderRequest){
         userOrder.setStatus(orderRequest.getStatus());
         userOrder.setOrderDate(orderRequest.getOrderDate());

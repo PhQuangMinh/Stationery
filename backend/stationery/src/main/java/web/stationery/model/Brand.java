@@ -14,7 +14,6 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "brands")
-@ToString
 public class Brand {
 
     @Id

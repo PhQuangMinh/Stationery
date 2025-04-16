@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import web.stationery.dto.request.productrequest.ProductRequest;
 import web.stationery.dto.response.categoryresponse.CategoryResponse;
-import web.stationery.dto.response.ProductResponse;
+import web.stationery.dto.response.productresponse.ProductResponse;
 import web.stationery.model.Product;
 
 import java.util.Collections;

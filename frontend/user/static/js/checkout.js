@@ -1,21 +1,22 @@
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
 function formatPrice(price) {
     return new Intl.NumberFormat('vi-VN').format(price) + ' đ';
 }
 
 function calculateTotal() {
-    const subtotal = cart.reduce((sum, item) => {
+    const subtotal = Math.round(cart.reduce((sum, item) => {
         const discountPrice = item.price * (100 - item.discount) / 100;
         return sum + (discountPrice * item.quantity);
-    }, 0);
+    }, 0));
     
     document.getElementById('subtotal').textContent = formatPrice(subtotal);
     document.getElementById('total').textContent = formatPrice(subtotal);
     document.getElementById('totalItems').textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
 }
 
-function renderCart() {
+async function renderCart() {
+    cart = await fetchCart(); // Lấy dữ liệu giỏ hàng từ API
     const orderItems = document.getElementById('orderItems');
+    console.log(cart);
     orderItems.innerHTML = cart.map(item => `
         <div class="order-item mb-3 border-bottom pb-3">
             <div class="d-flex">
@@ -23,11 +24,8 @@ function renderCart() {
                 <div class="ms-3 flex-grow-1">
                     <h6>${item.name}</h6>
                     <div class="d-flex justify-content-between align-items-center">
-                        <div class="quantity-controls">
-                            <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity(${item.id}, -1)">-</button>
-                            <input type="number" class="quantity-input mx-2" value="${item.quantity}" 
-                                   onchange="updateQuantityDirect(${item.id}, this.value)">
-                            <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantity(${item.id}, 1)">+</button>
+                        <div class="quantity-display">
+                            Số lượng: <span>${item.quantity}</span>
                         </div>
                         <span class="text-danger">${formatPrice(item.price * item.quantity)}</span>
                     </div>
@@ -37,25 +35,6 @@ function renderCart() {
         </div>
     `).join('');
     calculateTotal();
-}
-
-function updateQuantity(id, change) {
-    const item = cart.find(item => item.id === id);
-    if (item) {
-        const newQuantity = item.quantity + change;
-        if (newQuantity > 0) {
-            item.quantity = newQuantity;
-            renderCart();
-        }
-    }
-}
-
-function updateQuantityDirect(id, newQuantity) {
-    const item = cart.find(item => item.id === id);
-    if (item && newQuantity > 0) {
-        item.quantity = parseInt(newQuantity);
-        renderCart();
-    }
 }
 
 function removeItem(id) {
@@ -212,6 +191,9 @@ document.addEventListener('DOMContentLoaded', function() {
 document.querySelector('.btn-danger[type="submit"]').addEventListener('click', async function(e) {
     e.preventDefault();
     
+    // Đặt trạng thái thanh toán đang diễn ra
+    isCheckoutInProgress = true;
+
     const province = document.getElementById('province');
     const district = document.getElementById('district');
     const ward = document.getElementById('ward');
@@ -219,6 +201,7 @@ document.querySelector('.btn-danger[type="submit"]').addEventListener('click', a
     
     if (!province.value || !district.value || !ward.value || !specificAddress.value.trim()) {
         alert('Vui lòng nhập đầy đủ thông tin địa chỉ');
+        isCheckoutInProgress = false; // Hủy trạng thái nếu có lỗi
         return;
     }
     
@@ -229,10 +212,10 @@ document.querySelector('.btn-danger[type="submit"]').addEventListener('click', a
     
     const form = document.getElementById('checkoutForm');
     const formData = new FormData(form);
-    const total = cart.reduce((sum, item) => {
+    const total = Math.round(cart.reduce((sum, item) => {
         const discountPrice = item.price * (100 - item.discount) / 100;
         return sum + (discountPrice * item.quantity);
-    }, 0);
+    }, 0));
     
     const paymentMethod = document.getElementById('paymentMethod').value;
     const initialStatus = paymentMethod === 'VNPAY' ? 'PENDING' : 'CASH_ON_DELIVERY';
@@ -245,10 +228,12 @@ document.querySelector('.btn-danger[type="submit"]').addEventListener('click', a
         shippingAddress: fullAddress,
         paymentMethod: paymentMethod,
         orderItemRequests: cart.map(item => ({
+            id: item.id,
             quantity: item.quantity,
-            productId: item.id.toString()
+            productId: item.productId.toString()
         }))
     };
+    console.log(orderRequest);
 
     try {
         // Lưu đơn hàng vào database
@@ -277,9 +262,6 @@ document.querySelector('.btn-danger[type="submit"]').addEventListener('click', a
             if (vnpayData.data && vnpayData.data.paymentUrl) {
                 // Lưu ID đơn hàng vào localStorage
                 localStorage.setItem('pendingOrderId', orderResult.data.id);
-                
-                // Xóa giỏ hàng
-                localStorage.removeItem('cart');
                 cart = [];
                 
                 // Chuyển hướng đến trang thanh toán VNPAY
@@ -290,7 +272,6 @@ document.querySelector('.btn-danger[type="submit"]').addEventListener('click', a
         } else {
             // Thanh toán COD
             alert(`Đơn hàng đã được đặt thành công!\nPhương thức thanh toán: ${PAYMENT_METHODS.COD}\nTrạng thái: ${ORDER_STATUSES.COD.CASH_ON_DELIVERY}`);
-            localStorage.removeItem('cart');
             cart = [];
             renderCart();
             window.location.href = '/templates/order/userorder.html';
@@ -328,6 +309,36 @@ async function checkVNPayPayment() {
             alert('Có lỗi xảy ra khi kiểm tra thanh toán!');
             window.location.href = '/templates/order/userorder.html';
         }
+    }
+}
+
+async function fetchCart() {
+    const token = localStorage.getItem('accessToken');
+    const username = localStorage.getItem('username');
+    let BASE_API_URL = "http://localhost:8080";
+
+    if (!token || !username) {
+        alert('Bạn cần đăng nhập để xem giỏ hàng!');
+        return [];
+    }
+
+    try {
+        const response = await fetch(`${BASE_API_URL}/user/${username}/carts/get-cart`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Không thể tải giỏ hàng');
+        }
+
+        const data = await response.json();
+        return data.data.cartItems || [];
+    } catch (error) {
+        console.error('Error fetching cart:', error);
+        alert('Có lỗi xảy ra khi tải giỏ hàng!');
+        return [];
     }
 }
 

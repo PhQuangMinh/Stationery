@@ -5,8 +5,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import web.stationery.common.exception.NotFoundException;
 import web.stationery.common.utils.PageableUtils;
+import web.stationery.dto.request.CartItemRequest;
 import web.stationery.dto.request.CartRequest;
 import web.stationery.dto.request.productrequest.ProductRequest;
 import web.stationery.dto.response.CartResponse;
@@ -14,10 +16,10 @@ import web.stationery.model.Cart;
 import web.stationery.model.CartItem;
 import web.stationery.model.Product;
 import web.stationery.model.User;
+import web.stationery.repository.CartItemRepository;
 import web.stationery.repository.CartRepository;
 import web.stationery.repository.ProductRepository;
 import web.stationery.service.CartService;
-import web.stationery.utils.mapper.CartItemMapper;
 import web.stationery.utils.mapper.CartMapper;
 
 import java.util.List;
@@ -29,6 +31,8 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
 
     private final ProductRepository productRepository;
+
+    private final CartItemRepository cartItemRepository;
 
     private final CartMapper cartMapper = new CartMapper();
 
@@ -58,28 +62,41 @@ public class CartServiceImpl implements CartService {
     public CartResponse addProductToCart(User user, ProductRequest productRequest) {
         Optional<Cart> findCart = cartRepository.findByUser(user);
         if (findCart.isEmpty()) throw new NotFoundException("Cart not found for user - " + user.getUsername());
+        
         Optional<Product> product = productRepository.findById(String.valueOf(productRequest.getId()));
         if (product.isEmpty()) throw new NotFoundException("Product not found for - " + productRequest.getId());
+
+        if (product.get().getQuantity() < productRequest.getQuantity()) {
+            throw new IllegalArgumentException("Not enough quantity for product ID: " + productRequest.getId());
+        }
+        
         CartItem cartItem = new CartItem();
         cartItem.setCart(findCart.get());
         cartItem.setProduct(product.get());
         cartItem.setQuantity(productRequest.getQuantity());
         findCart.get().getCartItems().add(cartItem);
+        
         return cartMapper.toResponseCart(cartRepository.save(findCart.get()));
     }
 
     @Override
-    public CartResponse removeProductFromCart(User user, ProductRequest productRequest) {
+    @Transactional
+    public CartResponse removeProductFromCart(User user, CartItemRequest cartItemRequest) {
         Optional<Cart> findCart = cartRepository.findByUser(user);
         if (findCart.isEmpty()) throw new NotFoundException("Cart not found for user - " + user.getUsername());
-        Optional<Product> product = productRepository.findById(String.valueOf(productRequest.getId()));
-        if (product.isEmpty()) throw new NotFoundException("Product not found for - " + productRequest.getId());
+        Optional<CartItem> findExistCartItem = cartItemRepository.findById(cartItemRequest.getId());
+        if (findExistCartItem.isEmpty()) throw new NotFoundException("Product not found for - " + cartItemRequest.getId());
         CartItem findCartItem = findCart.get().getCartItems()
                 .stream()
-                .filter(cartItem -> cartItem.getProduct().getId() == product.get().getId())
+                .filter(cartItem -> cartItem.getId() == findExistCartItem.get().getId())
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("Product not found in cart for - " + productRequest.getId()));
-        findCartItem.setDeleteFlag(true);
+                .orElseThrow(() -> new NotFoundException("Cart Item not found in cart for - " + cartItemRequest.getId()));
+
+        if (!cartItemRepository.existsById(findCartItem.getId())) {
+            throw new RuntimeException("CartItem không tồn tại");
+        }
+        findCart.get().getCartItems().remove(findCartItem);
+        cartItemRepository.deleteById(findCartItem.getId());
         return cartMapper.toResponseCart(cartRepository.save(findCart.get()));
     }
 

@@ -2,15 +2,12 @@ package web.stationery.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import web.stationery.common.utils.PageableUtils;
 import web.stationery.dto.request.productrequest.AdminProductRequest;
-import web.stationery.dto.request.productrequest.ProductRequest;
 import web.stationery.dto.response.CustomResponse;
-import web.stationery.dto.response.ProductResponse;
-import web.stationery.model.Product;
+import web.stationery.dto.response.productresponse.ProductResponse;
 import web.stationery.service.Impl.elasticsearch.ProductESService;
 import web.stationery.service.ProductService;
 

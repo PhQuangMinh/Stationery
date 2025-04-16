@@ -47,7 +47,6 @@ public class WebSecurityConfig {
 
     private final JWTTokenService jwtTokenService;
 
-    // Tách các constant ra
     private static final String[] PUBLIC_URLS = {
         "/login", 
         "/register", 
@@ -73,10 +72,11 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers(PUBLIC_URLS).permitAll()
-                        .requestMatchers("/users/**").hasRole("USER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
+//                        .requestMatchers(PUBLIC_URLS).permitAll()
+//                        .requestMatchers("/users/**").hasRole("USER")
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+//                        .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
                 .exceptionHandling(handling -> handling
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))

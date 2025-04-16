@@ -122,17 +122,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse deleteUserByUsername(String username) {
-        System.out.println(username);
-        Optional<User> user = userRepository.findByUsername(username);
-        if (user.isEmpty()){
-            throw new NotFoundException("User not found - " + username);
-        }
-        user.get().setDeleteFlag(true);
-        return userMapper.toUserResponse(userRepository.save(user.get()));
-    }
-
-    @Override
     public int getTotalSpending(String username) {
         System.out.println(username);
         Optional<User> user = userRepository.findByUsername(username);
