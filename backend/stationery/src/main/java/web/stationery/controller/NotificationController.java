@@ -1,6 +1,7 @@
 package web.stationery.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class NotificationController {
     private final UserService userService;
 
@@ -25,17 +27,17 @@ public class NotificationController {
 
     private final RabbitTemplate rabbitTemplate;
 
-    private final Logger logger = LoggerFactory.getLogger(NotificationController.class);
-
+    @CrossOrigin(origins = {"http://localhost:5500", "http://127.0.0.1:5500"}, allowCredentials = "true")
     @MessageMapping("/send")
     public void sendNotification(@Payload NotificationRequest notification) {
         try {
-            logger.info("Received notification: {}", notification);
+            log.info("Received notification: {}", notification);
             validateNotification(notification);
-            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, 
+            notificationService.saveNotification(notification);
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME,
                 RabbitMQConfig.ROUTING_KEY, notification);
         } catch (Exception e) {
-            logger.error("Error sending notification: ", e);
+            log.error("Error sending notification: ", e);
             throw new RuntimeException("Failed to send notification", e);
         }
     }

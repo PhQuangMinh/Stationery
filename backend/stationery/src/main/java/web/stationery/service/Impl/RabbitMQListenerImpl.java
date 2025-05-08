@@ -1,6 +1,7 @@
 package web.stationery.service.Impl;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -13,9 +14,8 @@ import web.stationery.service.RabbitMQListener;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RabbitMQListenerImpl implements RabbitMQListener {
-    private final Logger logger = LoggerFactory.getLogger(RabbitMQListenerImpl.class);
-
     private final SimpMessagingTemplate messagingTemplate;
 
     private final NotificationService notificationService;
@@ -24,6 +24,7 @@ public class RabbitMQListenerImpl implements RabbitMQListener {
     @RabbitListener(queues = RabbitMQConfig.QUEUE_NAME)
     public void handleMessage(NotificationRequest notificationRequest) {
         try {
+            log.info(notificationRequest.toString());
             validateNotificationRequest(notificationRequest);
             notificationService.saveNotification(notificationRequest);
             messagingTemplate.convertAndSend(
@@ -31,8 +32,7 @@ public class RabbitMQListenerImpl implements RabbitMQListener {
                 notificationRequest
             );
         } catch (Exception e) {
-            logger.error("Error processing notification: ", e);
-            // Có thể thêm dead letter queue để xử lý message lỗi
+            log.error("Error processing notification: ", e);
         }
     }
 
@@ -41,7 +41,7 @@ public class RabbitMQListenerImpl implements RabbitMQListener {
             throw new IllegalArgumentException("Notification request cannot be null");
         }
         if (request.getUsernameReceiver() == null) {
-            logger.warn("Username receiver is null, notification might not be delivered correctly");
+            log.warn("Username receiver is null, notification might not be delivered correctly");
         }
     }
 }

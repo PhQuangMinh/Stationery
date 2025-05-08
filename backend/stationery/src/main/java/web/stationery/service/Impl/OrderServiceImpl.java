@@ -95,7 +95,6 @@ public class OrderServiceImpl implements OrderService {
             productRepository.save(findProduct.get());
         }
         for (CartItem cartItem : user.getCart().getCartItems()) {
-            cartItem.setDeleteFlag(true);
             cartItemRepository.save(cartItem);
         }
 

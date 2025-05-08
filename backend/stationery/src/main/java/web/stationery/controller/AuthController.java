@@ -51,12 +51,6 @@ public class AuthController {
         return new CustomResponse<>(authService.login(authRequest));
     }
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<CustomResponse<?>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        authService.forgotPassword(forgotPasswordRequest);
-        return new ResponseEntity<>(new CustomResponse<>("Password reset link sent to your email"), HttpStatus.OK);
-    }
-
     @PostMapping("/logout")
     public void logout(@RequestBody String accessToken) {
         authService.logout(accessToken);

@@ -60,11 +60,6 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
-        emailService.sendVerificationCode(forgotPasswordRequest.getEmail());
-    }
-
-    @Override
     public AuthResponse login(AuthRequest authRequest) {
         try {
             Authentication authentication = authenticationManager.authenticate(

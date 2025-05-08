@@ -59,22 +59,37 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartResponse addProductToCart(User user, ProductRequest productRequest) {
+    public CartResponse addProductToCart(User user, CartItemRequest cartItemRequest) {
         Optional<Cart> findCart = cartRepository.findByUser(user);
         if (findCart.isEmpty()) throw new NotFoundException("Cart not found for user - " + user.getUsername());
         
-        Optional<Product> product = productRepository.findById(String.valueOf(productRequest.getId()));
-        if (product.isEmpty()) throw new NotFoundException("Product not found for - " + productRequest.getId());
+        Optional<Product> product = productRepository.findById(String.valueOf(cartItemRequest.getProductId()));
+        if (product.isEmpty()) throw new NotFoundException("Product not found for - " + cartItemRequest.getProductId());
 
-        if (product.get().getQuantity() < productRequest.getQuantity()) {
-            throw new IllegalArgumentException("Not enough quantity for product ID: " + productRequest.getId());
+        if (product.get().getQuantity() < cartItemRequest.getQuantity()) {
+            throw new IllegalArgumentException("Not enough quantity for product ID: " + cartItemRequest.getProductId());
         }
         
-        CartItem cartItem = new CartItem();
-        cartItem.setCart(findCart.get());
-        cartItem.setProduct(product.get());
-        cartItem.setQuantity(productRequest.getQuantity());
-        findCart.get().getCartItems().add(cartItem);
+        Optional<CartItem> existingCartItem = findCart.get().getCartItems().stream()
+                .filter(item -> item.getProduct().getId() == product.get().getId())
+                .findFirst();
+        
+        if (existingCartItem.isPresent()) {
+            CartItem cartItem = existingCartItem.get();
+            int newQuantity = cartItem.getQuantity() + cartItemRequest.getQuantity();
+            
+            if (product.get().getQuantity() < newQuantity) {
+                throw new IllegalArgumentException("Not enough quantity for product ID: " + cartItemRequest.getProductId());
+            }
+            
+            cartItem.setQuantity(newQuantity);
+        } else {
+            CartItem cartItem = new CartItem();
+            cartItem.setCart(findCart.get());
+            cartItem.setProduct(product.get());
+            cartItem.setQuantity(cartItemRequest.getQuantity());
+            findCart.get().getCartItems().add(cartItem);
+        }
         
         return cartMapper.toResponseCart(cartRepository.save(findCart.get()));
     }

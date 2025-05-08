@@ -9,5 +9,4 @@ import lombok.*;
 @ToString
 public class BrandRequest {
     private String name;
-    private boolean deleteFlag;
 }

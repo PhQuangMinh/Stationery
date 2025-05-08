@@ -20,7 +20,7 @@ public class RegisterUserRequest {
     @Email(message = "INVALID_EMAIL")
     private String email;
 
-    @StrongPassword
+//    @StrongPassword
     private String password;
 
     private String address;

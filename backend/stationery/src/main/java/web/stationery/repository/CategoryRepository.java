@@ -16,4 +16,6 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
     List<Category> findByParent_Id(Integer parentId);
     List<Category> findByParentIsNullAndDeleteFlagFalse();
     List<Category> findByParent_IdAndDeleteFlagFalse(Integer parentId);
+    Page<Category> findByNameContainingIgnoreCaseAndDeleteFlagFalse(String name, Pageable pageable);
+    Page<Category> findByDeleteFlagFalse(Pageable pageable);
 }

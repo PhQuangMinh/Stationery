@@ -19,25 +19,4 @@ public class StatisticsController {
     public CustomResponse<?> getStatistics() {
         return new CustomResponse<>(statisticsService.getStatistics());
     }
-
-//    @GetMapping("/revenue")
-//    public ResponseEntity<?> getRevenue(
-//            @RequestParam String timeRange,  // daily, weekly, monthly, yearly
-//            @RequestParam String startDate,
-//            @RequestParam String endDate
-//    ) {
-//        // Trả về dữ liệu doanh thu theo thời gian
-//    }
-//
-//    @GetMapping("/order-status")
-//    public ResponseEntity<?> getOrderStatusStats() {
-//        // Trả về thống kê trạng thái đơn hàng
-//    }
-//
-//    @GetMapping("/top-products")
-//    public ResponseEntity<?> getTopProducts(
-//        @RequestParam int limit
-//    ) {
-//        // Trả về top sản phẩm bán chạy
-//    }
 }

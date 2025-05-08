@@ -14,9 +14,9 @@ public interface CategoryService {
     CategoryResponse findById(Integer id);
     List<CategoryAdminResponse> getCategoriesTree();
     List<CategoryUserResponse> getPublicCategoriesTree();
-
     Category findCategoryById(Integer id);
     Category saveAdmin(AdminCategoryRequest categoryRequest);
     Category updateAdmin(Integer id, AdminCategoryRequest categoryRequest);
     void deleteById(Integer id);
+    Page<CategoryResponse> findByName(String name, int size, int page, String sortBy);
 }

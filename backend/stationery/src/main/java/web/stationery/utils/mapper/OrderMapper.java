@@ -65,7 +65,6 @@ public class OrderMapper {
         userOrder.setOrderDate(orderRequest.getOrderDate());
         userOrder.setShippingAddress(orderRequest.getShippingAddress());
         userOrder.setPaymentMethod(orderRequest.getPaymentMethod());
-        userOrder.setTxnRef(orderRequest.getTxnRef());
     }
 
 

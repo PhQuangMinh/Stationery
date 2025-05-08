@@ -34,8 +34,8 @@ public class CartController {
     }
 
     @PostMapping("/user/{username}/carts/add-products")
-    public CustomResponse<?> addProductToCart(@PathVariable String username, @RequestBody ProductRequest productRequest) {
-        return new CustomResponse<>(cartService.addProductToCart(userService.findUserByUsername(username), productRequest));
+    public CustomResponse<?> addProductToCart(@PathVariable String username, @RequestBody CartItemRequest cartItemRequest) {
+        return new CustomResponse<>(cartService.addProductToCart(userService.findUserByUsername(username), cartItemRequest));
     }
 
     @PutMapping("/user/{username}/carts/update")

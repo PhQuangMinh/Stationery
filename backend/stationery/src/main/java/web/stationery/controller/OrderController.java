@@ -1,6 +1,7 @@
 package web.stationery.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import web.stationery.dto.request.OrderRequest;
@@ -12,6 +13,7 @@ import web.stationery.service.UserService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("")
+@Slf4j
 public class OrderController {
     private final OrderService orderService;
 
@@ -23,6 +25,7 @@ public class OrderController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "id") String sortBy) {
+        log.info(String.valueOf(size));
         return new CustomResponse<>(orderService.findAll(size, page, sortBy));
     }
 
@@ -31,7 +34,7 @@ public class OrderController {
         return new CustomResponse<>(orderService.getOrderUser(userService.findUserByUsername(username)));
     }
 
-    @PutMapping("/admin/orders/delete-order/{id}")
+    @DeleteMapping("/admin/orders/delete-order/{id}")
     public void deleteOrder(@PathVariable String id){
         orderService.deleteById(id);
     }

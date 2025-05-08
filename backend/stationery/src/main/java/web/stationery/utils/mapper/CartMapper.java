@@ -22,7 +22,7 @@ public class CartMapper {
         CartResponse cartResponse = new CartResponse();
         cartResponse.setId(cart.getId());
         for (CartItem cartItem:cart.getCartItems()){
-            if (!cartItem.isDeleteFlag() && cartItem.getQuantity()>0){
+            if (cartItem.getQuantity()>0){
                 cartResponse.getCartItems().add(cartItemMapper.toResponse(cartItem));
             }
         }

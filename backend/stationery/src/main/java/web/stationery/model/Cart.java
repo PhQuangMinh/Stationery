@@ -39,7 +39,6 @@ public class Cart {
     @Override
     public String toString() {
         return "Cart{" +
-                "user=" + user +
                 ", updateAt=" + updateAt +
                 ", createAt=" + createAt +
                 ", id=" + id +

@@ -30,31 +30,14 @@ public class UserController {
         return userService.save(user);
     }
 
-    @GetMapping("/admin/{id}")
-    public CustomResponse<User> findById(@PathVariable int id){
-        return new CustomResponse<>(userService.findById(String.valueOf(id)));
+    @PutMapping("/users/update-profile/{username}")
+    public CustomResponse<?> updateUser(@Valid @RequestBody UpdateUserRequest userRequest, String username){
+        return new CustomResponse<>(userService.updateUser(username, userRequest), HttpStatus.OK.toString());
     }
 
-    @PutMapping("/users/update-profile")
-    public CustomResponse<?> updateUser(@Valid @RequestBody UpdateUserRequest userRequest){
-//        return new CustomResponse<>(userService.updateUser("johndoe123", userRequest), HttpStatus.OK);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication instanceof JwtAuthenticationToken jwtToken){
-            Jwt jwt = jwtToken.getToken();
-            return new CustomResponse<>(userService.updateUser(jwt.getSubject(), userRequest), HttpStatus.OK.toString());
-        }
-        throw new AuthorizingException("Unauthenticated");
-    }
-
-    @GetMapping("/users/profile-current-user")
-    public CustomResponse<?> getProfileUser(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Authentication type: " + authentication.getClass().getName());
-        if (authentication instanceof JwtAuthenticationToken jwtToken){
-            Jwt jwt = jwtToken.getToken();
-            return new CustomResponse<>(userService.getProfileUserByUsername(jwt.getSubject()), HttpStatus.OK.toString());
-        }
-        throw new AuthorizingException("Unauthenticated");
+    @GetMapping("/users/profile-current-user/{username}")
+    public CustomResponse<?> getProfileUser(String username){
+        return new CustomResponse<>(userService.getProfileUserByUsername(username), HttpStatus.OK.toString());
     }
 
     @DeleteMapping("/admin/users/{id}")
@@ -88,6 +71,11 @@ public class UserController {
             userService.updateUserAdmin(id, userRequest),
             HttpStatus.OK.toString()
         );
+    }
+
+    @GetMapping("/admin/{id}")
+    public CustomResponse<User> findById(@PathVariable int id){
+        return new CustomResponse<>(userService.findById(String.valueOf(id)));
     }
 
 }

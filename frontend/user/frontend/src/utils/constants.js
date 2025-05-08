@@ -1,0 +1,1 @@
+export const BASE_API_URL = 'http://localhost:8080'; // Thay đổi URL API tùy theo môi trường 

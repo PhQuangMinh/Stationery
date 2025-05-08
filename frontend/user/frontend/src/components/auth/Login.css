@@ -1,0 +1,80 @@
+.form-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+}
+
+.login-title {
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.register-text {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.btn-google {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: white;
+    margin-bottom: 1rem;
+}
+
+.btn-google img {
+    width: 24px;
+    height: 24px;
+}
+
+.divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 45%;
+    height: 1px;
+    background-color: #ddd;
+}
+
+.divider::before {
+    left: 0;
+}
+
+.divider::after {
+    right: 0;
+}
+
+.divider-text {
+    background-color: white;
+    padding: 0 1rem;
+    color: #666;
+}
+
+.required {
+    color: red;
+    margin-left: 4px;
+}
+
+.btn-login {
+    min-width: 120px;
+}
+
+.forgot-password {
+    margin-left: auto;
+    text-decoration: none;
+} 

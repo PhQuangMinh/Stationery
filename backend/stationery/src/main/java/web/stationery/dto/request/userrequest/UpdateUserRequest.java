@@ -13,9 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateUserRequest {
-    private String firstName;
-
-    private String lastName;
+    private String name;
 
     @NotBlank(message = "NOT_EMPTY_EMAIL")
     @Email(message = "INVALID_EMAIL")

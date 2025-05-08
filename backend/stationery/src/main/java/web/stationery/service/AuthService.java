@@ -8,7 +8,6 @@ import web.stationery.dto.response.UserResponse;
 
 public interface AuthService {
     AuthResponse createUser(RegisterUserRequest userRequest);
-    void forgotPassword(ForgotPasswordRequest forgotPasswordRequest);
     AuthResponse login(AuthRequest authRequest);
     void logout(String accessToken);
     AuthResponse getAccessToken(String refreshToken);
