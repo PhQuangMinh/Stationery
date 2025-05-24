@@ -41,6 +41,10 @@ public class OrderServiceImpl implements OrderService {
 
     private final CartItemRepository cartItemRepository;
 
+    private final CartRepository cartRepository;
+
+    private final CartService cartService;
+
 
     @Override
     public Page<OrderResponse> findAll(int size, int page, String sortBy) {
@@ -94,10 +98,7 @@ public class OrderServiceImpl implements OrderService {
             findProduct.get().setQuantity(findProduct.get().getQuantity() - itemRequest.getQuantity());
             productRepository.save(findProduct.get());
         }
-        for (CartItem cartItem : user.getCart().getCartItems()) {
-            cartItem.setDeleteFlag(true);
-            cartItemRepository.save(cartItem);
-        }
+        cartItemRepository.deleteByCartIdNative(user.getCart().getId());
 
         return orderMapper.toResponse(order);
     }
@@ -144,8 +145,6 @@ public class OrderServiceImpl implements OrderService {
         if (order.isEmpty()) {
             throw new NotFoundException("Order not found - " + orderId);
         }
-        
-        order.get().setDeleteFlag(true);
         order.get().setStatus("Hủy");
         return orderMapper.toResponse(orderRepository.save(order.get()));
     }
@@ -157,10 +156,27 @@ public class OrderServiceImpl implements OrderService {
             throw new NotFoundException("Order not found with transaction reference: " + txnRef);
         }
 
+        UserOrder userOrder = order.get();
         if ("00".equals(status)) {
-            order.get().setStatus("Đã thanh toán");
+            userOrder.setStatus("Đã thanh toán");
+
+            int totalOrder = 0;
+            for (OrderItem orderItem : userOrder.getOrderItems()) {
+                Product product = orderItem.getProduct();
+                int quantity = orderItem.getQuantity();
+                int price = product.getPrice();
+                
+                product.setQuantity(product.getQuantity() - quantity);
+                product.setCountSales(product.getCountSales() + quantity);
+                productRepository.save(product);
+                
+                totalOrder += price * quantity;
+            }
+            userOrder.setTotalOrder(totalOrder);
+        } else {
+            userOrder.setStatus("Thanh toán thất bại");
         }
-        orderRepository.save(order.get());
+        orderRepository.save(userOrder);
     }
 
     @Override

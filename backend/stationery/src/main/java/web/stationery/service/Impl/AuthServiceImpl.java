@@ -56,12 +56,8 @@ public class AuthServiceImpl implements AuthService {
         user.getCart().setUser(user);
         String accessToken = jwtTokenService.generateAccessToken(user, new HashMap<>());
         String refreshToken = jwtTokenService.generateRefreshToken(user, new HashMap<>());
+        userRepository.save(user);
         return new AuthResponse(accessToken, refreshToken, false);
-    }
-
-    @Override
-    public void forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
-        emailService.sendVerificationCode(forgotPasswordRequest.getEmail());
     }
 
     @Override

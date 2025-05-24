@@ -22,9 +22,9 @@ public class ProductRequest {
     private int discount;
     private String imageUrl;
     private BrandRequest brand;
-    private List<CategoryRequest> categories;
+    private CategoryRequest category;
 
-    public ProductRequest(int id, String name, String description, int price, int quantity, int countSales, int discount, String imageUrl, BrandRequest brand, List<CategoryRequest> categories) {
+    public ProductRequest(int id, String name, String description, int price, int quantity, int countSales, int discount, String imageUrl, BrandRequest brand, CategoryRequest category) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -34,6 +34,6 @@ public class ProductRequest {
         this.discount = discount;
         this.imageUrl = imageUrl;
         this.brand = brand;
-        this.categories = categories;
+        this.category = category;
     }
 }

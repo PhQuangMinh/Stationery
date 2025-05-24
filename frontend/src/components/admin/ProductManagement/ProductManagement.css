@@ -1,0 +1,119 @@
+.main-content {
+    margin-left: 250px;
+    padding: 2rem;
+    background-color: #198754;
+    background: linear-gradient(to bottom, #4facfe, #00f2fe);
+    min-height: 100vh;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    width: calc(100% - 250px);
+}
+
+.table-container {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    background: white;
+    margin-bottom: 1rem;
+}
+
+.table {
+    border-collapse: collapse;
+    min-width: 1500px;
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.product-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    background-color: #198754;
+    color: white;
+    display: inline-block;
+    width: 150px;
+}
+
+.product-image {
+    width: 80px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.sortable:hover {
+    background-color: #e9ecef;
+}
+
+.sortable i {
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+
+.sort-asc i::before {
+    content: "\F282";
+}
+
+.sort-desc i::before {
+    content: "\F286";
+}
+
+.modal-dialog {
+    max-height: 90vh;
+    margin: 1.75rem auto;
+}
+
+.modal-content {
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-body {
+    overflow-y: auto;
+    max-height: calc(90vh - 120px);
+    padding: 1rem;
+}
+
+.modal-header {
+    flex-shrink: 0;
+}
+
+.modal-footer {
+    flex-shrink: 0;
+}
+
+.search-container {
+    position: relative;
+    width: 300px;
+}
+
+.search-container input {
+    padding-right: 30px;
+    border-radius: 20px;
+    border: 1px solid #ced4da;
+}
+
+.search-container input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    border-color: #80bdff;
+} 

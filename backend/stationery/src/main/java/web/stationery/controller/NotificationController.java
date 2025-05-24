@@ -1,6 +1,7 @@
 package web.stationery.controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 @RequiredArgsConstructor
 @RestController
+@Slf4j
 public class NotificationController {
     private final UserService userService;
 
@@ -25,49 +27,57 @@ public class NotificationController {
 
     private final RabbitTemplate rabbitTemplate;
 
-    private final Logger logger = LoggerFactory.getLogger(NotificationController.class);
-
+    @CrossOrigin(origins = {"http://localhost:5500", "http://127.0.0.1:5500"}, allowCredentials = "true")
     @MessageMapping("/send")
     public void sendNotification(@Payload NotificationRequest notification) {
         try {
-            logger.info("Received notification: {}", notification);
+            log.info("Received notification: {}", notification);
             validateNotification(notification);
-            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, 
+            notificationService.saveNotification(notification);
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME,
                 RabbitMQConfig.ROUTING_KEY, notification);
         } catch (Exception e) {
-            logger.error("Error sending notification: ", e);
+            log.error("Error sending notification: ", e);
             throw new RuntimeException("Failed to send notification", e);
         }
     }
 
+
+
     private void validateNotification(NotificationRequest notification) {
-        if (notification == null || notification.getUsernameReceiver() == null) {
+        if (notification == null) {
             throw new IllegalArgumentException("Invalid notification data");
         }
     }
 
-    @GetMapping("/notifications/{username}/{size}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public CustomResponse<Page<NotificationResponse>> getNotification(@PathVariable String username
-            , @RequestParam(defaultValue = "10") int size){
-        return new CustomResponse<>(notificationService.getNotifications(userService.findUserByUsername(username), size));
+    @PostMapping("/user/notifications/send")
+    public void saveNotification(@RequestBody NotificationRequest notification) {
+        try {
+            validateNotification(notification);
+            notificationService.saveNotification(notification);
+        } catch (Exception e) {
+            log.error("Error sending notification: ", e);
+            throw new RuntimeException("Failed to send notification", e);
+        }
     }
 
-    @GetMapping("/notifications/{username}/unread")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public CustomResponse<Integer> getQuantityUnreadNotifications(@PathVariable String username){
-        return new CustomResponse<>(notificationService.getQuantityUnreadNotifications(userService.findUserByUsername(username)));
+    @GetMapping("/admin/notifications/{size}")
+    public CustomResponse<Page<NotificationResponse>> getNotification(@RequestParam(defaultValue = "10") String size){
+        return new CustomResponse<>(notificationService.getNotifications(Integer.parseInt(size)));
     }
 
-    @PutMapping("/notifications/mark-read")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @GetMapping("/admin/notifications/unread")
+    public CustomResponse<Integer> getQuantityUnreadNotifications(){
+        return new CustomResponse<>(notificationService.getQuantityUnreadNotifications());
+    }
+
+    @PutMapping("/admin/notifications/mark-read")
     public CustomResponse<NotificationResponse> markReadNotification(@RequestParam String notificationId){
         return new CustomResponse<>(notificationService.markReadNotification(notificationId));
     }
 
-    @PutMapping("/notifications/delete")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public CustomResponse<NotificationResponse> deleteNotification(@RequestParam String notificationId){
-        return new CustomResponse<>(notificationService.deleteNotification(notificationId));
+    @PutMapping("/admin/notifications/delete")
+    public CustomResponse<?> deleteNotification(@RequestParam String notificationId){
+        return new CustomResponse<>("Delete successful");
     }
 }

@@ -1,0 +1,70 @@
+.main-content {
+    margin-left: 250px;
+    padding: 2rem;
+    background: linear-gradient(to bottom, #4facfe, #00f2fe);
+    min-height: 100vh; 
+}
+
+.table-container {
+    max-height: 70vh; 
+    overflow-y: auto;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    background: white;
+}
+
+.table {
+    border-collapse: collapse;
+    min-width: 1000px;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.modal-dialog {
+    max-width: 700px;
+}
+
+.modal-body {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+.pagination {
+    background: white;
+    padding: 0.5rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.modal.show {
+    display: block;
+}
+
+.modal-backdrop.show {
+    opacity: 0.5;
+}
+
+.modal-dialog {
+    margin-top: 50px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    display: block;
+} 

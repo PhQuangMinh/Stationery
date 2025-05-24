@@ -32,9 +32,6 @@ public class CartItem {
     @UpdateTimestamp
     private Timestamp updateAt;
 
-    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
-    private boolean deleteFlag = false;
-
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
@@ -51,7 +48,6 @@ public class CartItem {
                 ", quantity=" + quantity +
                 ", createAt=" + createAt +
                 ", updateAt=" + updateAt +
-                ", deleteFlag=" + deleteFlag +
                 '}';
     }
 }

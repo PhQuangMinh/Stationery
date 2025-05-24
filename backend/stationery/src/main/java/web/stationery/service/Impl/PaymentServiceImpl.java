@@ -9,6 +9,7 @@ import web.stationery.service.PaymentService;
 import web.stationery.utils.VNPayUtil;
 
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentResponse createVNPayPayment(HttpServletRequest request) {
+//        String txnRef = UUID.randomUUID().toString().replace("-", "").substring(0, 20);
+//        Map<String, String> params = vnPayConfig.getVNPayConfig(txnRef);
         Map<String, String> params = vnPayConfig.getVNPayConfig(request.getParameter("txnRef"));
         params.put("vnp_Amount", String.valueOf(Integer.parseInt(request.getParameter("amount")) * 100L));
         if (request.getParameter("bankCode") != null && !request.getParameter("bankCode").isEmpty()) {

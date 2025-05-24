@@ -1,0 +1,53 @@
+.main-content {
+    margin-left: 250px;
+    padding: 2rem;
+    background-color: #198754;
+    background: linear-gradient(to bottom, #4facfe, #00f2fe);
+    min-height: 100vh; 
+}
+
+.table-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.brand-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    background-color: #198754;
+    color: white;
+    display: inline-block;
+}
+
+.modal-backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal.show {
+    display: block;
+}
+
+tr {
+    cursor: pointer;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+} 

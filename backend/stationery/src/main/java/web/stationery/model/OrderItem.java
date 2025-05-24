@@ -23,9 +23,6 @@ public class OrderItem {
     @Column(nullable = false)
     private int quantity;
 
-    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
-    private boolean deleteFlag = false;
-
     @Column(name = "create_at", updatable = false)
     @CreationTimestamp
     private Timestamp createAt;

@@ -28,7 +28,7 @@ public class ProductSyncService {
     private final ProductRepository productRepository;
     private final ElasticsearchClient elasticsearchClient;
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 5000)
     public void syncProductsToElastic() {
         List<Product> updatedProducts = productRepository.findByUpdatedAtAfterAndDeleteFlagFalse(Timestamp.from(Instant.now().minusSeconds(60)));
 
@@ -49,11 +49,7 @@ public class ProductSyncService {
                 product.getDiscount(),
                 product.getImageUrl(),
                 new BrandDocument(product.getBrand().getId(), product.getBrand().getName()),
-                product.getCategories() != null
-                        ? product.getCategories().stream()
-                        .map(category -> new CategoryDocument(category.getId(), category.getName()))
-                        .collect(Collectors.toList())
-                        : Collections.emptyList(),
+                new CategoryDocument(product.getCategory().getId(), product.getCategory().getName()),
                 product.getCreatedAt(),
                 product.getUpdatedAt()
         );

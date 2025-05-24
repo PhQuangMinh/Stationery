@@ -13,7 +13,8 @@ public interface CartService {
     Page<CartResponse> findAll(int size, int page, String sortBy);
     CartResponse findById(int id);
     CartResponse getCartUser(User user);
-    CartResponse addProductToCart(User user, ProductRequest productRequest);
+    CartResponse addProductToCart(User user, CartItemRequest cartItemRequest);
     CartResponse removeProductFromCart(User user, CartItemRequest cartItemRequest);
     CartResponse updateCart(User user, CartRequest cartRequest);
+    CartResponse clearCart(User user);
 }

@@ -43,18 +43,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public CustomResponse<?> register(@Valid @RequestBody RegisterUserRequest userRequest){
+        System.out.println(userRequest.getEmail());
         return new CustomResponse<>(authService.createUser(userRequest), HttpStatus.OK);
     }
 
     @PostMapping("/login")
     public CustomResponse<?> login(@Valid @RequestBody AuthRequest authRequest){
         return new CustomResponse<>(authService.login(authRequest));
-    }
-
-    @PostMapping("/forgot-password")
-    public ResponseEntity<CustomResponse<?>> forgotPassword(@RequestBody ForgotPasswordRequest forgotPasswordRequest) {
-        authService.forgotPassword(forgotPasswordRequest);
-        return new ResponseEntity<>(new CustomResponse<>("Password reset link sent to your email"), HttpStatus.OK);
     }
 
     @PostMapping("/logout")

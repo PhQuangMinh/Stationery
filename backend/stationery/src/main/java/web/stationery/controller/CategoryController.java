@@ -12,6 +12,12 @@ import web.stationery.service.CategoryService;
 public class CategoryController {
     private final CategoryService categoryService;
 
+
+    @PostMapping("/admin/categories")
+    public CustomResponse<?> addCategory(@RequestBody AdminCategoryRequest categoryRequest) {
+        return new CustomResponse<>(categoryService.saveAdmin(categoryRequest));
+    }
+
     @GetMapping("/categories/{id}")
     public CustomResponse<?> findById(@PathVariable String id) {
         return new CustomResponse<>(categoryService.findById(Integer.valueOf(id)));
@@ -27,11 +33,6 @@ public class CategoryController {
         return new CustomResponse<>(categoryService.getPublicCategoriesTree());
     }
 
-    @PostMapping("/admin/categories")
-    public CustomResponse<?> addCategory(@RequestBody AdminCategoryRequest categoryRequest) {
-        return new CustomResponse<>(categoryService.saveAdmin(categoryRequest));
-    }
-
     @PutMapping("/admin/categories/{id}")
     public CustomResponse<?> updateCategory(@PathVariable String id, @RequestBody AdminCategoryRequest categoryRequest) {
         return new CustomResponse<>(categoryService.updateAdmin(Integer.valueOf(id), categoryRequest));
@@ -40,5 +41,17 @@ public class CategoryController {
     @DeleteMapping("/admin/categories/{id}")
     public void deleteCategory(@PathVariable String id) {
         categoryService.deleteById(Integer.valueOf(id));
+    }
+
+    @GetMapping("/categories")
+    public CustomResponse<?> findByName(
+            @RequestParam(required = false) String name,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        if (name != null && !name.isEmpty()) {
+            return new CustomResponse<>(categoryService.findByName(name, size, page, sortBy));
+        }
+        return new CustomResponse<>(categoryService.findByName("", size, page, sortBy));
     }
 }

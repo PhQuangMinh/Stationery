@@ -64,14 +64,10 @@ public class Product {
     @JsonIgnore
     private Brand brand;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "category_product",
-            joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
+    @ManyToOne()
+    @JoinColumn(name = "category_id")
     @JsonIgnore
-    private List<Category> categories;
+    private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference

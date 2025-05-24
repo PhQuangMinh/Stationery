@@ -57,25 +57,6 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Review findReviewById(String reviewId) {
-        Optional<Review> findReview = reviewRepository.findById(reviewId);
-        if (findReview.isPresent()) {
-            return findReview.get();
-        }
-        throw new NotFoundException("Review not found - " + reviewId);
-    }
-
-    @Override
-    public ReviewResponse deleteReview(String reviewId) {
-        Optional<Review> findReview = reviewRepository.findById(reviewId);
-        if (findReview.isEmpty()){
-            throw new NotFoundException("Review not found - " + reviewId);
-        }
-        findReview.get().setDeleteFlag(true);
-        return reviewMapper.toResponse(reviewRepository.save(findReview.get()));
-    }
-
-    @Override
     public List<ReviewResponse> getReviewByProductAndUser(User user, Product product) {
         Optional<List<Review>> findReviews = reviewRepository.findByUserAndProduct(user, product);
         if (findReviews.isEmpty()){
@@ -92,5 +73,22 @@ public class ReviewServiceImpl implements ReviewService {
     @Override
     public int getTotalReviewsByProductId(Product product) {
         return reviewRepository.countByProductAndDeleteFlag(product, false);
+    }
+
+    @Override
+    public Page<ReviewResponse> getAllReviews(int size, int page, String sortBy) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by("id").descending());
+        Page<Review> reviewPage = reviewRepository.findAll(pageable);
+        List<ReviewResponse> reviewResponses = reviewMapper.toResponseList(reviewPage.getContent());
+        return new PageImpl<>(reviewResponses, pageable, reviewPage.getTotalElements());
+    }
+
+    @Override
+    public void deleteReview(int reviewId) {
+        Optional<Review> review = reviewRepository.findById(String.valueOf(reviewId));
+        if (review.isEmpty()){
+            throw new NotFoundException("Not found review - " + reviewId);
+        }
+        reviewRepository.delete(review.get());
     }
 }

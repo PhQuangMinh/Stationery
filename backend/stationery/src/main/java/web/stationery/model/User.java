@@ -76,9 +76,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Notification> sentNotifications = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Notification> receivedNotifications = new ArrayList<>();
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<VerificationCode> verificationCodes = new ArrayList<>();
 

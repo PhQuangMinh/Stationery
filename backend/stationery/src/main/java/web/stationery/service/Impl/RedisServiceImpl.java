@@ -24,6 +24,7 @@ public class RedisServiceImpl implements RedisService {
             redisTemplate.opsForHash().put(userId, REFRESH_TOKEN_NAME, token);
         }
         catch (Exception e) {
+            log.error(e.getMessage());
             log.error("Error saving token to Redis");
         }
     }

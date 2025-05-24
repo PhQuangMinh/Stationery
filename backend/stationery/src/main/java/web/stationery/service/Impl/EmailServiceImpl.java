@@ -15,6 +15,7 @@ import web.stationery.service.UserService;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Random;
 
 @Service
@@ -54,12 +55,21 @@ public class EmailServiceImpl implements EmailService {
 
     public boolean verifyCode(String username, String code) {
         return verificationCodeRepository.findLatestByUsername(username)
-                .filter(vc -> vc.getCode().equals(code) && vc.getExpiryTime().toInstant().isAfter(LocalDateTime.now().atZone(java.time.ZoneId.systemDefault()).toInstant()))
+                .filter(vc -> {
+                    boolean isValid = vc.getCode().equals(code) && 
+                                    vc.getExpiryTime().toInstant().isAfter(LocalDateTime.now()
+                                            .atZone(java.time.ZoneId.systemDefault()).toInstant());
+                    if (isValid) {
+                        vc.setExpiryTime(Timestamp.from(Instant.now()));
+                        verificationCodeRepository.save(vc);
+                    }
+                    return isValid;
+                })
                 .isPresent();
     }
 
     public String generateVerificationCode() {
-        int code = 100000 + random.nextInt(900000);
+        int code = random.nextInt(900000);
         return String.valueOf(code);
     }
 }

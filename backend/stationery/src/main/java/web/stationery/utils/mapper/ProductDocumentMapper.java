@@ -35,8 +35,8 @@ public class ProductDocumentMapper {
             response.setBrandResponse(toBrandResponse(document.getBrand()));
         }
         
-        if (document.getCategories() != null) {
-            response.setCategories(toCategoryResponses(document.getCategories()));
+        if (document.getCategory() != null) {
+            response.setCategory(toCategoryResponse(document.getCategory()));
         }
         
         return response;

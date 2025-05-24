@@ -21,7 +21,8 @@ public class UserOrder {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "order_date", nullable = false)
+    @Column(name = "order_date", nullable = false, updatable = false)
+    @CreationTimestamp
     private Timestamp orderDate;
 
     @Column(name = "status", nullable = false)
@@ -29,9 +30,6 @@ public class UserOrder {
 
     @Column(name = "shipping_address", nullable = false)
     private String shippingAddress;
-
-    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
-    private boolean deleteFlag = false;
 
     @Column(name = "create_at", updatable = false)
     @CreationTimestamp

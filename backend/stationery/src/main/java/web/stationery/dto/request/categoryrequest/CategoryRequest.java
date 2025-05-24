@@ -10,5 +10,4 @@ import lombok.*;
 public class CategoryRequest {
     private String name;
     private Integer parentId;
-    private boolean deleteFlag;
 }

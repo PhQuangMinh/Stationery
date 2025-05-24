@@ -7,7 +7,5 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminCategoryRequest extends CategoryRequest {
-    private String name;
-    private Integer parentId;
     private boolean deleteFlag;
 }

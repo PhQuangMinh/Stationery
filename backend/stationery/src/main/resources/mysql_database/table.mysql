@@ -184,16 +184,17 @@ create table userorders
 (
     id               int auto_increment
         primary key,
-    user_id          int                                  not null,
-    order_date       datetime(6)                          not null,
-    status           varchar(255)                         not null,
-    shipping_address varchar(255)                         not null,
-    create_at        timestamp  default CURRENT_TIMESTAMP null,
-    update_at        timestamp  default CURRENT_TIMESTAMP null on update CURRENT_TIMESTAMP,
-    delete_flag      tinyint(1) default 0                 null,
-    constraint userorders_ibfk_1
+    create_at        timestamp default CURRENT_TIMESTAMP null,
+    order_date       datetime(6)  not null,
+    payment_method   varchar(255) not null,
+    shipping_address varchar(255) not null,
+    status           varchar(255) not null,
+    total_order      int          null,
+    txn_ref          varchar(255) null,
+    update_at        timestamp default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP null,
+    user_id          int          not null,
+    constraint FKfdt1vx6oyot71va0i1gf2v3ct
         foreign key (user_id) references users (id)
-            on delete cascade
 );
 
 create table orderitems

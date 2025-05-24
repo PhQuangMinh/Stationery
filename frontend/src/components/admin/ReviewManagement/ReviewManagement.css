@@ -1,0 +1,70 @@
+.main-content {
+    margin-left: 250px;
+    padding: 2rem;
+    background: linear-gradient(to bottom, #4facfe, #00f2fe);
+    min-height: 100vh; 
+}
+
+.table-container {
+    max-height: 70vh;
+    overflow-y: auto;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    background: white;
+}
+
+.table {
+    border-collapse: collapse;
+    min-width: 1000px;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.rating-stars {
+    white-space: nowrap;
+}
+
+.rating-stars i {
+    font-size: 1rem;
+    margin-right: 2px;
+}
+
+.pagination {
+    background: white;
+    padding: 0.5rem;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+.btn-danger {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}
+
+.btn-danger:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    opacity: 0.9;
+}
+
+.bi-trash {
+    font-size: 1rem;
+}
+
+td {
+    vertical-align: middle;
+} 

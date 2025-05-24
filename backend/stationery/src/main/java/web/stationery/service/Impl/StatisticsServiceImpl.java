@@ -15,6 +15,7 @@ import web.stationery.service.OrderService;
 import web.stationery.service.StatisticsService;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,21 +30,21 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     private final ProductRepository productRepository;
 
-    public SummaryResponse getSummary(List<UserOrder> userOrders) {
+    public SummaryResponse getSummary(List<UserOrder> userOrders, int year) {
         long totalRevenue = 0;
         for (UserOrder userOrder:userOrders){
             totalRevenue += userOrder.getTotalOrder();
         }
 
-        List<UserOrder> todayOrders = orderRepository.findTodayOrders();
+        List<UserOrder> todayOrders = orderRepository.findTodayOrders(year);
 
         long totalProduct = productRepository.count();
         return new SummaryResponse(userOrders.size(), totalRevenue, todayOrders.size(), totalProduct);
     }
 
 
-    public RevenueByMonthResponse getMonthlyRevenue() {
-        List<Object[]> results = orderRepository.getRevenueByMonth();
+    public RevenueByMonthResponse getMonthlyRevenue(int year) {
+        List<Object[]> results = orderRepository.getRevenueByMonth(year);
         Map<Integer, Integer> revenueMap = new HashMap<>();
         for (Object[] row : results) {
             int month = ((Number) row[0]).intValue();
@@ -74,13 +75,20 @@ public class StatisticsServiceImpl implements StatisticsService {
     }
 
     @Override
-    public Map<String, Object> getStatistics() {
-        List<UserOrder> userOrders = orderRepository.findAll();
+    public Map<String, Object> getStatistics(int year) {
+        List<UserOrder> userOrders = orderRepository.findAll().stream()
+                .filter(order -> {
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(order.getOrderDate());
+                    return calendar.get(Calendar.YEAR) == year;
+                })
+                .collect(Collectors.toList());
+        System.out.println(userOrders);
         Map<String, Object> result = new HashMap<>();
-        result.put("summary", getSummary(userOrders));
-        result.put("revenueByMonth", getMonthlyRevenue());
+        result.put("summary", getSummary(userOrders, year));
+        result.put("revenueByMonth", getMonthlyRevenue(year));
         result.put("orderStatus", getTotalOrderStatus(userOrders));
-        List<ProductStatisticProjection> rawList = productRepository.findTop5BestSellingProducts();
+        List<ProductStatisticProjection> rawList = productRepository.findTop5BestSellingProducts(year);
         List<ProductStatisticResponse> productStatisticResponses = rawList.stream()
                 .map(p -> new ProductStatisticResponse(p.getName(), p.getSoldQuantity(), p.getRevenue()))
                 .toList();

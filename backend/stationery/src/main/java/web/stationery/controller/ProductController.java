@@ -38,6 +38,16 @@ public class ProductController {
         return new CustomResponse<>(results);
     }
 
+    @GetMapping("/products/search-jpa")
+    public CustomResponse<?> searchProductsByNameJPA(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "id") String sortBy
+    ) {
+        return new CustomResponse<>(productService.searchByName(query, size, page, sortBy));
+    }
+
     @GetMapping("/products/{id}")
     public CustomResponse<?> findById(@PathVariable String id){
         return new CustomResponse<>(productService.findById(id));

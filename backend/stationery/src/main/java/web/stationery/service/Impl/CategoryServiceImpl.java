@@ -1,8 +1,12 @@
 package web.stationery.service.Impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import web.stationery.common.exception.NotFoundException;
+import web.stationery.common.utils.PageableUtils;
 import web.stationery.dto.request.categoryrequest.AdminCategoryRequest;
 import web.stationery.dto.response.categoryresponse.CategoryAdminResponse;
 import web.stationery.dto.response.categoryresponse.CategoryResponse;
@@ -98,5 +102,13 @@ public class CategoryServiceImpl implements CategoryService {
             }
             return response;
         }).toList();
+    }
+
+    @Override
+    public Page<CategoryResponse> findByName(String name, int size, int page, String sortBy) {
+        Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
+        Page<Category> categories = categoryRepository.findByNameContainingIgnoreCaseAndDeleteFlagFalse(name, pageable);
+        List<CategoryResponse> categoryResponses = categoryMapper.toResponseList(categories.getContent());
+        return new PageImpl<>(categoryResponses, pageable, categories.getTotalElements());
     }
 }

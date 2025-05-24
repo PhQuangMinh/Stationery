@@ -17,4 +17,5 @@ public class StationeryApplication {
 		SpringApplication.run(StationeryApplication.class, args);
 	}
 
+
 }

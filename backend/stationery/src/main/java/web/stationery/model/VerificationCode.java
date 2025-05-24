@@ -33,9 +33,6 @@ public class VerificationCode {
     @Column(name = "expiry_time", nullable = false)
     private Timestamp expiryTime;
 
-    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
-    private boolean deleteFlag = false;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
