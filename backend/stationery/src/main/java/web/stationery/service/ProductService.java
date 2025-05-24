@@ -20,4 +20,5 @@ public interface ProductService {
     List<ProductResponse> getRandomProductsByCategory(String categoryName);
     List<ProductResponse> getRandomDiscountProducts();
     Page<ProductResponse> findByCategoryName(int size, int page, String sortBy, String categoryName);
+    Page<ProductResponse> searchByName(String keyword, int size, int page, String sortBy);
 }

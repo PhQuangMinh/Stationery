@@ -39,14 +39,7 @@ public class Notification {
     @Column(name = "read_at", updatable = false)
     private Timestamp readAt;
 
-    @Column(name = "delete_flag", nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
-    private boolean deleteFlag = false;
-
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private User sender;
-
-    @ManyToOne
-    @JoinColumn(name = "receiver_id", nullable = false)
-    private User receiver;
 }

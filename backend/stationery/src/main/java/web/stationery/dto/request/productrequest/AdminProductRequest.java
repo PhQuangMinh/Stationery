@@ -12,16 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 public class AdminProductRequest extends ProductRequest {
-    private int id;
-    private String name;
-    private String description;
-    private int price;
-    private int quantity;
-    private int countSales;
-    private int discount;
-    private String imageUrl;
-    private BrandRequest brand;
-    private List<CategoryRequest> categories;
     private boolean deleteFlag;
 
 }

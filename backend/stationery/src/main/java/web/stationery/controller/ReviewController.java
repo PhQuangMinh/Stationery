@@ -34,6 +34,13 @@ public class ReviewController {
         return new CustomResponse<>(reviewService.getReviewsByUser(userService.findUserByUsername(username), size, page, sortBy));
     }
 
+    @GetMapping("/admin/reviews/get-all")
+    public CustomResponse<?> getReviewByProduct(@RequestParam(defaultValue = "10") int size,
+                                                @RequestParam(defaultValue = "0") int page,
+                                                @RequestParam(defaultValue = "id") String sortBy) {
+        return new CustomResponse<>(reviewService.getAllReviews(size, page, sortBy));
+    }
+
     @PostMapping("/user/reviews/{productId}/{username}/create")
     public CustomResponse<?> createReview(@PathVariable String username, @PathVariable String productId, @RequestBody ReviewRequest reviewRequest) {
         return new CustomResponse<>(reviewService.createReview(userService.findUserByUsername(username), productService.findProductById(productId), reviewRequest));
@@ -60,5 +67,10 @@ public class ReviewController {
     @GetMapping("/reviews/{productId}/total-review")
     public CustomResponse<?> getTotalReviewsByProduct(@PathVariable String productId){
         return new CustomResponse<>(reviewService.getTotalReviewsByProductId(productService.findProductById(productId)));
+    }
+
+    @DeleteMapping("/admin/reviews/delete/{reviewId}")
+    public void deleteReview(@PathVariable int reviewId){
+        reviewService.deleteReview(reviewId);
     }
 }

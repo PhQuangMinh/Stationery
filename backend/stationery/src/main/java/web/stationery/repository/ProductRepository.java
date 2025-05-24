@@ -21,14 +21,17 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, String> {
     @Query("SELECT p FROM Product p WHERE p.deleteFlag = false ORDER BY p.countSales DESC")
     Optional<Product> findTopByOrderByCountSalesDesc();
-    @Query("SELECT p FROM Product p JOIN p.categories c WHERE c.name = :categoryName AND p.deleteFlag = false ORDER BY FUNCTION('RAND') LIMIT 4")
+    @Query("SELECT p FROM Product p JOIN p.category c WHERE c.name = :categoryName AND p.deleteFlag = false ORDER BY FUNCTION('RAND') LIMIT 4")
     List<Product> findRandomProductsByCategory(@Param("categoryName") String categoryName);
     @Query("SELECT p FROM Product p WHERE p.discount > 0 AND p.deleteFlag = false ORDER BY RAND() LIMIT 4")
     List<Product> findRandomDiscountProducts();
-    @Query("SELECT p FROM Product p JOIN p.categories c WHERE c.name = :categoryName AND p.deleteFlag = false")
+    @Query("SELECT p FROM Product p JOIN p.category c WHERE c.name = :categoryName AND p.deleteFlag = false")
     Page<Product> findByCategoryName(@Param("categoryName") String categoryName, Pageable pageable);
     List<Product> findByUpdatedAtAfterAndDeleteFlagFalse(Timestamp lastSyncTime);
     List<Product> findByDeleteFlagFalse();
+
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) AND p.deleteFlag = false")
+    Page<Product> searchByNameContaining(@Param("keyword") String keyword, Pageable pageable);
 
     @Modifying
     @Transactional
@@ -43,9 +46,10 @@ public interface ProductRepository extends JpaRepository<Product, String> {
     JOIN products p ON od.product_id = p.id
     JOIN userorders o ON od.order_id = o.id
     WHERE o.status = 'Đã thanh toán'
+    AND YEAR(o.order_date) = :year
     GROUP BY p.name
     ORDER BY soldQuantity DESC
     LIMIT 5
     """, nativeQuery = true)
-    List<ProductStatisticProjection> findTop5BestSellingProducts();
+    List<ProductStatisticProjection> findTop5BestSellingProducts(@Param("year") int year);
 }

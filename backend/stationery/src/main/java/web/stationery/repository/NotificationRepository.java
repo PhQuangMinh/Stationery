@@ -9,6 +9,5 @@ import web.stationery.model.User;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, String> {
-    Page<Notification> findByReceiverEquals(User receiver, Pageable pageable);
-    int countByStatusAndDeleteFlagAndReceiver(String status, boolean deleteFlag, User receiver);
+    int countByStatus(String status);
 }

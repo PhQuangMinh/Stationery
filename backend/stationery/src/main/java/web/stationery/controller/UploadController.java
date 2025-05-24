@@ -33,7 +33,8 @@ public class UploadController {
             throw new IllegalArgumentException("File rỗng");
         }
 
-        int MAX_SIZE_IMAGE = 5 * 1024 * 1024;
+        long MAX_SIZE_IMAGE = 5L * 1024 * 1024;
+        System.out.println(file.getSize());
         if (file.getSize() > MAX_SIZE_IMAGE) {
             throw new IllegalArgumentException("Kích thước file lớn hơn 5MB");
         }

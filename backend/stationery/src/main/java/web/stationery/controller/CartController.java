@@ -47,4 +47,9 @@ public class CartController {
     public CustomResponse<?> removeProductFromCart(@PathVariable String username, @RequestBody CartItemRequest cartItemRequest){
         return new CustomResponse<>(cartService.removeProductFromCart(userService.findUserByUsername(username), cartItemRequest));
     }
+
+    @PutMapping("/user/{username}/carts/clear-cart")
+    public CustomResponse<?> clearCart(@PathVariable String username){
+        return new CustomResponse<>(cartService.clearCart(userService.findUserByUsername(username)));
+    }
 }

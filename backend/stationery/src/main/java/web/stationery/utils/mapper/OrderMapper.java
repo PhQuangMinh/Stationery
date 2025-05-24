@@ -24,7 +24,6 @@ public class OrderMapper {
     public List<OrderResponse> toResponseList(List<UserOrder> userOrderList){
         List<OrderResponse> orderResponses = new ArrayList<>();
         for (UserOrder userOrder:userOrderList){
-            if (userOrder.isDeleteFlag()) continue;
             orderResponses.add(toResponse(userOrder));
         }
         return orderResponses;
@@ -62,21 +61,19 @@ public class OrderMapper {
 
     public void updateOrderAdmin(UserOrder userOrder, OrderRequest orderRequest){
         userOrder.setStatus(orderRequest.getStatus());
-        userOrder.setOrderDate(orderRequest.getOrderDate());
         userOrder.setShippingAddress(orderRequest.getShippingAddress());
         userOrder.setPaymentMethod(orderRequest.getPaymentMethod());
     }
-
 
     public UserOrder toEntity(OrderRequest orderRequest, User user, ProductRepository productRepository){
         UserOrder userOrder = new UserOrder();
         userOrder.setOrderItems(new ArrayList<>());
         userOrder.setUser(user);
-        userOrder.setOrderDate(orderRequest.getOrderDate());
         userOrder.setStatus(orderRequest.getStatus());
         userOrder.setShippingAddress(orderRequest.getShippingAddress());
         userOrder.setPaymentMethod(orderRequest.getPaymentMethod());
         userOrder.setTxnRef(orderRequest.getTxnRef());
+        int totalOrder = 0;
         for (OrderItemRequest orderItemRequest: orderRequest.getOrderItemRequests()){
             OrderItem orderItem = new OrderItem();
             Optional<Product> findProduct = productRepository.findById(String.valueOf(orderItemRequest.getProductId()));
@@ -86,6 +83,7 @@ public class OrderMapper {
             orderItem.setOrder(userOrder);
             orderItem.setProduct(findProduct.get());
             orderItem.setQuantity(orderItemRequest.getQuantity());
+            totalOrder = orderItem.getProduct().getPrice()*orderItemRequest.getQuantity();
             userOrder.getOrderItems().add(orderItem);
         }
         return userOrder;

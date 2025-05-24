@@ -5,5 +5,5 @@ import web.stationery.dto.response.statistics.StatisticsResponse;
 import java.util.Map;
 
 public interface StatisticsService {
-    Map<String, Object> getStatistics();
+    Map<String, Object> getStatistics(int year);
 }

@@ -16,7 +16,7 @@ public class StatisticsController {
     private final StatisticsService statisticsService;
 
     @GetMapping()
-    public CustomResponse<?> getStatistics() {
-        return new CustomResponse<>(statisticsService.getStatistics());
+    public CustomResponse<?> getStatistics(@RequestParam int year) {
+        return new CustomResponse<>(statisticsService.getStatistics(year));
     }
 }

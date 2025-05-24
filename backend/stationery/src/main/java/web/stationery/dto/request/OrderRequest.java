@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @Getter
@@ -15,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderRequest {
-    private Timestamp orderDate;
     private long totalAmount;
     private String status;
     private String shippingAddress;

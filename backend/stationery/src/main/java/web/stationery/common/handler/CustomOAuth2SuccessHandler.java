@@ -52,7 +52,7 @@ public class CustomOAuth2SuccessHandler implements AuthenticationSuccessHandler 
         redisService.saveToken(user.getUsername(), refreshToken);
 
         String redirectUrl = String.format(
-                "http://localhost:5501/templates/landingpage/landingpage.html?token=%s&username=%s"
+                "http://localhost:3000?token=%s&username=%s"
                 , accessToken, user.getUsername());
 
         response.sendRedirect(redirectUrl);

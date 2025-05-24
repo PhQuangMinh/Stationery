@@ -74,4 +74,21 @@ public class ReviewServiceImpl implements ReviewService {
     public int getTotalReviewsByProductId(Product product) {
         return reviewRepository.countByProductAndDeleteFlag(product, false);
     }
+
+    @Override
+    public Page<ReviewResponse> getAllReviews(int size, int page, String sortBy) {
+        Pageable pageable = PageRequest.of(0, size, Sort.by("id").descending());
+        Page<Review> reviewPage = reviewRepository.findAll(pageable);
+        List<ReviewResponse> reviewResponses = reviewMapper.toResponseList(reviewPage.getContent());
+        return new PageImpl<>(reviewResponses, pageable, reviewPage.getTotalElements());
+    }
+
+    @Override
+    public void deleteReview(int reviewId) {
+        Optional<Review> review = reviewRepository.findById(String.valueOf(reviewId));
+        if (review.isEmpty()){
+            throw new NotFoundException("Not found review - " + reviewId);
+        }
+        reviewRepository.delete(review.get());
+    }
 }

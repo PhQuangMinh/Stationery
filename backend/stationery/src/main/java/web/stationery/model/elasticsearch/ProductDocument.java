@@ -47,7 +47,7 @@ public class ProductDocument {
     private BrandDocument brand;
     
     @Field(type = FieldType.Nested)
-    private List<CategoryDocument> categories;
+    private CategoryDocument category;
     
     @Field(type = FieldType.Date)
     private Date createdAt;

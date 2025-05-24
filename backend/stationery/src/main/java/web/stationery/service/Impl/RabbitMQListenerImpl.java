@@ -28,7 +28,7 @@ public class RabbitMQListenerImpl implements RabbitMQListener {
             validateNotificationRequest(notificationRequest);
             notificationService.saveNotification(notificationRequest);
             messagingTemplate.convertAndSend(
-                "/topic/notifications/" + notificationRequest.getUsernameReceiver(), 
+                "/topic/notifications/",
                 notificationRequest
             );
         } catch (Exception e) {
@@ -39,9 +39,6 @@ public class RabbitMQListenerImpl implements RabbitMQListener {
     private void validateNotificationRequest(NotificationRequest request) {
         if (request == null) {
             throw new IllegalArgumentException("Notification request cannot be null");
-        }
-        if (request.getUsernameReceiver() == null) {
-            log.warn("Username receiver is null, notification might not be delivered correctly");
         }
     }
 }

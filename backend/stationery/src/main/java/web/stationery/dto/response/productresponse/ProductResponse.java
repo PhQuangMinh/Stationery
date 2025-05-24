@@ -24,5 +24,5 @@ public class ProductResponse {
     private String imageUrl;
     private BrandResponse brandResponse;
     private boolean deleteFlag;
-    private List<CategoryResponse> categories;
+    private CategoryResponse category;
 }

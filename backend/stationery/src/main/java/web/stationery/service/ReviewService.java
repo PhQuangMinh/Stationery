@@ -17,4 +17,6 @@ public interface ReviewService {
     List<ReviewResponse> getReviewByProductAndUser(User user, Product product);
     double getAverageRatingByProduct(Product product);
     int getTotalReviewsByProductId(Product product);
+    Page<ReviewResponse> getAllReviews(int size, int page, String sortBy);
+    void deleteReview(int reviewId);
 }

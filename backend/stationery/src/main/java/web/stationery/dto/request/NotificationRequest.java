@@ -13,10 +13,10 @@ public class NotificationRequest {
     private String status;
     private String link;
     private String type;
-    private String usernameReceiver;
+    private String usernameSender;
 
     @Override
     public String toString(){
-        return message + " " + status + " " + link + " " + type + " " + usernameReceiver;
+        return message + " " + status + " " + link + " " + type + " " + usernameSender;
     }
 }

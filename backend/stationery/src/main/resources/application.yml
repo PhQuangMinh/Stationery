@@ -17,6 +17,10 @@ payment:
   version: 2.1.0
   command: pay
   orderType: other
+
+gemini:
+  api-key: ${GEMINI_API_KEY:AIzaSyByyw_aAUszQjh3ILIBfyTM46ngNHPGZcA}
+
 key:
   open-api-key:
   cloudinary-url:

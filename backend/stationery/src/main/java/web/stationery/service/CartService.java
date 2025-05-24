@@ -16,4 +16,5 @@ public interface CartService {
     CartResponse addProductToCart(User user, CartItemRequest cartItemRequest);
     CartResponse removeProductFromCart(User user, CartItemRequest cartItemRequest);
     CartResponse updateCart(User user, CartRequest cartRequest);
+    CartResponse clearCart(User user);
 }

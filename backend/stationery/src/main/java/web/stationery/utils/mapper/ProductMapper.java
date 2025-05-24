@@ -47,13 +47,7 @@ public class ProductMapper {
         response.setCountSales(product.getCountSales());
         response.setDiscount(product.getDiscount());
         response.setImageUrl(product.getImageUrl());
-        response.setCategories(product.getCategories().stream()
-            .map(category -> new CategoryResponse(
-                category.getId(),
-                category.getName(),
-                category.getParent() != null ? category.getParent().getId() : null
-            ))
-            .collect(Collectors.toList()));
+        response.setCategory(new CategoryResponse(product.getCategory().getId(), product.getCategory().getName()));
         response.setDeleteFlag(product.isDeleteFlag());
         response.setBrandResponse(brandMapper.toResponse(product.getBrand()));
         return response;
@@ -75,6 +69,8 @@ public class ProductMapper {
             existingProduct.setPrice(productRequest.getPrice());
             existingProduct.setQuantity(productRequest.getQuantity());
             existingProduct.setImageUrl(productRequest.getImageUrl());
+            existingProduct.setDiscount(productRequest.getDiscount());
+            existingProduct.setCountSales(productRequest.getCountSales());
         }
     }
     

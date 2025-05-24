@@ -33,6 +33,6 @@ public class PaymentController {
             @RequestParam("vnp_TxnRef") String txnRef
     ) throws IOException {
         orderService.updateOrderAfterPayment(txnRef, responseCode);
-        response.sendRedirect("http://127.0.0.1:5501/templates/order/userorder.html");
+        response.sendRedirect("http://localhost:3000/orders");
     }
 }

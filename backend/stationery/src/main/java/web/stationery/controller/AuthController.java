@@ -43,6 +43,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public CustomResponse<?> register(@Valid @RequestBody RegisterUserRequest userRequest){
+        System.out.println(userRequest.getEmail());
         return new CustomResponse<>(authService.createUser(userRequest), HttpStatus.OK);
     }
 

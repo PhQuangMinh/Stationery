@@ -65,7 +65,17 @@ public class ProductServiceImpl implements ProductService {
         Optional<Product> findProduct = productRepository.findById(String.valueOf(id));
         if (findProduct.isEmpty()) throw new NotFoundException("Product not found - " + id);
         productMapper.updateProduct(findProduct.get(), productRequest);
-        return productMapper.toResponse(findProduct.get());
+        Optional<Brand> brand = brandRepository.findByName(productRequest.getBrand().getName());
+        if (brand.isEmpty()){
+            throw  new NotFoundException("Brand not found - " + productRequest.getBrand().getName());
+        }
+        findProduct.get().setBrand(brand.get());
+        Optional<Category> category = categoryRepository.findByName(productRequest.getCategory().getName());
+        if (category.isEmpty()){
+            throw  new NotFoundException("Category not found - " + productRequest.getCategory().getName());
+        }
+        findProduct.get().setCategory(category.get());
+        return productMapper.toResponse(productRepository.save(findProduct.get()));
     }
 
     @Override
@@ -88,14 +98,9 @@ public class ProductServiceImpl implements ProductService {
         Optional<Brand> findBrand = brandRepository.findByName(productRequest.getBrand().getName());
         if (findBrand.isEmpty()) throw new NotFoundException("Brand not found - " + productRequest.getBrand().getName());
         product.setBrand(findBrand.get());
-        List<Category> categories = productRequest.getCategories().stream().map(
-                categoryRequest -> {
-                    Optional<Category> findCategory = categoryRepository.findByName(categoryRequest.getName());
-                    if (findCategory.isEmpty()) throw new NotFoundException("Category not found - " + categoryRequest.getName());
-                    return findCategory.get();
-                }
-        ).toList();
-        product.setCategories(categories);
+        Optional<Category> findCategory = categoryRepository.findByName(productRequest.getCategory().getName());
+        if (findCategory.isEmpty()) throw new NotFoundException("Category not found - " + productRequest.getCategory().getName());
+        product.setCategory(findCategory.get());
         product.setDeleteFlag(productRequest.isDeleteFlag());
         return productRepository.save(product);
     }
@@ -110,14 +115,9 @@ public class ProductServiceImpl implements ProductService {
         Brand updateBrand = brandService.findBrandByName(productRequest.getBrand().getName());
         productMapper.updateProduct(existingProduct, productRequest);
         existingProduct.setBrand(updateBrand);
-
-        List<Category> categories = productRequest.getCategories().stream().map(categoryRequest -> {
-            Optional<Category> findCategory = categoryRepository.findByName(categoryRequest.getName());
-            if (findCategory.isEmpty()) throw new NotFoundException("Category not found - " + categoryRequest.getName());
-            return findCategory.get();
-        }).collect(Collectors.toList());
-
-        existingProduct.setCategories(categories);
+        Optional<Category> findCategory = categoryRepository.findByName(productRequest.getCategory().getName());
+        if (findCategory.isEmpty()) throw new NotFoundException("Category not found - " + productRequest.getCategory().getName());
+        existingProduct.setCategory(findCategory.get());
         existingProduct.setDeleteFlag(productRequest.isDeleteFlag());
 
         return productRepository.save(existingProduct);
@@ -144,9 +144,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Page<ProductResponse> findByCategoryName(int size, int page, String sortBy, String categoryName) {
         Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
-        Page<Product> products = productRepository.findByCategoryName(categoryName, pageable);
-        List<ProductResponse> productResponses = productMapper.toResponseList(products.getContent());
-        return new PageImpl<>(productResponses, pageable, products.getTotalElements());
+        Page<Product> productPage = productRepository.findByCategoryName(categoryName, pageable);
+        List<ProductResponse> productResponses = productMapper.toResponseList(productPage.getContent());
+        return new PageImpl<>(productResponses, pageable, productPage.getTotalElements());
+    }
+
+    @Override
+    public Page<ProductResponse> searchByName(String keyword, int size, int page, String sortBy) {
+        Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
+        Page<Product> productPage = productRepository.searchByNameContaining(keyword, pageable);
+        List<ProductResponse> productResponses = productMapper.toResponseList(productPage.getContent());
+        return new PageImpl<>(productResponses, pageable, productPage.getTotalElements());
     }
 
 }
