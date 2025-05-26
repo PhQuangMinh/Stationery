@@ -23,6 +23,11 @@ public class CategoryController {
         return new CustomResponse<>(categoryService.findById(Integer.valueOf(id)));
     }
 
+    @GetMapping("/admin/categories/full")
+    public CustomResponse<?> getAll() {
+        return new CustomResponse<>(categoryService.getAll());
+    }
+
     @GetMapping("/admin/categories/tree")
     public CustomResponse<?> getCategoriesTree() {
         return new CustomResponse<>(categoryService.getCategoriesTree());

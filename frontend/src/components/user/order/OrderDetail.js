@@ -7,6 +7,32 @@ import Footer from '../footer/Footer';
 import { BASE_API_URL } from '../../../utils/constants';
 import './OrderDetail.css';
 
+const PAYMENT_METHODS = {
+    COD: 'Thanh toán khi nhận hàng',
+    VNPAY: 'Thanh toán qua VNPAY'
+};
+
+
+const ORDER_STATUSES = {
+    COD: {
+        "CASH_ON_DELIVERY": 'Chờ xác nhận',
+        "PROCESSING": 'Đang xử lý',
+        "SHIPPING": 'Đang giao hàng',
+        "COMPLETED": 'Đã hoàn thành',
+        "CANCELLED": 'Đã hủy'
+    },
+    VNPAY: {
+        "WAITING_PAYMENT": 'Chờ thanh toán',
+        "PAID": 'Đã thanh toán',
+        "PROCESSING": 'Đang xử lý',
+        "SHIPPING": 'Đang giao hàng',
+        "COMPLETED": 'Đã hoàn thành',
+        "PAYMENT_FAILED": 'Thanh toán thất bại',
+        "CANCELLED": 'Đã hủy'
+    }
+};
+
+
 const OrderDetail = () => {
     const [orderData, setOrderData] = useState(null);
     const [showReviewModal, setShowReviewModal] = useState(false);
@@ -108,6 +134,22 @@ const OrderDetail = () => {
         return price.toLocaleString('vi-VN') + ' đ';
     };
 
+    const handleVNPayPayment = async () => {
+        try {
+            const response = await fetch(`${BASE_API_URL}/api/v1/payment/vn-pay?amount=${orderData.totalAmount}&bankCode=NCB&txnRef=${orderData.id}`);
+            const data = await response.json();
+            
+            if (data.data && data.data.paymentUrl) {
+                window.location.href = data.data.paymentUrl;
+            } else {
+                throw new Error('Không thể khởi tạo thanh toán VNPAY');
+            }
+        } catch (error) {
+            console.error('Lỗi khi tạo thanh toán:', error);
+            alert('Có lỗi xảy ra khi tạo thanh toán!');
+        }
+    };
+
     return (
         <>
             <Header />
@@ -128,11 +170,21 @@ const OrderDetail = () => {
                                 <div className="col-md-6">
                                     <p><strong>Mã đơn hàng:</strong> {orderData.id}</p>
                                     <p><strong>Ngày đặt:</strong> {new Date(orderData.orderDate).toLocaleDateString('vi-VN')}</p>
-                                    <p><strong>Trạng thái:</strong> {orderData.status}</p>
+                                    <p><strong>Trạng thái:</strong> {orderData.paymentMethod === 'COD' ? 
+                                        ORDER_STATUSES.COD[orderData.status] || orderData.status :
+                                        ORDER_STATUSES.VNPAY[orderData.status] || orderData.status}</p>
                                 </div>
                                 <div className="col-md-6">
                                     <p><strong>Địa chỉ giao hàng:</strong> {orderData.addressShipping}</p>
-                                    <p><strong>Phương thức thanh toán:</strong> {orderData.paymentMethod}</p>
+                                    <p><strong>Phương thức thanh toán:</strong> {PAYMENT_METHODS[orderData.paymentMethod] || orderData.paymentMethod}</p>
+                                    {orderData.paymentMethod === 'VNPAY' && orderData.status === 'WAITING_PAYMENT' && (
+                                        <button 
+                                            className="btn btn-primary mt-2"
+                                            onClick={handleVNPayPayment}
+                                        >
+                                            Thanh toán ngay
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>

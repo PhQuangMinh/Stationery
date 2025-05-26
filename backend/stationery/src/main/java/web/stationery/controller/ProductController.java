@@ -38,6 +38,18 @@ public class ProductController {
         return new CustomResponse<>(results);
     }
 
+//    @GetMapping("/products/search")
+//    public CustomResponse<?> searchProducts(
+//            @RequestParam String name,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "id") String sortBy
+//    ) {
+//        Pageable pageable = PageableUtils.createPageable(size, page, sortBy);
+//        return productESService.searchProductsByName(name, pageable);
+//
+//    }
+
     @GetMapping("/products/search-jpa")
     public CustomResponse<?> searchProductsByNameJPA(
             @RequestParam String query,

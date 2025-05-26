@@ -137,7 +137,7 @@ const Checkout = () => {
 
         const fullAddress = `${specificAddress}, ${selectedWardObj.name}, ${selectedDistrictObj.name}, ${selectedProvinceObj.name}`;
         const total = calculateTotal();
-        const initialStatus = paymentMethod === 'VNPAY' ? 'PENDING' : 'CASH_ON_DELIVERY';
+        const initialStatus = paymentMethod === 'VNPAY' ? 'WAITING_PAYMENT' : 'CASH_ON_DELIVERY';
 
         const orderRequest = {
             totalAmount: total,

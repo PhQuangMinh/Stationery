@@ -19,4 +19,5 @@ public interface CategoryService {
     Category updateAdmin(Integer id, AdminCategoryRequest categoryRequest);
     void deleteById(Integer id);
     Page<CategoryResponse> findByName(String name, int size, int page, String sortBy);
+    List<CategoryAdminResponse> getAll();
 }

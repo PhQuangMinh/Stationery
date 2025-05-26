@@ -11,7 +11,7 @@ const OrderManagement = () => {
 
     const ORDER_STATUSES = {
         COD: {
-            "PENDING": 'Chờ xác nhận',
+            "CASH_ON_DELIVERY": 'Chờ xác nhận',
             "PROCESSING": 'Đang xử lý',
             "SHIPPING": 'Đang giao hàng',
             "COMPLETED": 'Đã hoàn thành',
@@ -156,8 +156,8 @@ const OrderManagement = () => {
                                     </td>
                                     <td>
                                         {order.paymentMethod === 'COD' ? 
-                                            order.status || 'N/A' : 
-                                            order.status || 'N/A'}
+                                            ORDER_STATUSES.COD[order.status] || 'N/A' : 
+                                            ORDER_STATUSES.VNPAY[order.status] || 'N/A'}
                                     </td>
                                 </tr>
                             ))}

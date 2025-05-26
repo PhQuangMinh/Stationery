@@ -127,7 +127,7 @@ const ProductManagement = () => {
     const fetchCategories = async () => {
         try {
             const token = localStorage.getItem('accessToken');
-            const response = await fetch(`${API_BASE_URL}/admin/categories/tree`, {
+            const response = await fetch(`${API_BASE_URL}/admin/categories/full`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
