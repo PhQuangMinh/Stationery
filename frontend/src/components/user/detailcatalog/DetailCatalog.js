@@ -136,6 +136,25 @@ const DetailCatalog = () => {
         }
     };
 
+    // Thêm hàm tính giá sau giảm giá
+    const calculateDiscountedPrice = (originalPrice, discount) => {
+        return originalPrice - (originalPrice * discount / 100);
+    };
+
+    // Thêm hàm render stars
+    const renderStars = (rating) => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(
+                <i 
+                    key={i} 
+                    className={`bi ${i <= rating ? 'bi-star-fill' : 'bi-star'}`}
+                ></i>
+            );
+        }
+        return stars;
+    };
+
     return (
         <>
             <Header />
@@ -165,21 +184,47 @@ const DetailCatalog = () => {
                                 ) : (
                                     products.map(product => (
                                         <div key={product.id} className="product-card">
-                                            <Link 
-                                                to={`/product/${product.id}`}
-                                                className="product-title"
-                                            >
-                                                <img 
-                                                    src={product.imageUrl} 
-                                                    alt={product.name} 
-                                                    className="product-image"
-                                                />
-                                                <div className="product-name">{product.name}</div>
-                                                <div className="price">{formatPrice(product.price)}đ</div>
-                                                {product.discount > 0 && (
-                                                    <div className="discount">Giảm {product.discount}%</div>
-                                                )}
+                                            {product.discount > 0 && (
+                                                <div className="discount-badge">-{product.discount}%</div>
+                                            )}
+                                            
+                                            <div className="product-image-container">
+                                                <Link to={`/product/${product.id}`}>
+                                                    <img 
+                                                        src={product.imageUrl} 
+                                                        alt={product.name} 
+                                                        className="product-image"
+                                                    />
+                                                </Link>
+                                            </div>
+                                            
+                                            <Link to={`/product/${product.id}`} className="product-name">
+                                                {product.name}
                                             </Link>
+                                            
+                                            <div className="rating">
+                                                <div className="stars">
+                                                    {renderStars(product.rating || 4)}
+                                                </div>
+                                                <span className="rating-count">({product.ratingCount || 0})</span>
+                                            </div>
+
+                                            <div className="price-info">
+                                                {product.discount > 0 ? (
+                                                    <>
+                                                        <div className="original-price">
+                                                            {formatPrice(product.price)}đ
+                                                        </div>
+                                                        <div className="discounted-price">
+                                                            {formatPrice(calculateDiscountedPrice(product.price, product.discount))}đ
+                                                        </div>
+                                                    </>
+                                                ) : (
+                                                    <div className="discounted-price">
+                                                        {formatPrice(product.price)}đ
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     ))
                                 )}

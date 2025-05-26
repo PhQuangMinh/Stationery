@@ -75,6 +75,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponse save(User user, OrderRequest orderRequest) {
+        if (orderRequest.getOrderItemRequests().isEmpty()){
+            throw new RuntimeException("Đơn hàng rỗng");
+        }
         String txnRef = String.valueOf(System.currentTimeMillis()).substring(5); 
         orderRequest.setTxnRef(txnRef);
 

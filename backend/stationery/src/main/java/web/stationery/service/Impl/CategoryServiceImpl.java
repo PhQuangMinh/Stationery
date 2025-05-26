@@ -16,6 +16,7 @@ import web.stationery.repository.CategoryRepository;
 import web.stationery.service.CategoryService;
 import web.stationery.utils.mapper.CategoryMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,5 +111,15 @@ public class CategoryServiceImpl implements CategoryService {
         Page<Category> categories = categoryRepository.findByNameContainingIgnoreCaseAndDeleteFlagFalse(name, pageable);
         List<CategoryResponse> categoryResponses = categoryMapper.toResponseList(categories.getContent());
         return new PageImpl<>(categoryResponses, pageable, categories.getTotalElements());
+    }
+
+    @Override
+    public List<CategoryAdminResponse> getAll() {
+        List<Category> categories = categoryRepository.findAll();
+        List<CategoryAdminResponse> categoryAdminResponses = new ArrayList<>();
+        for (Category category:categories){
+            categoryAdminResponses.add(categoryMapper.toAdminResponse(category));
+        }
+        return categoryAdminResponses;
     }
 }

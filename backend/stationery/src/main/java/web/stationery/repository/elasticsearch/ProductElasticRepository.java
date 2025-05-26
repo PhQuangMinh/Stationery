@@ -27,15 +27,17 @@ public class ProductElasticRepository {
             SearchResponse<ProductDocument> response = elasticsearchClient.search(s -> s
                             .index("products")
                             .query(q -> q
-                                    .match(m -> m
-                                            .field("name")
-                                            .query(name)
+                                    .queryString(qs -> qs
+                                            .fields("name")
+                                            .query("*" + name.toLowerCase() + "*")
                                     )
                             )
                             .from((int) pageable.getOffset())
                             .size(pageable.getPageSize()),
                     ProductDocument.class
             );
+
+
 
             List<ProductDocument> products = response.hits().hits().stream()
                     .map(Hit::source)

@@ -133,21 +133,37 @@
     margin-bottom: 8px;
 }
 
-.price {
-    color: #ff0000;
-    font-weight: bold;
-    font-size: 16px;
+.price-info {
+    margin-top: auto;
+    padding: 10px 0;
 }
 
-.discount {
+.original-price {
+    text-decoration: line-through;
+    color: #999;
+    font-size: 14px;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.discounted-price {
+    color: #ff0000;
+    font-weight: bold;
+    font-size: 18px;
+    display: block;
+}
+
+.discount-badge {
     position: absolute;
     top: 10px;
     right: 10px;
     background-color: #ff0000;
     color: white;
-    padding: 2px 8px;
+    padding: 4px 8px;
     border-radius: 3px;
-    font-size: 12px;
+    font-size: 13px;
+    font-weight: bold;
+    z-index: 1;
 }
 
 #categoryMenu {

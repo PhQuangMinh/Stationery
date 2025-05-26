@@ -54,16 +54,17 @@ const Header = () => {
   };
 
   const handleSearch = async (query) => {
-    if (query.length < 2) {
+    if (query.length < 1) {
       setSearchResults([]);
       return;
     }
 
     try {
       const response = await fetch(
-        `${BASE_API_URL}/products/search-jpa?query=${encodeURIComponent(query)}`
+        `${BASE_API_URL}/products/search?name=${encodeURIComponent(query)}`
       );
       const data = await response.json();
+      console.log(data);
       setSearchResults(data.data?.content || []);
     } catch (error) {
       console.error('Error searching products:', error);

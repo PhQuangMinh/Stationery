@@ -8,6 +8,8 @@ import web.stationery.model.elasticsearch.ProductDocument;
 import web.stationery.repository.elasticsearch.ProductElasticRepository;
 import web.stationery.dto.response.productresponse.ProductResponse;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProductESService {
@@ -18,4 +20,8 @@ public class ProductESService {
         Page<ProductDocument> productDocuments = productElasticRepository.searchByName(name, pageable);
         return productMapper.toProductResponsePage(productDocuments);
     }
+
+//    public List<ProductDocument> searchProductsByName(String name, Pageable pageable) {
+//        return productElasticRepository.searchByName(name, pageable);
+//    }
 }

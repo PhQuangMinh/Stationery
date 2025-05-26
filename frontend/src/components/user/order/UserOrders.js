@@ -12,14 +12,24 @@ const PAYMENT_METHODS = {
     VNPAY: 'Thanh toán qua VNPAY'
 };
 
+
 const ORDER_STATUSES = {
-    PENDING: 'Chờ thanh toán',
-    CASH_ON_DELIVERY: 'Chờ xác nhận',
-    PROCESSING: 'Đang xử lý',
-    SHIPPED: 'Đang giao hàng',
-    COMPLETED: 'Đã hoàn thành',
-    FAILED: 'Thanh toán thất bại',
-    CANCELED: 'Đã hủy'
+    COD: {
+        "CASH_ON_DELIVERY": 'Chờ xác nhận',
+        "PROCESSING": 'Đang xử lý',
+        "SHIPPING": 'Đang giao hàng',
+        "COMPLETED": 'Đã hoàn thành',
+        "CANCELLED": 'Đã hủy'
+    },
+    VNPAY: {
+        "WAITING_PAYMENT": 'Chờ thanh toán',
+        "PAID": 'Đã thanh toán',
+        "PROCESSING": 'Đang xử lý',
+        "SHIPPING": 'Đang giao hàng',
+        "COMPLETED": 'Đã hoàn thành',
+        "PAYMENT_FAILED": 'Thanh toán thất bại',
+        "CANCELLED": 'Đã hủy'
+    }
 };
 
 const UserOrders = () => {
@@ -128,7 +138,7 @@ const UserOrders = () => {
                                 </tr>
                             ) : (
                                 orders.map(order => {
-                                    const canCancel = ['CASH_ON_DELIVERY', 'PENDING'].includes(order.status);
+                                    const canCancel = ['CASH_ON_DELIVERY', 'WAITING_PAYMENT'].includes(order.status);
                                     return (
                                         <tr key={order.id} onClick={() => goToOrderDetail(order.id)} style={{ cursor: 'pointer' }}>
                                             <td>{order.id}</td>
@@ -136,9 +146,12 @@ const UserOrders = () => {
                                             <td>{order.addressShipping}</td>
                                             <td className="price">{formatPrice(order.totalAmount)} đ</td>
                                             <td>{PAYMENT_METHODS[order.paymentMethod] || order.paymentMethod}</td>
-                                            <td>{ORDER_STATUSES[order.status] || order.status}</td>
+                                            <td>{order.paymentMethod === 'COD' ? 
+                                                ORDER_STATUSES.COD[order.status] || order.status :
+                                                ORDER_STATUSES.VNPAY[order.status] || order.status}
+                                            </td>
                                             <td onClick={(e) => e.stopPropagation()}>
-                                                {canCancel && (
+                                                {(order.status === 'CASH_ON_DELIVERY' || order.status === 'WAITING_PAYMENT') && (
                                                     <button 
                                                         className="btn btn-danger btn-sm"
                                                         onClick={() => cancelOrder(order.id)}
